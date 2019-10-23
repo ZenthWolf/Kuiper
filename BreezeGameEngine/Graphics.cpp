@@ -305,8 +305,55 @@ void Graphics::PutPixel(int x, int y, Color c)
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
 }
 
+/* Draws rectangle from Point0 to Point 1 */
+void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
+{
+	SwapIfGrtr(x0, x1);
+	SwapIfGrtr(y0, y1);
 
+	for (int x = x0; x <= x1; x++)
+	{
+		for (int y = y0; y <= y1; y++)
+		{
+			PutPixel(x, y, c);
+		}
+	}
+}
 
+/* Draws Rectangle centered at a point- best used with odd W and H */
+void Graphics::DrawCRect(int x0, int y0, int w, int h, Color c)
+{
+	if (h % 2 == 1)
+	{
+		h -= 1;
+	}
+	if (w % 2 == 1)
+	{
+		w -= 1;
+	}
+
+	h = h / 2;
+	w = w / 2;
+
+	DrawRect(x0 - w, x0 + w, y0 - h, y0 + h, c);
+}
+
+/* Draws Rectangle from P0 (top left) with given width/height */
+void Graphics::DrawRectDim(int x0, int y0, int w, int h, Color c)
+{
+	DrawRect(x0 , y0, x0 + w, y0 + h, c);
+}
+
+void Graphics::SwapIfGrtr(int& a, int& b)
+{
+	//std::swap(a,b)
+	if (a > b)
+	{
+		const int temp = a;
+		a = b;
+		b = temp;
+	}
+}
 
 //////////////////////////////////////////////////
 //           Graphics Exception
