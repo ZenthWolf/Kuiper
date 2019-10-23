@@ -56,6 +56,7 @@ public:
 	void DrawRect(int x0, int y0, int x1, int y2, Color c);
 	void DrawCRect(int x0, int y0, int w, int h, Color c);
 	void DrawRectDim(int x0, int y0, int w, int h, Color c);
+	void DrawCirc(int x0, int y0, int r, Color C);
 	
 	~Graphics();
 private:
