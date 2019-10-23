@@ -12,5 +12,7 @@ public:
 	float H;
 	Color C;
 	void Draw();
+
+private:
 	Graphics& gfx;
 };
