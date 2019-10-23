@@ -12,6 +12,7 @@ public:
 	float H;
 	Color C;
 	void Draw();
+	bool CollWith( const Rect& Targ ) const;
 
 private:
 	Graphics& gfx;
