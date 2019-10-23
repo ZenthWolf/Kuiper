@@ -135,6 +135,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="BreezeException.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Keyboard.h" />
@@ -151,6 +152,7 @@
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Rect.cpp" />
     <ClCompile Include="Tone.cpp" />
   </ItemGroup>
   <ItemGroup>
