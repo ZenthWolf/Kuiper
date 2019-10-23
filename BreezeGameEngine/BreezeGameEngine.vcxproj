@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="COMInitializer.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Game.h" />
@@ -137,6 +138,8 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Sound.h" />
+    <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="WinDefs.h" />
     <ClInclude Include="MainWindow.h" />
   </ItemGroup>
