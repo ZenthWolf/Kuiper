@@ -346,11 +346,12 @@ void Graphics::DrawRectDim(int x0, int y0, int w, int h, Color c)
 
 void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 {
-	for (int y = y0 - r; y <= y0 + r; y++)
+	int rsq = r * r;
+	for (int y = y0 - r+1; y < y0 + r; y++)
 	{
-		for (int x = x0 - r; x <= x0 + r; x++)
+		for (int x = x0 - r+1; x < x0 + r; x++)
 		{
-			if (float(x-x0) * float(x-x0) + float(y-y0) * float(y-y0) <= float(r) * float(r))
+			if ((x-x0) * (x-x0) + (y-y0) * (y-y0) <= rsq)
 			{
 				PutPixel(x, y, c);
 			}
