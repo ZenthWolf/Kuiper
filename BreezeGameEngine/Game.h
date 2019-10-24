@@ -21,6 +21,7 @@
 
 #include "Paddle.h"
 #include "Ball.h"
+#include "Brick.h"
 
 class Game
 {
@@ -46,4 +47,5 @@ private:
 	Paddle Player;
 	Ball Ball;
 	float dt;
+	RectF wall;
 };

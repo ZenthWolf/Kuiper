@@ -5,16 +5,11 @@
 
 class Brick
 {
-public:
-	Brick(Graphics& gfx);
-	Brick(Graphics& gfx, float x, float y, Color c);
-	void Draw();
+	Brick(RectF rect, Color c);
+	void Draw(Graphics& gfx);
 
 private:
-	static constexpr int W = 20;
-	static constexpr int H = 5;
 	RectF Rect;
 	Color C;
 	bool Broken = 0;
-	Graphics& gfx;
 };

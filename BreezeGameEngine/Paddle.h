@@ -3,20 +3,23 @@
 #include "RectF.h"
 #include "Graphics.h"
 #include "Keyboard.h"
+#include "Ball.h"
 
 class Paddle 
 {
 public:
-	Paddle(Graphics& gfx, Keyboard& kbd);
-	Paddle(Graphics& gfx, Keyboard& kbd, float x, float y, float w, float h, Color c);
-	void Draw();
-	void Update(Keyboard& kbd, float dt);
-	RectF Rect;
+
+	Paddle(Vec pos, float hWidth, float hHeight);
+	void Draw(Graphics& gfx) const;
+	void Move(const Keyboard& kbd, const float dt);
+	void CollBall(Ball& ball) const;
+	void CollWall(RectF& wall);
+	RectF GetRect() const;
 
 private:
-	Graphics& gfx;
-	
 	static constexpr float Vx = 3.0f;
-
-	Keyboard& kbd;
+	Color C = Colors::LightGray;
+	Vec Pos;
+	float halfWidth;
+	float halfHeight;
 };

@@ -2,22 +2,22 @@
 #include "Graphics.h"
 #include "Vec.h"
 #include "RectF.h"
-#include "Paddle.h"
 
 class Ball 
 {
 public:
-	Ball(Graphics& gfx);
-	Ball(Graphics& gfx, float x, float y, Color c);
-	Ball(Graphics& gfx, float x, float y, float vx, float vy, Color c);
-	void Draw();
-	void Update(float dt, const RectF& pad);
-	bool Paddled(const RectF& pad) const;
-
+	Ball();
+	Ball(float x, float y, Color c);
+	Ball(float x, float y, float vx, float vy, Color c);
+	void Draw(Graphics& gfx);
+	void Move(const float dt);
+	bool CollWall(const RectF& wall);
+	RectF GetRect() const;
+	void BounceX();
+	void BounceY();
 private:
-	RectF Rect;
-	Vec Vel;
-	static constexpr int R = 10;
+	Vec Pos;
+	Vec Vel;	
+	static constexpr float R = 10.0f;
 	Color C;
-	Graphics& gfx;
 };

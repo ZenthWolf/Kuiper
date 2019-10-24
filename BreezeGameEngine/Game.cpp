@@ -19,10 +19,12 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
-	Player(gfx, wnd.kbd, 400.0f, 550.0f, 75.0f, 15.0f, Colors::Gray),
-	Ball(gfx, 200, 500, 2.0f, 3.0f, Colors::Green)
+	Player({ 400.0f, 550.0f }, 35.0f, 10.0f),
+	Ball(200.0f, 550.0f, 2.0f, 3.0f, Colors::Green),
+	wall(0.0f, 0.0f, float(Graphics::ScreenWidth-1),float(Graphics::ScreenHeight-1))
 {
 }
+
 
 void Game::Play()
 {
@@ -36,30 +38,18 @@ void Game::UpdateModel()
 {
 	float dt = ft.Mark();
 
-	Player.Update(wnd.kbd, dt);
+	Player.Move(wnd.kbd, dt);
+	Player.CollWall(wall);
 
-	Ball.Update(dt, Player.Rect);
+	Ball.Move(dt);
+	Ball.CollWall(wall);
+
+	Player.CollBall(Ball);
 }
 
 
 void Game::ComposeFrame()
 {
-	Ball.Draw();
-	Player.Draw();
-
-
-	/*** Test Rects for Wall Behavior ***/
-	float t = 5.0f;
-	float SH = float(gfx.ScreenHeight);
-	float SW = float(gfx.ScreenWidth);
-
-	RectF Left(gfx, 0.0f, 0.0f, t, SH -1.0f, Colors::Red);
-	RectF Right(gfx, SW - t - 1.0f, 0.0f, t, SH - 1.0f, Colors::Red);
-	RectF Top(gfx, 0.0f, 0.0f, SW-1.0f, t, Colors::Red);
-	RectF Bot(gfx, 0.0f, SH - t - 1.0f, SW-1.0f, t, Colors::Red);
-
-	Left.Draw();
-	Right.Draw();
-	Top.Draw();
-	Bot.Draw();
+	Ball.Draw(gfx);
+	Player.Draw(gfx);
 }

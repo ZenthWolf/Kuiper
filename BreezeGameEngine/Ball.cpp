@@ -1,67 +1,75 @@
 #include "Ball.h"
 
-Ball::Ball(Graphics& gfx) : gfx(gfx), Rect(gfx)
+Ball::Ball()
 {
 }
 
-Ball::Ball(Graphics& gfx, float x, float y, Color c) : gfx(gfx), Rect(gfx,x-R,y-R, float(2*R+1), float(2*R+1), c)
+Ball::Ball(float x, float y, Color c)
 {
+	Pos = { x, y };
 	C = c;
 }
 
-Ball::Ball(Graphics& gfx, float x, float y, float vx, float vy, Color c) : gfx(gfx), Rect(gfx, x-R, y-R, float(2*R+1), float(2*R+1), c), Vel(vx, vy)
+Ball::Ball(float x, float y, float vx, float vy, Color c)
 {
+	Pos = { x, y };
+	Vel = { vx, vy };
 	C = c;
 }
 
-void Ball::Draw()
+void Ball::Draw(Graphics& gfx)
 {
-	gfx.DrawCirc(R+int(Rect.Pos.X), R+int(Rect.Pos.Y), R, C);
+	gfx.DrawCirc(int(Pos.X), int(Pos.Y), int(R), C);
 }
 
-void Ball::Update(float dt, const RectF& pad)
+void Ball::Move(float dt)
 {
-	Rect.Pos.X += Vel.X * dt * 60.0f;
-	Rect.Pos.Y += Vel.Y * dt * 60.0f;
-
-	/*** Test Rects for Wall Behavior ***/
-	float t = 5.0f;
-	float SH = float(gfx.ScreenHeight);
-	float SW = float(gfx.ScreenWidth);
-	RectF Left(gfx, 0.0f, 0.0f, t, SH - 1.0f, Colors::Red);
-	RectF Right(gfx, SW - t - 1.0f, 0.0f, t, SH - 1.0f, Colors::Red);
-	RectF Top(gfx, 0.0f, 0.0f, SW - 1.0f, t, Colors::Red);
-	RectF Bot(gfx, 0.0f, SH - t - 1.0f, SW - 1.0f, t, Colors::Red);
-
-	if (Rect.CollWith(Left))
-	{
-		Rect.Pos.X = 5.0f;
-		Vel.X = -Vel.X;
-	}
-	else if (Rect.CollWith(Right))
-	{
-		Rect.Pos.X = float(gfx.ScreenWidth) - 6.0f - 2*R;
-		Vel.X = -Vel.X;
-	}
-	if (Rect.CollWith(Top))
-	{
-		Rect.Pos.Y = 5.0f;
-		Vel.Y = -Vel.Y;
-	}
-	else if (Rect.CollWith(Bot))
-	{
-		Rect.Pos.Y = float(gfx.ScreenHeight) - 6.0f - 2*R;
-
-		Vel.Y = -Vel.Y;
-	}
-
-	if (Paddled(pad))
-	{
-		Vel.Y = -Vel.Y;
-	}
+	Pos += Vel * dt * 60.0f;
 }
 
-bool Ball::Paddled(const RectF& pad) const
+bool Ball::CollWall(const RectF& wall)
 {
-	return Rect.CollWith(pad);
+	RectF Rect = GetRect();
+
+	bool hit = false;
+	if (Rect.X0 < wall.X0)
+	{
+		Pos.X += wall.X0 - Rect.X0;
+		BounceX();
+		hit = true;
+	}
+	else if (Rect.X1 > wall.X1)
+	{
+		Pos.X += wall.X1 - Rect.X1;
+		BounceX();
+		hit = true;
+	}
+	if (Rect.Y0 < wall.Y0)
+	{
+		Pos.Y += wall.Y0 - Rect.Y0;
+		BounceY();
+		hit = true;
+	}
+	else if (Rect.Y1 > wall.Y1)
+	{
+		Pos.Y += wall.Y1 - Rect.Y1;
+		BounceY();
+		hit = true;
+	}
+	return hit;
+}
+
+void Ball::BounceX()
+{
+	Vel.X = -Vel.X;
+}
+
+void Ball::BounceY()
+{
+	Vel.Y = -Vel.Y;
+}
+
+RectF Ball::GetRect() const
+{
+	return RectF::FromCent(Pos, R, R);;
 }

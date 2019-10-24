@@ -1,14 +1,19 @@
 #include "Brick.h"
 
-Brick::Brick(Graphics& gfx) : gfx(gfx), Rect(gfx)
+Brick::Brick(RectF rect, Color c)
 {
+	Rect = rect;
+	C = c;
 }
 
-Brick::Brick(Graphics& gfx, float x, float y, Color c): gfx(gfx), Rect(gfx, x, y, W, H, c)
+void Brick::Draw(Graphics& gfx)
 {
+	gfx.DrawRect(Rect, C);
 }
 
-void Brick::Draw()
+/*
+void Brick::Broked(RectF ball)
 {
-	Rect.Draw();
+	Broken = Rect.CollWith(ball);
 }
+*/

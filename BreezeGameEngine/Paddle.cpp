@@ -1,43 +1,52 @@
 #include "Paddle.h"
 #include "Keyboard.h"
 
-Paddle::Paddle(Graphics& gfx, Keyboard& kbd):gfx(gfx), kbd(kbd), Rect(gfx)
+Paddle::Paddle(Vec pos, float hWidth, float hHeight)
 {
+	Pos = pos;
+	halfWidth = hWidth;
+	halfHeight = hHeight;
 }
 
-Paddle::Paddle(Graphics& gfx, Keyboard& kbd, float x, float y, float w, float h, Color c)
-	:gfx(gfx), kbd(kbd), Rect(gfx, x, y, w, h, c)
+void Paddle::Draw(Graphics& gfx) const
 {
+	gfx.DrawRect( GetRect(), C);
 }
 
-void Paddle::Draw()
-{
-	Rect.Draw();
-}
-
-void Paddle::Update(Keyboard& kbd, float dt)
+void Paddle::Move(const Keyboard& kbd, const float dt)
 {
 	if (kbd.KeyIsPressed(VK_LEFT))
 	{
-		Rect.Pos.X -= Vx * dt * 60.0f;
+		Pos.X -= Vx * dt * 60.0f;
 	}
 	else if (kbd.KeyIsPressed(VK_RIGHT))
 	{
-		Rect.Pos.X += Vx * dt * 60.0f;
+		Pos.X += Vx * dt * 60.0f;
 	}
+}
 
-/*** Test Rects for Wall Behavior ***/
-	RectF Left(gfx, 0.0f, 0.0f, 5.0f, float(gfx.ScreenHeight), Colors::White);
-	RectF Right(gfx, float(gfx.ScreenWidth) - 5.0f, 0.0f, 5.0f, float(gfx.ScreenHeight), Colors::White);
-//	RectF Top(gfx, 0.0f, 0.0f, float(gfx.ScreenWidth), 5.0f, Colors::White);
-//	RectF Bot(gfx, 0.0f, float(gfx.ScreenHeight) - 5.0f, float(gfx.ScreenWidth), 5.0f, Colors::White);
+void Paddle::CollBall(Ball& ball) const
+{
+	if (GetRect().CollWith(ball.GetRect()))
+	{
+		ball.BounceY();
+	}
+}
 
-	if (Rect.CollWith(Left))
+void Paddle::CollWall(RectF& wall)
+{
+	RectF Rect = GetRect();
+	if (Rect.X0 < wall.X0)
 	{
-		Rect.Pos.X = 5.0f;
+		Pos.X += wall.X0-Rect.X0;
 	}
-	else if (Rect.CollWith(Right))
+	if (Rect.X1 > wall.X1)
 	{
-		Rect.Pos.X = float(gfx.ScreenWidth) - 5.0f - Rect.W;
+		Pos.X += wall.X1 - Rect.X1;
 	}
+}
+
+RectF Paddle::GetRect() const
+{
+	return RectF::FromCent(Pos, halfWidth, halfHeight);
 }

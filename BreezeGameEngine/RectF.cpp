@@ -1,23 +1,29 @@
 #include "RectF.h"
 
-RectF::RectF(Graphics& gfx): gfx(gfx)
+RectF::RectF(float x0, float y0, float x1, float y1)
 {
+	X0 = x0;
+	Y0 = y0;
+	X1 = x1;
+	Y1 = y1;
 }
 
-RectF::RectF(Graphics& gfx, float x, float y, float w, float h, Color c): gfx(gfx), Pos(x,y)
+RectF::RectF(Vec v0, Vec v1)
 {
-	W = w;
-	H = h;
-	C = c;
+	X0 = v0.X;
+	Y0 = v0.Y;
+	X1 = v1.X;
+	Y1 = v1.Y;
 }
 
-void RectF::Draw()
+RectF RectF::FromCent(Vec center, float halfWidth, float halfHeight)
 {
-	gfx.DrawRectDim(int(Pos.X),int(Pos.Y),int(W),int(H),C);
+	Vec half = { halfWidth, halfHeight };
+	return RectF(center-half, center+half);
 }
 
 bool RectF::CollWith(const RectF& Targ) const
 {
-	return ( (Pos.X+W >= Targ.Pos.X) && (Pos.X <= Targ.Pos.X + Targ.W)
-	      && (Pos.Y+H >= Targ.Pos.Y) && (Pos.Y <= Targ.Pos.Y + Targ.H));
+	return ( (X1 >= Targ.X0) && (X0 <= Targ.X1)
+	      && (Y1 >= Targ.Y0) && (Y0 <= Targ.Y1) );
 }
