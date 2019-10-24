@@ -12,7 +12,7 @@ public:
 	Paddle(Vec pos, float hWidth, float hHeight);
 	void Draw(Graphics& gfx) const;
 	void Move(const Keyboard& kbd, const float dt);
-	void CollBall(Ball& ball) const;
+	bool CollBall(Ball& ball) const;
 	void CollWall(RectF& wall);
 	RectF GetRect() const;
 

@@ -25,12 +25,14 @@ void Paddle::Move(const Keyboard& kbd, const float dt)
 	}
 }
 
-void Paddle::CollBall(Ball& ball) const
+bool Paddle::CollBall(Ball& ball) const
 {
 	if (GetRect().CollWith(ball.GetRect()))
 	{
 		ball.BounceY();
+		return 1;
 	}
+	return 0;
 }
 
 void Paddle::CollWall(RectF& wall)
