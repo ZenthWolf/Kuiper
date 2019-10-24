@@ -15,11 +15,16 @@ void Paddle::Draw()
 	Rect.Draw();
 }
 
-void Paddle::Update(Keyboard& kbd)
+void Paddle::Update(Keyboard& kbd, float dt)
 {
-	if (kbd.KeyIsPressed(VK_Up))
+	if (kbd.KeyIsPressed(VK_LEFT))
 	{
-		Vx = -1;
+		Rect.Pos.X -= Vx * dt * 60.0f;
 	}
-	else if(kbd.KeyIsPressed(VK_Right))
+	else if (kbd.KeyIsPressed(VK_RIGHT))
+	{
+		Rect.Pos.X += Vx * dt * 60.0f;
+	}
+
+	RectF Left(gfx, 0.0f, 0.0f, 5.0f, float(gfx.ScreenHeight), Colors::White);
 }

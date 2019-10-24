@@ -15,13 +15,11 @@
 #include "MainWindow.h"
 #include "Game.h"
 
-#include "Paddle.h"
-
 
 Game::Game(MainWindow& wnd)
 	:
-	wnd(wnd),
-	gfx(wnd)
+	wnd(wnd), gfx(wnd),
+	Player(gfx, wnd.kbd, 400.0f, 550.0f, 75.0f, 15.0f, Colors::Gray)
 {
 }
 
@@ -35,14 +33,18 @@ void Game::Play()
 
 void Game::UpdateModel()
 {
+	float dt = ft.Mark();
 
+	Player.Update(wnd.kbd, dt);
 }
 
 
 void Game::ComposeFrame()
 {
-	Paddle Player(gfx, 400,550, 75,15, Colors::Gray);
+	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		5709.0;
+	}
 	Player.Draw();
+
 }
-
-

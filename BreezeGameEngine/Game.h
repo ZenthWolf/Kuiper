@@ -16,6 +16,10 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
+#include "FrameTimer.h"
+#include <chrono>
+
+#include "Paddle.h"
 
 class Game
 {
@@ -30,7 +34,6 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
-	bool BoxColl(int box0x, int box0y, int box1x, int box1y);
 
 private:
 	MainWindow& wnd;
@@ -38,4 +41,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	FrameTimer ft;
+	Paddle Player;
+	float dt;
 };

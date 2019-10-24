@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Graphics.h"
-#include "Rect.h"
+#include "RectF.h"
 
 class Brick
 {
@@ -13,7 +13,7 @@ public:
 private:
 	static constexpr int W = 20;
 	static constexpr int H = 5;
-	Rect Rect;
+	RectF Rect;
 	Color C;
 	bool Broken = 0;
 	Graphics& gfx;
