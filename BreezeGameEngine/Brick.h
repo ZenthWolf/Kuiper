@@ -7,12 +7,10 @@ class Brick
 {
 public:
 	Brick(Graphics& gfx);
-	Brick(Graphics& gfx, int x, int y, Color c);
-	void Draw() const;
+	Brick(Graphics& gfx, float x, float y, Color c);
+	void Draw();
 
 private:
-	int X;
-	int Y;
 	static constexpr int W = 20;
 	static constexpr int H = 5;
 	Rect Rect;

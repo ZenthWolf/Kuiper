@@ -4,14 +4,11 @@ Brick::Brick(Graphics& gfx) : gfx(gfx), Rect(gfx)
 {
 }
 
-Brick::Brick(Graphics& gfx, int x, int y, Color c): gfx(gfx), Rect(gfx, float(x), float(y), W, H, c)
+Brick::Brick(Graphics& gfx, float x, float y, Color c): gfx(gfx), Rect(gfx, x, y, W, H, c)
 {
-	X = x;
-	Y = y;
-	C = c;
 }
 
-void Brick::Draw() const
+void Brick::Draw()
 {
-	gfx.DrawRectDim(X, Y, W, H, C);
+	Rect.Draw();
 }
