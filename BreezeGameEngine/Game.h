@@ -49,4 +49,6 @@ private:
 	Ball Ball;
 	float dt;
 	RectF wall;
+
+	Sound sndPad;
 };

@@ -162,6 +162,7 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="RectF.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Tone.cpp" />
     <ClCompile Include="Vec.cpp" />
   </ItemGroup>
