@@ -18,6 +18,7 @@
 #include "Graphics.h"
 #include "FrameTimer.h"
 #include <chrono>
+#include "Sound.h"
 
 #include "Paddle.h"
 #include "Ball.h"
