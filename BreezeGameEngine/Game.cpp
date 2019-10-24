@@ -20,7 +20,7 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
 	Player(gfx, wnd.kbd, 400.0f, 550.0f, 75.0f, 15.0f, Colors::Gray),
-	Ball(gfx, 200, 500, 1.0f, 1.5f, Colors::Green)
+	Ball(gfx, 200, 500, 2.0f, 3.0f, Colors::Green)
 {
 }
 
@@ -38,7 +38,7 @@ void Game::UpdateModel()
 
 	Player.Update(wnd.kbd, dt);
 
-	Ball.Update(dt);
+	Ball.Update(dt, Player.Rect);
 }
 
 

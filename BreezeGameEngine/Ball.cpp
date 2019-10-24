@@ -19,7 +19,7 @@ void Ball::Draw()
 	gfx.DrawCirc(R+int(Rect.Pos.X), R+int(Rect.Pos.Y), R, C);
 }
 
-void Ball::Update(float dt)
+void Ball::Update(float dt, const RectF& pad)
 {
 	Rect.Pos.X += Vel.X * dt * 60.0f;
 	Rect.Pos.Y += Vel.Y * dt * 60.0f;
@@ -54,4 +54,14 @@ void Ball::Update(float dt)
 
 		Vel.Y = -Vel.Y;
 	}
+
+	if (Paddled(pad))
+	{
+		Vel.Y = -Vel.Y;
+	}
+}
+
+bool Ball::Paddled(const RectF& pad) const
+{
+	return Rect.CollWith(pad);
 }
