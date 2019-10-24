@@ -4,10 +4,8 @@ Rect::Rect(Graphics& gfx): gfx(gfx)
 {
 }
 
-Rect::Rect(Graphics& gfx, float x, float y, float w, float h, Color c): gfx(gfx)
+Rect::Rect(Graphics& gfx, float x, float y, float w, float h, Color c): gfx(gfx), Pos(x,y)
 {
-	X = x;
-	Y = y;
 	W = w;
 	H = h;
 	C = c;
@@ -15,11 +13,11 @@ Rect::Rect(Graphics& gfx, float x, float y, float w, float h, Color c): gfx(gfx)
 
 void Rect::Draw()
 {
-	gfx.DrawRectDim(int(X),int(Y),int(W),int(H),C);
+	gfx.DrawRectDim(int(Pos.X),int(Pos.Y),int(W),int(H),C);
 }
 
 bool Rect::CollWith(const Rect& Targ) const
 {
-	return ( (X+W > Targ.X) && (X < Targ.X + Targ.W) 
-	      && (Y+H > Targ.Y) && (Y < Targ.Y + Targ.W));
+	return ( (Pos.X+W > Targ.Pos.X) && (Pos.X < Targ.Pos.X + Targ.W)
+	      && (Pos.Y+H > Targ.Pos.Y) && (Pos.Y < Targ.Pos.Y + Targ.H));
 }

@@ -1,13 +1,13 @@
 #pragma once
 #include "Graphics.h"
+#include "Vec.h"
 
 class Rect 
 {
 public:
 	Rect(Graphics& gfx);
 	Rect(Graphics& gfx, float x, float y, float w, float h, Color c);
-	float X;
-	float Y;
+	Vec Pos;
 	float W;
 	float H;
 	Color C;
