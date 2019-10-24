@@ -18,6 +18,6 @@ void RectF::Draw()
 
 bool RectF::CollWith(const RectF& Targ) const
 {
-	return ( (Pos.X+W > Targ.Pos.X) && (Pos.X < Targ.Pos.X + Targ.W)
-	      && (Pos.Y+H > Targ.Pos.Y) && (Pos.Y < Targ.Pos.Y + Targ.H));
+	return ( (Pos.X+W >= Targ.Pos.X) && (Pos.X <= Targ.Pos.X + Targ.W)
+	      && (Pos.Y+H >= Targ.Pos.Y) && (Pos.Y <= Targ.Pos.Y + Targ.H));
 }

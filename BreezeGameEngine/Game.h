@@ -20,6 +20,7 @@
 #include <chrono>
 
 #include "Paddle.h"
+#include "Ball.h"
 
 class Game
 {
@@ -43,5 +44,6 @@ private:
 	/********************************/
 	FrameTimer ft;
 	Paddle Player;
+	Ball Ball;
 	float dt;
 };
