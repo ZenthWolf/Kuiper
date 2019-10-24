@@ -15,6 +15,8 @@
 #include "MainWindow.h"
 #include "Game.h"
 
+#include "Paddle.h"
+
 
 Game::Game(MainWindow& wnd)
 	:
@@ -39,7 +41,8 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-
+	Paddle Player(gfx, 400,550, 75,15, Colors::Gray);
+	Player.Draw();
 }
 
 
