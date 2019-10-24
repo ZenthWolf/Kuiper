@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics.h"
+#include "Vec.h"
 
 class Ball 
 {
@@ -10,10 +11,8 @@ public:
 	void Draw();
 
 private:
-	float X;
-	float Y;
-	float Vx;
-	float Vy;
+	Vec Pos;
+	Vec Vel;
 	static constexpr int R = 17;
 	Color C;
 	Graphics& gfx;
