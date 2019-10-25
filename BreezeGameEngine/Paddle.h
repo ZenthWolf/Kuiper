@@ -24,5 +24,4 @@ private:
 	Vec Pos;
 	float halfWidth;
 	float halfHeight;
-	static int Tests;
 };
