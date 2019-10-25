@@ -11,6 +11,7 @@ public:
 	Brick(RectF rect, Color c);
 	void Draw(Graphics& gfx);
 	bool Break(Ball& ball);
+	Vec GetLoc() const;
 	RectF Rect;
 	Color C;
 

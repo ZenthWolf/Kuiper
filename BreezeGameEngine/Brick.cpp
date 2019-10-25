@@ -16,11 +16,26 @@ void Brick::Draw(Graphics& gfx)
 
 bool Brick::Break(Ball& ball)
 {
-	if (Rect.CollWith(ball.GetRect()) && !Broken )
+	Vec bpos = ball.GetPos();
+
+	if (!Broken && Rect.CollWith(ball.GetRect()) )
 	{
-		ball.BounceY();
+		if (bpos.X > Rect.X0&& bpos.X < Rect.X1)
+		{
+			ball.BounceY();
+		}
+		else
+		{
+			ball.BounceX();
+		}
+
 		Broken = 1;
 		return 1;
 	}
 	return 0;
+}
+
+Vec Brick::GetLoc() const
+{
+	return { (Rect.X1 + Rect.X0) / 2.0f, (Rect.Y1 + Rect.Y0) / 2.0f, };
 }

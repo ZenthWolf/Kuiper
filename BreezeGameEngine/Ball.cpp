@@ -69,7 +69,18 @@ void Ball::BounceY()
 	Vel.Y = -Vel.Y;
 }
 
-Vec Ball::GetVel()
+void Ball::Bounce(const Vec impulse)
+{
+	Vel.Y = Vel.Y * impulse.Y;
+	Vel.X = Vel.X * impulse.X;
+}
+
+Vec Ball::GetPos() const
+{
+	return Pos;
+}
+
+Vec Ball::GetVel() const
 {
 	return Vel;
 }

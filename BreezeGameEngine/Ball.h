@@ -15,7 +15,10 @@ public:
 	RectF GetRect() const;
 	void BounceX();
 	void BounceY();
-	Vec GetVel();
+	void Bounce(const Vec impulse);
+	void BounceY(const float impy);
+	Vec GetPos() const;
+	Vec GetVel() const;
 
 private:
 	Vec Pos;
