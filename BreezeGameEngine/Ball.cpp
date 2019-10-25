@@ -18,6 +18,14 @@ Ball::Ball(float x, float y, float v, Color c)
 	C = c;
 }
 
+Ball::Ball(float x, float y, float v, Vec initDir, Color c)
+{
+	Pos = { x, y };
+	speed = v;
+	SetDir(initDir);
+	C = c;
+}
+
 void Ball::Draw(Graphics& gfx)
 {
 	gfx.DrawCirc(int(Pos.X), int(Pos.Y), int(R), C);

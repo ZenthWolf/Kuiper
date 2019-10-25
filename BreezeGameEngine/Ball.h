@@ -9,6 +9,7 @@ public:
 	Ball();
 	Ball(float x, float y, Color c);
 	Ball(float x, float y, float speed, Color c);
+	Ball(float x, float y, float speed, Vec initDir, Color c);
 	void Draw(Graphics& gfx);
 	void Move(const float dt);
 	bool CollWall(const RectF& wall);
