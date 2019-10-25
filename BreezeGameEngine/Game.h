@@ -44,6 +44,11 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	static constexpr float BrickWidth = 50.0f;
+	static constexpr float BrickHeight = 20.0f;
+	static constexpr int Columns = 10;
+	static constexpr int Rows = 5;
+	Brick Block[Columns][Rows];
 	FrameTimer ft;
 	Paddle Player;
 	Ball Ball;
@@ -52,5 +57,4 @@ private:
 
 	Sound sndPad;
 	Sound sndBreak;
-	Brick Block;
 };

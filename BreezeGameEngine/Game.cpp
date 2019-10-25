@@ -22,9 +22,17 @@ Game::Game(MainWindow& wnd)
 	Player({ 400.0f, 550.0f }, 35.0f, 10.0f),
 	Ball(200.0f, 550.0f, 2.0f, 3.0f, Colors::Green),
 	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
-	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav"),
-	Block(RectF(50.0f, 75.0f, 150.0f, 95.0f), Colors::Cyan)
+	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {
+	Color Cols[5] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Cyan, {148, 0, 211} };
+	for (int x = 0; x < Columns; x++)
+	{
+		for (int y = 0; y < Rows; y++)
+		{
+			Block[x][y]= Brick(RectF(float(x)* BrickWidth, float(y)* BrickHeight, float(x + 1)* BrickWidth, float(y + 1)* BrickHeight), Cols[y%5]);
+		}
+	}
+	
 }
 
 
@@ -54,16 +62,58 @@ void Game::UpdateModel()
 		sndPad.Play();
 	}
 
-	if (Block.Break(Ball))
+	bool quit = 0;
+	for ( auto &row : Block)
 	{
-		sndBreak.Play();
+		for (auto &b : row)
+		{
+			if (b.Break(Ball))
+			{
+				sndBreak.Play();
+				quit = 1;
+				break;
+			}
+		}
+		if (quit)
+		{
+			break;
+		}
 	}
+
+/*
+	bool quit = 0;
+	for (int x = 0; x < Columns; x++)
+	{
+
+		for (int y = 0; y < Rows; y++)
+		{
+			if (Block[x][y].Break(Ball))
+			{
+				sndBreak.Play();
+				quit = 1;
+				break;
+			}
+		}
+		if (quit)
+		{
+			break;
+		}
+	}
+*/
 }
+
 
 
 void Game::ComposeFrame()
 {
 	Ball.Draw(gfx);
 	Player.Draw(gfx);
-	Block.Draw(gfx);
+
+	for (auto& row : Block)
+	{
+		for (auto& b : row)
+		{
+			b.Draw(gfx);
+		}
+	}
 }

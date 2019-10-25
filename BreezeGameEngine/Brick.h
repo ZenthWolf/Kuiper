@@ -7,6 +7,7 @@
 class Brick
 {
 public:
+	Brick() = default;
 	Brick(RectF rect, Color c);
 	void Draw(Graphics& gfx);
 	bool Break(Ball& ball);
