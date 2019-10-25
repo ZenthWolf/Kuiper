@@ -15,6 +15,8 @@ public:
 	RectF GetRect() const;
 	void BounceX();
 	void BounceY();
+	Vec GetVel();
+
 private:
 	Vec Pos;
 	Vec Vel;	

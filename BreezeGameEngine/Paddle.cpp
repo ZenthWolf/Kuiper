@@ -31,7 +31,7 @@ void Paddle::Move(const Keyboard& kbd, const float dt)
 
 bool Paddle::CollBall(Ball& ball) const
 {
-	if (GetRect().CollWith(ball.GetRect()))
+	if (ball.GetVel().Y > 0.0f && GetRect().CollWith(ball.GetRect()))
 	{
 		ball.BounceY();
 		return 1;

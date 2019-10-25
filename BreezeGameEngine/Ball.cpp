@@ -69,6 +69,11 @@ void Ball::BounceY()
 	Vel.Y = -Vel.Y;
 }
 
+Vec Ball::GetVel()
+{
+	return Vel;
+}
+
 RectF Ball::GetRect() const
 {
 	return RectF::FromCent(Pos, R, R);;
