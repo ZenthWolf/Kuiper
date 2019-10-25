@@ -26,10 +26,16 @@ void Brick::Break(Ball& ball)
 
 	Vec bpos = ball.GetPos();
 
-	if (bpos.X > Rect.X0&& bpos.X < Rect.X1)
+	if (signbit(ball.GetVel().X) == signbit((bpos - GetLoc()).X) )
 	{
 		ball.BounceY();
 	}
+
+	else if (bpos.X > Rect.X0&& bpos.X < Rect.X1)
+	{
+		ball.BounceY();
+	}
+
 	else
 	{
 		ball.BounceX();
