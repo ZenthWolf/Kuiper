@@ -17,9 +17,12 @@ public:
 	RectF GetRect() const;
 
 private:
+	static constexpr float wingWidth = 15.0f;
+	Color wingC = Colors::Gray;
 	static constexpr float Vx = 3.0f;
 	Color C = Colors::LightGray;
 	Vec Pos;
 	float halfWidth;
 	float halfHeight;
+	static int Tests;
 };

@@ -10,7 +10,11 @@ Paddle::Paddle(Vec pos, float hWidth, float hHeight)
 
 void Paddle::Draw(Graphics& gfx) const
 {
-	gfx.DrawRect( GetRect(), C);
+	RectF rect = GetRect();
+	gfx.DrawRect(rect, wingC);
+	rect.X0 += wingWidth;
+	rect.X1 -= wingWidth;
+	gfx.DrawRect( rect, C);
 }
 
 void Paddle::Move(const Keyboard& kbd, const float dt)
