@@ -20,16 +20,22 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
 	Player({ 400.0f, 550.0f }, 35.0f, 10.0f),
-	Ball(200.0f, 550.0f, 2.0f, 3.0f, Colors::Green),
+	Ball(200.0f, 550.0f, 4.0f, 2.0f, Colors::Green),
 	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {
 	Color Cols[5] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Cyan, {148, 0, 211} };
+	
+	Vec offset = { (float(Graphics::ScreenWidth) - float(Columns) * BrickWidth) / 2.0f, 50.0f };
+
 	for (int x = 0; x < Columns; x++)
 	{
 		for (int y = 0; y < Rows; y++)
 		{
-			Block[x][y]= Brick(RectF(float(x)* BrickWidth, float(y)* BrickHeight, float(x + 1)* BrickWidth, float(y + 1)* BrickHeight), Cols[y%5]);
+			Vec Start = { float(x) * BrickWidth, float(y) * BrickHeight };
+			Start += offset;
+			Vec BVec = { float(BrickWidth), float(BrickHeight) };
+			Block[x][y]= Brick( RectF(Start, Start + BVec), Cols[y%5]);
 		}
 	}
 	
