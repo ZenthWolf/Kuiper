@@ -29,11 +29,33 @@ void Paddle::Move(const Keyboard& kbd, const float dt)
 	}
 }
 
-bool Paddle::CollBall(Ball& ball) const
+bool Paddle::checkColl(Ball& ball) const
 {
-	if (ball.GetVel().Y > 0.0f && GetRect().CollWith(ball.GetRect()))
+	return GetRect().CollWith(ball.GetRect());
+}
+
+bool Paddle::CollBall(Ball& ball)
+{
+	if (!onCooldown && checkColl(ball))
 	{
-		ball.BounceY();
+		onCooldown = 1;
+		Vec bpos = ball.GetPos();
+
+		if (signbit(ball.GetVel().X) == signbit((bpos - Pos).X))
+		{
+			ball.BounceY();
+		}
+
+		else if (bpos.X > Pos.X - halfWidth && bpos.X < Pos.X+halfWidth)
+		{
+			ball.BounceY();
+		}
+
+		else
+		{
+			ball.BounceX();
+		}
+
 		return 1;
 	}
 	return 0;
@@ -55,4 +77,9 @@ void Paddle::CollWall(RectF& wall)
 RectF Paddle::GetRect() const
 {
 	return RectF::FromCent(Pos, halfWidth, halfHeight);
+}
+
+void Paddle::Cool()
+{
+	onCooldown = 0;
 }
