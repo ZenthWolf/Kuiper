@@ -19,8 +19,8 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
-	Player({ 400.0f, 550.0f }, 35.0f, 10.0f),
-	Ball(200.0f, 550.0f, 3.0f, 6.0f, Colors::Green),
+	Player({ 400.0f, 550.0f }, 70.0f, 7.0f),
+	Ball(200.0f, 550.0f, 10.0f, Colors::Green),
 	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {

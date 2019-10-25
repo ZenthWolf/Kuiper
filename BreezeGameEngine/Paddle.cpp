@@ -40,15 +40,16 @@ bool Paddle::CollBall(Ball& ball)
 	{
 		onCooldown = 1;
 		Vec bpos = ball.GetPos();
+		Vec off = (bpos - Pos);
 
-		if (signbit(ball.GetVel().X) == signbit((bpos - Pos).X))
+		if (signbit(ball.GetVel().X) == signbit(off.X))
 		{
-			ball.BounceY();
+			ball.BounceY(off);
 		}
 
 		else if (bpos.X > Pos.X - halfWidth && bpos.X < Pos.X+halfWidth)
 		{
-			ball.BounceY();
+			ball.BounceY(off);
 		}
 
 		else

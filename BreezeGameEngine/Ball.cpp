@@ -10,10 +10,11 @@ Ball::Ball(float x, float y, Color c)
 	C = c;
 }
 
-Ball::Ball(float x, float y, float vx, float vy, Color c)
+Ball::Ball(float x, float y, float v, Color c)
 {
 	Pos = { x, y };
-	Vel = { vx, vy };
+	speed = v;
+	SetDir({ -1.0f, -1.0f });
 	C = c;
 }
 
@@ -69,6 +70,11 @@ void Ball::BounceY()
 	Vel.Y = -Vel.Y;
 }
 
+void Ball::BounceY(const Vec off)
+{
+	SetDir(off);
+}
+
 void Ball::Bounce(const Vec impulse)
 {
 	Vel.Y = Vel.Y * impulse.Y;
@@ -83,6 +89,11 @@ Vec Ball::GetPos() const
 Vec Ball::GetVel() const
 {
 	return Vel;
+}
+
+void Ball::SetDir(const Vec Dir)
+{
+	Vel = Dir.Norm() * speed;
 }
 
 RectF Ball::GetRect() const

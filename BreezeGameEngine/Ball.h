@@ -8,21 +8,23 @@ class Ball
 public:
 	Ball();
 	Ball(float x, float y, Color c);
-	Ball(float x, float y, float vx, float vy, Color c);
+	Ball(float x, float y, float speed, Color c);
 	void Draw(Graphics& gfx);
 	void Move(const float dt);
 	bool CollWall(const RectF& wall);
 	RectF GetRect() const;
 	void BounceX();
 	void BounceY();
+	void BounceY(const Vec offx);
 	void Bounce(const Vec impulse);
-	void BounceY(const float impy);
 	Vec GetPos() const;
 	Vec GetVel() const;
+	void SetDir(const Vec Dir);
 
 private:
 	Vec Pos;
-	Vec Vel;	
-	static constexpr float R = 10.0f;
+	Vec Vel;
+	float speed;
+	static constexpr float R = 8.0f;
 	Color C;
 };

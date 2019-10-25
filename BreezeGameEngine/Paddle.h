@@ -21,7 +21,7 @@ public:
 private:
 	static constexpr float wingWidth = 15.0f;
 	Color wingC = Colors::Gray;
-	static constexpr float Vx = 5.0f;
+	static constexpr float Vx = 7.0f;
 	Color C = Colors::LightGray;
 	Vec Pos;
 	float halfWidth;
