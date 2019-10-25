@@ -8,12 +8,19 @@ Brick::Brick(RectF rect, Color c)
 
 void Brick::Draw(Graphics& gfx)
 {
-	gfx.DrawRect(Rect, C);
+	if (!Broken)
+	{
+		gfx.DrawRect(Rect, C);
+	}
 }
 
-/*
-void Brick::Broked(RectF ball)
+bool Brick::Break(Ball& ball)
 {
-	Broken = Rect.CollWith(ball);
+	if (Rect.CollWith(ball.GetRect()) && !Broken )
+	{
+		ball.BounceY();
+		Broken = 1;
+		return 1;
+	}
+	return 0;
 }
-*/

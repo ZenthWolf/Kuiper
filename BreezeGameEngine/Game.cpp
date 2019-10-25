@@ -21,8 +21,9 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd), gfx(wnd),
 	Player({ 400.0f, 550.0f }, 35.0f, 10.0f),
 	Ball(200.0f, 550.0f, 2.0f, 3.0f, Colors::Green),
-	wall(0.0f, 0.0f, float(Graphics::ScreenWidth-1),float(Graphics::ScreenHeight-1)),
-	sndPad(L"Sound\\arkpad.wav")
+	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
+	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav"),
+	Block(RectF(50.0f, 75.0f, 150.0f, 95.0f), Colors::Cyan)
 {
 }
 
@@ -45,11 +46,18 @@ void Game::UpdateModel()
 	Ball.Move(dt);
 	if (Ball.CollWall(wall))
 	{
-		Ball.CollWall(wall);
 		sndPad.Play();
 	}
 
-	Player.CollBall(Ball);
+	if (Player.CollBall(Ball))
+	{
+		sndPad.Play();
+	}
+
+	if (Block.Break(Ball))
+	{
+		sndBreak.Play();
+	}
 }
 
 
@@ -57,4 +65,5 @@ void Game::ComposeFrame()
 {
 	Ball.Draw(gfx);
 	Player.Draw(gfx);
+	Block.Draw(gfx);
 }

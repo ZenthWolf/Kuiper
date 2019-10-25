@@ -51,4 +51,6 @@ private:
 	RectF wall;
 
 	Sound sndPad;
+	Sound sndBreak;
+	Brick Block;
 };
