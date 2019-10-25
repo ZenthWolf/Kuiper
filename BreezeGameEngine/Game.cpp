@@ -85,27 +85,6 @@ void Game::UpdateModel()
 			break;
 		}
 	}
-
-/*
-	bool quit = 0;
-	for (int x = 0; x < Columns; x++)
-	{
-
-		for (int y = 0; y < Rows; y++)
-		{
-			if (Block[x][y].Break(Ball))
-			{
-				sndBreak.Play();
-				quit = 1;
-				break;
-			}
-		}
-		if (quit)
-		{
-			break;
-		}
-	}
-*/
 }
 
 

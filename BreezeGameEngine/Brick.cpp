@@ -10,7 +10,7 @@ void Brick::Draw(Graphics& gfx)
 {
 	if (!Broken)
 	{
-		gfx.DrawRect(Rect, C);
+		gfx.DrawRect(Rect.GetExpand(-1.0f), C);
 	}
 }
 
