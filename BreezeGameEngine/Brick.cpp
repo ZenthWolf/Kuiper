@@ -1,4 +1,5 @@
 #include "Brick.h"
+#include <assert.h>
 
 Brick::Brick(RectF rect, Color c)
 {
@@ -14,28 +15,30 @@ void Brick::Draw(Graphics& gfx)
 	}
 }
 
-bool Brick::Break(Ball& ball)
+bool Brick::CollCheck(const Ball ball) const
 {
+	return (!Broken && Rect.CollWith(ball.GetRect()));
+}
+
+void Brick::Break(Ball& ball)
+{
+	assert(CollCheck(ball));
+
 	Vec bpos = ball.GetPos();
 
-	if (!Broken && Rect.CollWith(ball.GetRect()) )
+	if (bpos.X > Rect.X0&& bpos.X < Rect.X1)
 	{
-		if (bpos.X > Rect.X0&& bpos.X < Rect.X1)
-		{
-			ball.BounceY();
-		}
-		else
-		{
-			ball.BounceX();
-		}
-
-		Broken = 1;
-		return 1;
+		ball.BounceY();
 	}
-	return 0;
+	else
+	{
+		ball.BounceX();
+	}
+
+	Broken = 1;
 }
 
 Vec Brick::GetLoc() const
 {
-	return { (Rect.X1 + Rect.X0) / 2.0f, (Rect.Y1 + Rect.Y0) / 2.0f, };
+	return Rect.Cent();
 }

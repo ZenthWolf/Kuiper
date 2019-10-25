@@ -13,4 +13,5 @@ public:
 	float X0; float Y0; float X1; float Y1;
 	RectF GetExpand(float offset) const;
 	RectF GetExpand(float offx, float offy) const;
+	Vec Cent() const;
 };

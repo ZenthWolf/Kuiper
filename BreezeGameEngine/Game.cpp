@@ -68,22 +68,41 @@ void Game::UpdateModel()
 		sndPad.Play();
 	}
 
-	bool quit = 0;
-	for ( auto &row : Block)
+	bool doColl = false;
+	float closeColl;
+	int whichColl[2];
+
+	for (int i = 0; i < Columns; i++)
 	{
-		for (auto &b : row)
+		for (int j = 0; j < Columns; j++)
 		{
-			if (b.Break(Ball))
+			if (Block[i][j].CollCheck(Ball))
 			{
-				sndBreak.Play();
-				quit = 1;
-				break;
+				const float newDist = (Ball.GetPos() - Block[i][j].Rect.Cent()).GetLengthSq();
+				if (doColl)
+				{
+					if (newDist < closeColl)
+					{
+						closeColl = newDist;
+						whichColl[0] = i;
+						whichColl[1] = j;
+					}
+				}
+				else
+				{
+					closeColl = newDist;
+					whichColl[0] = i;
+					whichColl[1] = j;
+					doColl = 1;
+				}
 			}
 		}
-		if (quit)
-		{
-			break;
-		}
+	}
+
+	if (doColl)
+	{
+		Block[whichColl[0]][whichColl[1]].Break(Ball);
+		sndBreak.Play();
 	}
 }
 

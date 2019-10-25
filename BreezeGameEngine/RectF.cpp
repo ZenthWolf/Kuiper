@@ -37,3 +37,8 @@ RectF RectF::GetExpand(float offx, float offy) const
 {
 	return RectF(X0 - offx, Y0 - offy, X1 + offx, Y1 + offy);
 }
+
+Vec RectF::Cent() const
+{
+	return { (X1 + X0) / 2.0f, (Y1 + Y0) / 2.0f, };
+}

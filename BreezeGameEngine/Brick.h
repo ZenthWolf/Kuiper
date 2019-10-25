@@ -10,7 +10,8 @@ public:
 	Brick() = default;
 	Brick(RectF rect, Color c);
 	void Draw(Graphics& gfx);
-	bool Break(Ball& ball);
+	bool CollCheck(const Ball ball) const;
+	void Break(Ball& ball);
 	Vec GetLoc() const;
 	RectF Rect;
 	Color C;
