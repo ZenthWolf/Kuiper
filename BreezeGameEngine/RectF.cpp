@@ -27,3 +27,13 @@ bool RectF::CollWith(const RectF& Targ) const
 	return ( (X1 >= Targ.X0) && (X0 <= Targ.X1)
 	      && (Y1 >= Targ.Y0) && (Y0 <= Targ.Y1) );
 }
+
+RectF RectF::GetExpand(float offset) const
+{
+	return RectF(X0-offset, Y0-offset, X1+offset, Y1+offset);
+}
+
+RectF RectF::GetExpand(float offx, float offy) const
+{
+	return RectF(X0 - offx, Y0 - offy, X1 + offx, Y1 + offy);
+}
