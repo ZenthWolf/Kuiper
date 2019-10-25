@@ -46,6 +46,12 @@ Vec Vec::operator*(const float scale) const
 	return Vec(X * scale, Y * scale);
 }
 
+Vec Vec::Norm() const
+{
+	float mag = GetLength();
+	return {X/mag, Y/mag};
+}
+
 float Vec::GetLengthSq() const
 {
 	return X * X + Y * Y;

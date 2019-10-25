@@ -12,6 +12,7 @@ public:
 	Vec operator-(const Vec& rhs) const;
 	Vec& operator-=(const Vec& rhs);
 	Vec operator*(const float scale) const;
+	Vec Norm() const;
 
 public:
 	float X;
