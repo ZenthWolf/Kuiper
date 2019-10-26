@@ -31,6 +31,7 @@ void Game::Play()
 	float elapseTime = ft.Mark();
 	while (elapseTime > 0.0f)
 	{
+		float dt = std::min(0.0025f, elapseTime);
 	}
 	UpdateModel();
 	ComposeFrame();
