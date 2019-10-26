@@ -42,5 +42,3 @@ void Game::ComposeFrame()
 {
 
 }
-
-
