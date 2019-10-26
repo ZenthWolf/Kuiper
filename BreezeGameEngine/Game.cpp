@@ -32,8 +32,9 @@ void Game::Play()
 	while (elapseTime > 0.0f)
 	{
 		float dt = std::min(0.0025f, elapseTime);
+		UpdateModel(dt);
 	}
-	UpdateModel();
+
 	ComposeFrame();
 	gfx.EndFrame();
 }
