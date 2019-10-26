@@ -40,4 +40,6 @@ private:
 	/*  User Variables              */
 	/********************************/
 	FrameTimer ft;
+
+	float dt;
 };
