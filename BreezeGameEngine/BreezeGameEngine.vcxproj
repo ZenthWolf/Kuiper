@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="COMInitializer.h" />
+    <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Game.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="MainWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
