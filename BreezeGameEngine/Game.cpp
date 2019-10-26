@@ -27,6 +27,8 @@ Game::Game(MainWindow& wnd)
 void Game::Play()
 {
 	gfx.BeginFrame();
+
+
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
