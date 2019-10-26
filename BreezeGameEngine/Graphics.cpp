@@ -320,6 +320,11 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	}
 }
 
+void Graphics::DrawRect(RectF Rect, Color c)
+{
+	DrawRect( int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c );
+}
+
 /* Draws Rectangle centered at a point- best used with odd W and H */
 void Graphics::DrawCRect(int x0, int y0, int w, int h, Color c)
 {
@@ -367,6 +372,50 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 		const int temp = a;
 		a = b;
 		b = temp;
+	}
+}
+
+void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel( x + i, y + j, C );
+		}
+	}
+}
+
+void Graphics::DrawURIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x - i, y + j, C);
+		}
+	}
+}
+
+void Graphics::DrawDLIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x + i, y - j, C);
+		}
+	}
+}
+
+void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x - i, y - j, C);
+		}
 	}
 }
 

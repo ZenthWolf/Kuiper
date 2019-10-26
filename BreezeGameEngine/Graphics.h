@@ -19,6 +19,8 @@
 #include "BreezeException.h"
 #include "Colors.h"
 
+#include "RectF.h"
+
 class Graphics
 {
 public:
@@ -54,9 +56,14 @@ public:
 
 	void SwapIfGrtr(int& a, int& b);
 	void DrawRect(int x0, int y0, int x1, int y2, Color c);
+	void DrawRect(RectF Rect, Color c);
 	void DrawCRect(int x0, int y0, int w, int h, Color c);
 	void DrawRectDim(int x0, int y0, int w, int h, Color c);
 	void DrawCirc(int x0, int y0, int r, Color C);
+	void DrawULIsoTri(int x, int y, int size, Color C);
+	void DrawURIsoTri(int x, int y, int size, Color C);
+	void DrawDLIsoTri(int x, int y, int size, Color C);
+	void DrawDRIsoTri(int x, int y, int size, Color C);
 	
 	~Graphics();
 private:
