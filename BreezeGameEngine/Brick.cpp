@@ -48,3 +48,8 @@ Vec Brick::GetLoc() const
 {
 	return Rect.Cent();
 }
+
+void Brick::Respawn()
+{
+	Broken = 0;
+}

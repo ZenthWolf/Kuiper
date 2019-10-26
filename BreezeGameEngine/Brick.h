@@ -15,6 +15,7 @@ public:
 	Vec GetLoc() const;
 	RectF Rect;
 	Color C;
+	void Respawn();
 
 private:
 	

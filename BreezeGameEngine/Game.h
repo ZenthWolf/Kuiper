@@ -33,7 +33,7 @@ public:
 	void Play();
 private:
 	void ComposeFrame();
-	void UpdateModel();
+	void UpdateModel(float ts);
 	/********************************/
 	/*  User Functions              */
 	/********************************/
@@ -52,7 +52,6 @@ private:
 	FrameTimer ft;
 	Paddle Player;
 	Ball Ball;
-	float dt;
 	RectF wall;
 
 	Sound sndPad;

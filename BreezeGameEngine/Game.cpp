@@ -21,7 +21,7 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd), gfx(wnd),
 	Player({ 400.0f, 550.0f }, 70.0f, 7.0f),
 //	Ball(200.0f, 550.0f, 10.0f, Colors::Green),
-    Ball(400.0f, 400.0f, 10.0f, {0.0f, 1.0f}, Colors::Green),
+    Ball(400.0f, 300.0f, 10.0f, {0.0f, 1.0f}, Colors::Green),
 	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {
@@ -46,15 +46,21 @@ Game::Game(MainWindow& wnd)
 void Game::Play()
 {
 	gfx.BeginFrame();
-	UpdateModel();
+	
+	
+	float elapseTime = ft.Mark();
+	while (elapseTime > 0.0f)
+	{
+		float dt = std::min(0.0025f, elapseTime);
+		UpdateModel(dt);
+		elapseTime -= dt;
+	}
 	ComposeFrame();
 	gfx.EndFrame();
 }
 
-void Game::UpdateModel()
+void Game::UpdateModel(float dt)
 {
-	float dt = ft.Mark();
-
 	Player.Move(wnd.kbd, dt);
 	Player.CollWall(wall);
 
@@ -106,6 +112,18 @@ void Game::UpdateModel()
 		Player.Cool();
 		Block[whichColl[0]][whichColl[1]].Break(Ball);
 		sndBreak.Play();
+	}
+
+	if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
+	{
+		for (int i = 0; i < Columns; i++)
+		{
+			for (int j = 0; j < Rows; j++)
+			{
+				Block[i][j].Respawn();
+			}
+		}
+		int stop = 0;
 	}
 }
 
