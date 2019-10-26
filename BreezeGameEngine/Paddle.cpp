@@ -44,11 +44,13 @@ bool Paddle::CollBall(Ball& ball)
 
 		if (signbit(ball.GetVel().X) == signbit(off.X))
 		{
+			bpos.X = 1.73205f * (bpos.X / halfWidth) * bpos.Y; // Up to 60 deg angle
 			ball.BounceY(off);
 		}
 
 		else if (bpos.X > Pos.X - halfWidth && bpos.X < Pos.X+halfWidth)
 		{
+			bpos.X = bpos.X * bpos.Y / halfWidth;
 			ball.BounceY(off);
 		}
 
