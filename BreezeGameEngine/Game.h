@@ -17,6 +17,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Sound.h"
+#include "FrameTimer.h"
 
 class Game
 {
