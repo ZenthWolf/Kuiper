@@ -19,7 +19,8 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
-	gfx(wnd)
+	gfx(wnd),
+	sndFUCK(L"Sound\\arkpad.wav")
 {
 }
 
@@ -33,7 +34,10 @@ void Game::Play()
 
 void Game::UpdateModel()
 {
-
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		sndFUCK.Play();
+	}
 }
 
 
