@@ -21,6 +21,7 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd)
 {
+
 }
 
 void Game::Play()
