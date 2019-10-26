@@ -33,6 +33,7 @@ void Game::Play()
 	{
 		float dt = std::min(0.0025f, elapseTime);
 		UpdateModel(dt);
+		elapseTime -= dt;
 	}
 
 	ComposeFrame();
