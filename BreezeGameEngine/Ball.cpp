@@ -83,12 +83,6 @@ void Ball::BounceY(const Vec off)
 	SetDir(off);
 }
 
-void Ball::Bounce(const Vec impulse)
-{
-	Vel.Y = Vel.Y * impulse.Y;
-	Vel.X = Vel.X * impulse.X;
-}
-
 Vec Ball::GetPos() const
 {
 	return Pos;

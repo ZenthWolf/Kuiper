@@ -17,7 +17,6 @@ public:
 	void BounceX();
 	void BounceY();
 	void BounceY(const Vec offx);
-	void Bounce(const Vec impulse);
 	Vec GetPos() const;
 	Vec GetVel() const;
 	void SetDir(const Vec Dir);
