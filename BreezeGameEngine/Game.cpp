@@ -28,7 +28,7 @@ void Game::Play()
 {
 	gfx.BeginFrame();
 
-
+	float elapseTime = ft.Mark();
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
