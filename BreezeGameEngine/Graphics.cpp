@@ -375,6 +375,50 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 	}
 }
 
+void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel( x + i, y + j, C );
+		}
+	}
+}
+
+void Graphics::DrawURIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x - i, y + j, C);
+		}
+	}
+}
+
+void Graphics::DrawDLIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x + i, y - j, C);
+		}
+	}
+}
+
+void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
+{
+	for (int j = 0; j < size; j++)
+	{
+		for (int i = 0; i < size - j; i++)
+		{
+			PutPixel(x - i, y - j, C);
+		}
+	}
+}
+
 //////////////////////////////////////////////////
 //           Graphics Exception
 Graphics::Exception::Exception(HRESULT hr, const std::wstring& note, const wchar_t* file, unsigned int line)

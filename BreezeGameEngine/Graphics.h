@@ -60,6 +60,10 @@ public:
 	void DrawCRect(int x0, int y0, int w, int h, Color c);
 	void DrawRectDim(int x0, int y0, int w, int h, Color c);
 	void DrawCirc(int x0, int y0, int r, Color C);
+	void DrawULIsoTri(int x, int y, int size, Color C);
+	void DrawURIsoTri(int x, int y, int size, Color C);
+	void DrawDLIsoTri(int x, int y, int size, Color C);
+	void DrawDRIsoTri(int x, int y, int size, Color C);
 	
 	~Graphics();
 private:
