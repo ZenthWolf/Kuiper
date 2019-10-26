@@ -20,9 +20,10 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
 	Player({ 400.0f, 550.0f }, 70.0f, 7.0f),
+	Wall( RectF(horiBuffer , vertBuffer , float(Graphics::ScreenWidth - 1) - horiBuffer, float(Graphics::ScreenHeight - 1) - vertBuffer), 2.0f, Colors::Blue),
 //	Ball(200.0f, 550.0f, 10.0f, Colors::Green),
     Ball(400.0f, 300.0f, 10.0f, {0.0f, 1.0f}, Colors::Green),
-	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
+//	wall(0.0f, 0.0f, float(Graphics::ScreenWidth - 1), float(Graphics::ScreenHeight - 1)),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {
 	Color Cols[5] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Cyan, {148, 0, 211} };
@@ -62,10 +63,10 @@ void Game::Play()
 void Game::UpdateModel(float dt)
 {
 	Player.Move(wnd.kbd, dt);
-	Player.CollWall(wall);
+	Player.CollWall(Wall.GetBound());
 
 	Ball.Move(dt);
-	if (Ball.CollWall(wall))
+	if (Ball.CollWall(Wall.GetBound()))
 	{
 		Player.Cool();
 		sndPad.Play();
@@ -141,4 +142,6 @@ void Game::ComposeFrame()
 			b.Draw(gfx);
 		}
 	}
+
+	Wall.Draw(gfx);
 }

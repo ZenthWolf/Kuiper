@@ -1,15 +1,17 @@
 #pragma once
 
 #include "RectF.h"
-#include "Colors.h"
+#include "Graphics.h"
 
 class Wall 
 {
 public:
 	Wall(RectF boundary, float thickness, Color c);
-RectF Bound;
+	RectF GetBound();
+	void Draw(Graphics& gfx);
+
 private:
-	
+	RectF Bound;
 	float borderThickness;
 	Color C;
 };
