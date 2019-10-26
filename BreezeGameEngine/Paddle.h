@@ -17,6 +17,7 @@ public:
 	void CollWall(RectF& wall);
 	RectF GetRect() const;
 	void Cool();
+	float height() const;
 
 private:
 	static constexpr float wingWidth = 15.0f;

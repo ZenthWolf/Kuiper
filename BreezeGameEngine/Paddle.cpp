@@ -86,3 +86,8 @@ void Paddle::Cool()
 {
 	onCooldown = 0;
 }
+
+float Paddle::height() const
+{
+	return halfHeight;
+}

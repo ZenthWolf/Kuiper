@@ -26,6 +26,14 @@ Ball::Ball(float x, float y, float v, Vec initDir, Color c)
 	C = c;
 }
 
+Ball::Ball(Vec pos, float v, Vec initDir, Color c)
+{
+	Pos = pos;
+	speed = v;
+	SetDir(initDir);
+	C = c;
+}
+
 void Ball::Draw(Graphics& gfx)
 {
 	gfx.DrawCirc(int(Pos.X), int(Pos.Y), int(R), C);
@@ -96,6 +104,11 @@ Vec Ball::GetVel() const
 void Ball::SetDir(const Vec Dir)
 {
 	Vel = Dir.Norm() * speed;
+}
+
+float Ball::GetRad() const
+{
+	return R;
 }
 
 RectF Ball::GetRect() const

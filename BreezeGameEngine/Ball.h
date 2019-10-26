@@ -10,6 +10,7 @@ public:
 	Ball(float x, float y, Color c);
 	Ball(float x, float y, float speed, Color c);
 	Ball(float x, float y, float speed, Vec initDir, Color c);
+	Ball(Vec pos, float speed, Vec initDir, Color c);
 	void Draw(Graphics& gfx);
 	void Move(const float dt);
 	bool CollWall(const RectF& wall);
@@ -20,6 +21,7 @@ public:
 	Vec GetPos() const;
 	Vec GetVel() const;
 	void SetDir(const Vec Dir);
+	float GetRad() const;
 
 private:
 	Vec Pos;
