@@ -146,6 +146,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="Vec.h" />
+    <ClInclude Include="Wall.h" />
     <ClInclude Include="WinDefs.h" />
     <ClInclude Include="MainWindow.h" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Tone.cpp" />
     <ClCompile Include="Vec.cpp" />
+    <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FramebufferPS.shh" />
