@@ -40,7 +40,7 @@ void Game::Play()
 	gfx.EndFrame();
 }
 
-void Game::UpdateModel()
+void Game::UpdateModel(float dt)
 {
 
 }
