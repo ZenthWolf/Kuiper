@@ -390,9 +390,9 @@ void Graphics::DrawURIsoTri(int x, int y, int size, Color C)
 {
 	for (int j = 0; j < size; j++)
 	{
-		for (int i = 0; i < size - j; i++)
+		for (int i = j; i < size; i++)
 		{
-			PutPixel(x - i, y + j, C);
+			PutPixel(x + i, y + j, C);
 		}
 	}
 }
@@ -401,9 +401,9 @@ void Graphics::DrawDLIsoTri(int x, int y, int size, Color C)
 {
 	for (int j = 0; j < size; j++)
 	{
-		for (int i = 0; i < size - j; i++)
+		for (int i = 0; i <= j; i++)
 		{
-			PutPixel(x + i, y - j, C);
+			PutPixel(x + i, y + j, C);
 		}
 	}
 }
@@ -412,9 +412,9 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 {
 	for (int j = 0; j < size; j++)
 	{
-		for (int i = 0; i < size - j; i++)
+		for (int i = size-j; i < size; i++)
 		{
-			PutPixel(x - i, y - j, C);
+			PutPixel(x + i, y + j, C);
 		}
 	}
 }
