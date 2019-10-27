@@ -31,12 +31,12 @@ bool RectF::CollWith(const RectF& Targ) const
 
 float RectF::width() const
 {
-	return fabs(X1 - X0);
+	return fabsf(X1 - X0);
 }
 
 float RectF::height() const
 {
-	return fabs(Y1 - Y0);
+	return fabsf(Y1 - Y0);
 }
 
 RectF RectF::GetExpand(float offset) const

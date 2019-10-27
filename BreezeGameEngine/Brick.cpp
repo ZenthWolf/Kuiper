@@ -10,7 +10,7 @@ void Brick::Draw(Graphics& gfx)
 {
 	if (!Broken)
 	{
-		Bev.DrawBevBrick(Rect.GetExpand(-1.0f), 3.0f, gfx);
+		Bev.DrawBevBrick(Rect.GetExpand(-1.0f), 3, gfx);
 	}
 }
 

@@ -15,5 +15,5 @@ public:
 private:
 	RectF Bound;
 	Beveler Bev;
-	static constexpr float borderThickness = 3.0f;
+	static constexpr int borderThickness = 3;
 };

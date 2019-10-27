@@ -100,7 +100,7 @@ void Beveler::DrawBevBorder(RectF& Rect, int size, Graphics& gfx)
 
 void Beveler::ChangeBaseColor(Color newbase)
 {
-	float HighVal = float(max(newbase.GetR(), newbase.GetB(), newbase.GetG())) * LeftFactor;
+	float HighVal = float(max(max(newbase.GetR(), newbase.GetB()), newbase.GetG())) * LeftFactor;
 
 	if (int(HighVal) > 255)
 	{
