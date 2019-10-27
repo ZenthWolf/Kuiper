@@ -22,7 +22,7 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
 	Player({ 400.0f, 550.0f }, 50.0f, 4.0f),
-	Wall( RectF(horiBuffer , vertBuffer , float(Graphics::ScreenWidth - 1) - horiBuffer, float(Graphics::ScreenHeight - 1) - vertBuffer), 2.0f, Colors::Blue),
+	Wall( RectF(horiBuffer , vertBuffer , float(Graphics::ScreenWidth - 1) - horiBuffer, float(Graphics::ScreenHeight - 1) - vertBuffer), Colors::Blue),
     Ball(Player.GetRect().Cent() - Vec(0.0f, Player.height() + Ball.GetRad()), 10.0f, { 0.5f, -0.866f }, Colors::Green),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {

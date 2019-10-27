@@ -2,17 +2,18 @@
 
 #include "RectF.h"
 #include "Graphics.h"
+#include "Beveler.h"
 
 class Wall 
 {
 public:
-	Wall(RectF boundary, float thickness, Color c);
+	Wall(RectF boundary, Color c);
 	RectF GetBound();
 	Vec GetOrigin();
 	void Draw(Graphics& gfx);
 
 private:
 	RectF Bound;
-	float borderThickness;
-	Color C;
+	Beveler Bev;
+	static constexpr float borderThickness = 3.0f;
 };
