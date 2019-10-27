@@ -412,7 +412,7 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 {
 	for (int j = 0; j < size; j++)
 	{
-		for (int i = size-j; i < size; i++)
+		for (int i = size-j; i <= size; i++)
 		{
 			PutPixel(x + i, y + j, C);
 		}
