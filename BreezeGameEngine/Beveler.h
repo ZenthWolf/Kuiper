@@ -3,10 +3,11 @@
 #include "Graphics.h"
 #include "RectF.h"
 
-class Bev
+class Beveler
 {
 public:
-	Bev(Color base);
+	Beveler() = default;
+	Beveler(Color base);
 	void DrawOuterBev(RectF& Rect, int size, Graphics& gfx);
 	void DrawInnerBev(RectF& Rect, int size, Graphics& gfx);
 	void DrawBevBrick(RectF& Rect, int size, Graphics& gfx);

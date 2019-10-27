@@ -1,17 +1,16 @@
 #include "Brick.h"
 #include <assert.h>
 
-Brick::Brick(RectF rect, Color c)
+Brick::Brick(RectF rect, Color c): Bev(c)
 {
 	Rect = rect;
-	C = c;
 }
 
 void Brick::Draw(Graphics& gfx)
 {
 	if (!Broken)
 	{
-		gfx.DrawRect(Rect.GetExpand(-1.0f), C);
+		Bev.DrawBevBrick(Rect.GetExpand(-1.0f), 3.0f, gfx);
 	}
 }
 

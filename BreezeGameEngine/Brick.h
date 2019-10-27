@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "RectF.h"
 #include "Ball.h"
+#include "Beveler.h"
 
 class Brick
 {
@@ -14,10 +15,9 @@ public:
 	void Break(Ball& ball);
 	Vec GetLoc() const;
 	RectF Rect;
-	Color C;
 	void Respawn();
 
 private:
-	
+	Beveler Bev;
 	bool Broken = 0;
 };

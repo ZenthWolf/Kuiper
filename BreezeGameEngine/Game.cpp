@@ -138,7 +138,7 @@ void Game::ComposeFrame()
 {
 
 
-	Bev Test = Bev(Color(240, 140, 40));
+	Beveler Test = Beveler(Color(240, 140, 40));
 
 	Test.DrawBevBrick(RectF(390, 290, 410, 310	), 5, gfx);
 

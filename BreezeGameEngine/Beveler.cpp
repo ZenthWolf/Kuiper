@@ -1,13 +1,15 @@
 #include "Beveler.h"
 
-Bev::Bev(Color base)
+Beveler::Beveler(Color base)
 {
 
-	float HighVal = float(max(base.GetR(), base.GetB(), base.GetG())) * LeftFactor;
+	float HighVal = float(    max(max(base.GetR(), base.GetB()), base.GetG())) * LeftFactor;
 
 	if (int(HighVal) > 255)
 	{
 		base.SetR(int(float(base.GetR()) * 255.0f / HighVal));
+		base.SetG(int(float(base.GetG()) * 255.0f / HighVal));
+		base.SetB(int(float(base.GetB()) * 255.0f / HighVal));
 	}
 
 
@@ -38,7 +40,7 @@ Bev::Bev(Color base)
 	);
 }
 
-void Bev::DrawOuterBev(RectF& Rect, int size, Graphics& gfx)
+void Beveler::DrawOuterBev(RectF& Rect, int size, Graphics& gfx)
 {
 	/* LeftSide */
 	gfx.DrawDLIsoTri(int(Rect.X0), int(Rect.Y0), size, LeftColor);
@@ -61,7 +63,7 @@ void Bev::DrawOuterBev(RectF& Rect, int size, Graphics& gfx)
 	gfx.DrawDLIsoTri(int(Rect.X1) - size + 1, int(Rect.Y1) - size + 1, size, BotColor);
 }
 
-void Bev::DrawInnerBev(RectF& Rect, int size, Graphics& gfx)
+void Beveler::DrawInnerBev(RectF& Rect, int size, Graphics& gfx)
 {
 	/* LeftSide */
 	gfx.DrawDLIsoTri(int(Rect.X0), int(Rect.Y0), size, RightColor);
@@ -84,19 +86,19 @@ void Bev::DrawInnerBev(RectF& Rect, int size, Graphics& gfx)
 	gfx.DrawDLIsoTri(int(Rect.X1) - size + 1, int(Rect.Y1) - size + 1, size, TopColor);
 }
 
-void Bev::DrawBevBrick(RectF& Rect, int size, Graphics& gfx)
+void Beveler::DrawBevBrick(RectF& Rect, int size, Graphics& gfx)
 {
 	DrawInnerBev(Rect, size, gfx);
 	gfx.DrawRect(Rect.GetExpand(-float(size)), BaseColor);
 }
 
-void Bev::DrawBevBorder(RectF& Rect, int size, Graphics& gfx)
+void Beveler::DrawBevBorder(RectF& Rect, int size, Graphics& gfx)
 {
 	DrawOuterBev(Rect.GetExpand(float(2 * size)), size, gfx);
 	DrawInnerBev(Rect.GetExpand(float(size)), size, gfx);
 }
 
-void Bev::ChangeBaseColor(Color newbase)
+void Beveler::ChangeBaseColor(Color newbase)
 {
 	float HighVal = float(max(newbase.GetR(), newbase.GetB(), newbase.GetG())) * LeftFactor;
 
