@@ -12,6 +12,11 @@ RectF Wall::GetBound()
 	return Bound;
 }
 
+Vec Wall::GetOrigin()
+{
+	return { Bound.X0, Bound.Y0 };
+}
+
 void Wall::Draw(Graphics& gfx)
 {
 	RectF LeftB = RectF(Bound.X0 - borderThickness, Bound.Y0 - borderThickness, Bound.X0, Bound.Y1 + borderThickness );

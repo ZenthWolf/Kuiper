@@ -8,6 +8,7 @@ class Wall
 public:
 	Wall(RectF boundary, float thickness, Color c);
 	RectF GetBound();
+	Vec GetOrigin();
 	void Draw(Graphics& gfx);
 
 private:

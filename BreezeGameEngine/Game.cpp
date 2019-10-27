@@ -14,19 +14,25 @@
 
 #include "MainWindow.h"
 #include "Game.h"
+#include <assert.h>
 
+#include "Beveler.h"
 
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd), gfx(wnd),
-	Player({ 400.0f, 550.0f }, 70.0f, 7.0f),
+	Player({ 400.0f, 550.0f }, 50.0f, 4.0f),
 	Wall( RectF(horiBuffer , vertBuffer , float(Graphics::ScreenWidth - 1) - horiBuffer, float(Graphics::ScreenHeight - 1) - vertBuffer), 2.0f, Colors::Blue),
     Ball(Player.GetRect().Cent() - Vec(0.0f, Player.height() + Ball.GetRad()), 10.0f, { 0.5f, -0.866f }, Colors::Green),
 	sndPad(L"Sound\\arkpad.wav"), sndBreak(L"Sound\\arkbrick.wav")
 {
+	assert((Columns - 1) * BrickWidth <= Wall.GetBound().width());
+	assert((Rows - 1) * BrickHeight <= Wall.GetBound().height());
+
 	Color Cols[5] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Cyan, {148, 0, 211} };
 	
-	Vec offset = { (float(Graphics::ScreenWidth) - float(Columns) * BrickWidth) / 2.0f, 50.0f };
+	Vec offset = Vec{ (Wall.GetBound().width() - float(Columns) * BrickWidth) / 2.0f, 50.0f } + Wall.GetOrigin();
+	
 
 	for (int x = 0; x < Columns; x++)
 	{
@@ -130,6 +136,21 @@ void Game::UpdateModel(float dt)
 
 void Game::ComposeFrame()
 {
+
+
+	Bev Test = Bev(Color(240, 140, 40));
+
+	Test.DrawBevBrick(RectF(390, 290, 410, 310	), 5, gfx);
+
+	Test.ChangeBaseColor(Colors::LightGray);
+
+	Test.DrawBevBorder(RectF(390, 290, 410, 310), 2, gfx);
+
+//	gfx.PutPixel(390, 290, Colors::Blue);
+//	gfx.PutPixel(410, 290, Colors::Blue);
+//	gfx.PutPixel(390, 310, Colors::Blue);
+//	gfx.PutPixel(410, 310, Colors::Blue);
+
 	Ball.Draw(gfx);
 	Player.Draw(gfx);
 
@@ -142,4 +163,5 @@ void Game::ComposeFrame()
 	}
 
 	Wall.Draw(gfx);
+
 }

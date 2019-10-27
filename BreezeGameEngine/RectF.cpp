@@ -1,4 +1,5 @@
 #include "RectF.h"
+#include <math.h>
 
 RectF::RectF(float x0, float y0, float x1, float y1)
 {
@@ -26,6 +27,16 @@ bool RectF::CollWith(const RectF& Targ) const
 {
 	return ( (X1 >= Targ.X0) && (X0 <= Targ.X1)
 	      && (Y1 >= Targ.Y0) && (Y0 <= Targ.Y1) );
+}
+
+float RectF::width() const
+{
+	return fabs(X1 - X0);
+}
+
+float RectF::height() const
+{
+	return fabs(Y1 - Y0);
 }
 
 RectF RectF::GetExpand(float offset) const

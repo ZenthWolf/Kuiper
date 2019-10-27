@@ -27,6 +27,6 @@ private:
 	Vec Pos;
 	Vec Vel;
 	float speed;
-	static constexpr float R = 8.0f;
+	static constexpr float R = 6.0f;
 	Color C;
 };
