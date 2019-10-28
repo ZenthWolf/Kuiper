@@ -49,6 +49,11 @@ VecI VecI::operator*(const int scale) const
 	return VecI(X * scale, Y * scale);
 }
 
+VecI VecI::operator/(const int scale) const
+{
+	return VecI(X / scale, Y / scale);
+}
+
 /*
 VecI VecI::Norm() const
 {

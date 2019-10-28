@@ -364,7 +364,7 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 	}
 }
 
-void Graphics::DrawCirc(Vec pos, int r, Color c)
+void Graphics::DrawCirc(VecI pos, int r, Color c)
 {
 	int rsq = r * r;
 	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)

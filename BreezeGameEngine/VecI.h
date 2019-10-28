@@ -12,6 +12,7 @@ public:
 	VecI operator-(const VecI& rhs) const;
 	VecI& operator-=(const VecI& rhs);
 	VecI operator*(const int scale) const;
+	VecI operator/(const int scale) const;
 //	VecI Norm() const;
 
 public:

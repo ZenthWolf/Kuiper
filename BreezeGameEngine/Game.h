@@ -19,6 +19,9 @@
 #include "FrameTimer.h"
 #include <chrono>
 #include "Sound.h"
+#include <random>
+
+#include "MineField.h"
 
 
 class Game
@@ -41,5 +44,9 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	std::mt19937 rng;
+
+
 	FrameTimer ft;
+	MineField Field;
 };

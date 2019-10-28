@@ -18,8 +18,8 @@
 
 Game::Game(MainWindow& wnd)
 	:
-	wnd(wnd),
-	gfx(wnd)
+	wnd(wnd),gfx(wnd), rng(std::random_device()()),
+	Field({200,200}, 10, rng)
 {
 
 }
@@ -43,11 +43,14 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-
+	if (wnd.mouse.LeftIsPressed())
+	{
+		Field.RevealTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() });
+	}
 }
 
 
 void Game::ComposeFrame()
 {
-
+	Field.Draw(gfx);
 }
