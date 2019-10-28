@@ -35,7 +35,7 @@ void MineField::Draw(Graphics& gfx)
 				{
 				case Tile::TileContents::Empty:
 				{
-					Bev.ChangeBaseColor(NumColor[0]);
+					Bev.ChangeBaseColor(NumColor[tile[j * Columns + i].GetAdj()]);
 
 					Bev.DrawBevBrick(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), 2, gfx);
 
@@ -84,9 +84,9 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 			if (tile[j * Columns + i].hasContents() == Tile::TileContents::Empty)
 			{
 				int adj = 0;
-				for (int x = min(abs(i - 1), i); x < max(i, (i + 1) % Columns); x++)
+				for (int x = min(abs(i - 1), i); x <= max(i, (i + 1) % Columns); x++)
 				{
-					for (int y = min(abs(j - 1), j); y < max(j, (j + 1) % Rows); y++)
+					for (int y = min(abs(j - 1), j); y <= max(j, (j + 1) % Rows); y++)
 					{
 						if (tile[y * Columns + x].hasContents() == Tile::TileContents::Mine)
 						{
@@ -128,4 +128,9 @@ void MineField::Tile::PlaceBomb()
 	assert(contents == TileContents::Empty);
 
 	contents = TileContents::Mine;
+}
+
+int MineField::Tile::GetAdj() const
+{
+	return adj;
 }

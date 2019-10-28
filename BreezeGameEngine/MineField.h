@@ -30,6 +30,7 @@ private:
 		TileContents hasContents() const;
 		void SetAdj(const int adjacent);
 		void PlaceBomb();
+		int GetAdj() const;
 
 	private:
 		bool isRevealed = false;
