@@ -135,3 +135,4 @@ void Beveler::ChangeBaseColor(Color newbase)
 		int(float(newbase.GetB()) * BotFactor)
 	);
 }
+
