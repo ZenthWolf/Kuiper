@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Graphics.h"
-#include "RectF.h"
+#include "RectI.h"
 
 class Beveler
 {
 public:
 	Beveler() = default;
 	Beveler(Color base);
-	void DrawOuterBev(RectF& Rect, int size, Graphics& gfx);
-	void DrawInnerBev(RectF& Rect, int size, Graphics& gfx);
-	void DrawBevBrick(RectF& Rect, int size, Graphics& gfx);
-	void DrawBevBorder(RectF& Rect, int size, Graphics& gfx);
+	void DrawOuterBev(RectI& Rect, int size, Graphics& gfx);
+	void DrawInnerBev(RectI& Rect, int size, Graphics& gfx);
+	void DrawBevBrick(RectI& Rect, int size, Graphics& gfx);
+	void DrawBevBorder(RectI& Rect, int size, Graphics& gfx);
 	void ChangeBaseColor(Color newbase);
 private:
 	static constexpr float LeftFactor = 1.10f;

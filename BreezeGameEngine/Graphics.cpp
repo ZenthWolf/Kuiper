@@ -320,7 +320,7 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	}
 }
 
-void Graphics::DrawRect(RectF Rect, Color c)
+void Graphics::DrawRect(RectI Rect, Color c)
 {
 	DrawRect( int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c );
 }
