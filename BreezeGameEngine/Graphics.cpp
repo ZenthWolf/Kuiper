@@ -364,6 +364,21 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 	}
 }
 
+void Graphics::DrawCirc(Vec pos, int r, Color c)
+{
+	int rsq = r * r;
+	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)
+	{
+		for (int x = pos.X - r + 1; x < pos.X + r; x++)
+		{
+			if ((x - pos.X) * (x - pos.X) + (y - pos.Y) * (y - pos.Y) <= rsq)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
+}
+
 void Graphics::SwapIfGrtr(int& a, int& b)
 {
 	//std::swap(a,b)
