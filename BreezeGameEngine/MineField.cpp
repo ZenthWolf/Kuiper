@@ -84,7 +84,7 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 	while (mines > 0)
 	{
 		int testtile = RandTile(rng);
-		if (tile[testtile].hasContents() == Tile::TileContents::Empty)
+		if (tile[testtile].hasContents() == Tile::TileContents::Empty && !tile[testtile].IsRevealed())
 		{
 			tile[testtile].PlaceBomb();
 			mines--;
@@ -151,6 +151,7 @@ int MineField::Tile::GetAdj() const
 void MineField::Tile::CloseTile()
 {
 	isRevealed = false;
+	contents = TileContents::Empty;
 }
 
 VecI MineField::MouseToTile(const VecI mvec) const
