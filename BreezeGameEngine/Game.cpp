@@ -43,26 +43,19 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-	if (wnd.mouse.LeftIsPressed())
+	while (!wnd.mouse.IsEmpty())
 	{
-		inputPrimed = true;
-	}
+		const Mouse::Event e = wnd.mouse.Read();
 
-	if (wnd.mouse.RightIsPressed())
-	{
-		susPrimed = true;
-	}
+		switch (e.GetType())
+		{
+		case Mouse::Event::Type::LRelease:
+			Field.RevealTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+			break;
 
-	if (inputPrimed && !wnd.mouse.LeftIsPressed())
-	{
-		Field.RevealTile( Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng );
-		inputPrimed = false;
-	}
-
-	if (susPrimed && !wnd.mouse.RightIsPressed())
-	{
-		Field.SusTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
-		susPrimed = false;
+		case Mouse::Event::Type::RRelease:
+			Field.SusTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+		}
 	}
 
 	if (wnd.kbd.KeyIsPressed(VK_ESCAPE))

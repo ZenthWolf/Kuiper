@@ -46,8 +46,6 @@ private:
 	/********************************/
 	std::mt19937 rng;
 
-	bool inputPrimed = false;
-	bool susPrimed = false;
 	FrameTimer ft;
 	MineField Field;
 };
