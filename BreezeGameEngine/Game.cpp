@@ -19,7 +19,7 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	Field(10)
+	Field(99)
 {
 
 }

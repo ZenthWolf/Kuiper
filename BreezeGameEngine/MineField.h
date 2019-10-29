@@ -41,7 +41,7 @@ private:
 		void PlaceBomb();
 		int GetAdj() const;
 		void CloseTile();
-		Suspicion IsSus() const;
+		Suspicion IsSus();
 		void UnSus();
 		void CycleSus();
 

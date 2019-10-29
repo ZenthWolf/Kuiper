@@ -199,7 +199,7 @@ void MineField::Tile::CloseTile()
 	contents = Contents::Empty;
 }
 
-MineField::Tile::Suspicion MineField::Tile::IsSus() const
+MineField::Tile::Suspicion MineField::Tile::IsSus()
 {
 	return isSus;
 }
