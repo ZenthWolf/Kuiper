@@ -8,7 +8,7 @@ class MineField
 {
 public:
 	MineField();
-	MineField(VecI fieldpos, int mines);
+	MineField(int mines);
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void PlaceMines(int mines, std::mt19937& rng);
@@ -41,8 +41,8 @@ private:
 		TileContents contents = TileContents::Empty;
 	};
 
-	static constexpr int Columns = 15;
-	static constexpr int Rows = 10;
+	static constexpr int Columns = 30;
+	static constexpr int Rows = 16;
     VecI TileSize = { 25, 25 };
 	VecI FieldPos = { 0, 0 };
 

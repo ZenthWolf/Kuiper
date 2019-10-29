@@ -5,10 +5,11 @@ MineField::MineField()
 {
 }
 
-MineField::MineField(VecI fieldpos, int mines)
+MineField::MineField( int mines )
 {
 	Mines = mines;
-	FieldPos = fieldpos;
+
+	FieldPos = (VecI({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - VecI({ Columns, Rows }) * TileSize.X) / 2;
 }
 
 void MineField::Draw(Graphics& gfx)
@@ -32,9 +33,7 @@ void MineField::Draw(Graphics& gfx)
 				{
 				case Tile::TileContents::Empty:
 				{
-					Bev.ChangeBaseColor(NumColor[tile[j * Columns + i].GetAdj()]);
-
-					Bev.DrawBevBrick(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), 2, gfx);
+					gfx.DrawRect(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
 
 					break;
 				}
@@ -48,6 +47,9 @@ void MineField::Draw(Graphics& gfx)
 			}
 		}
 	}
+
+	Bev.DrawBevBorder(RectI({ (Graphics::ScreenWidth - Columns * TileSize.X) / 2, (Graphics::ScreenHeight - Rows * TileSize.Y) / 2 },
+		                    { (Graphics::ScreenWidth + Columns * TileSize.X) / 2, (Graphics::ScreenHeight + Rows * TileSize.Y) / 2 }), 3, gfx);
 }
 
 void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
