@@ -11,6 +11,7 @@ public:
 	MineField(int mines);
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
+	void SusTile(const VecI tpos);
 	void PlaceMines(int mines, std::mt19937& rng);
 	VecI MouseToTile(const VecI mvec) const;
 	void ResetField();
@@ -20,25 +21,35 @@ private:
 	{
 	public:
 		Tile();
-		enum class TileContents
+		enum class Contents
 		{
-		    Empty,
+			Empty,
 			Mine
+		};
+		enum class Suspicion
+		{
+			NoSus,
+			Mine,
+			Unsure
 		};
 
 	public:
 		bool IsRevealed() const;
 		void OpenTile();
-		TileContents hasContents() const;
+		Contents hasContents();
 		void SetAdj(const int adjacent);
 		void PlaceBomb();
 		int GetAdj() const;
 		void CloseTile();
+		Suspicion IsSus() const;
+		void UnSus();
+		void CycleSus();
 
 	private:
 		bool isRevealed = false;
+		Suspicion isSus = Suspicion::NoSus;
 		int adj = 5;
-		TileContents contents = TileContents::Empty;
+		Contents contents = Contents::Empty;
 	};
 
 	static constexpr int Columns = 30;

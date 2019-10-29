@@ -26,19 +26,54 @@ void MineField::Draw(Graphics& gfx)
 				Bev.ChangeBaseColor(CoveredColor);
 
 				Bev.DrawBevBrick(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), 2, gfx);
+
+				switch (tile[j * Columns + i].IsSus())
+				{
+				case Tile::Suspicion::Mine:
+				{
+					gfx.DrawCirc(FieldPos + loc + TileSize / 2 + VecI{ 1,1 }, TileSize.X / 2 - 1, BombColor);
+
+					int hash = 0;
+					while (hash <= TileSize.Y)
+					{
+						for (int x = (FieldPos + loc).X; x <= (FieldPos + loc + TileSize).X; x++)
+						{
+							gfx.PutPixel(x, (FieldPos + loc).Y + hash, CoveredColor);
+						}
+						hash += 3;
+					}
+
+					break;
+				}
+
+				case Tile::Suspicion::Unsure:
+				{
+					int hash = 0;
+					while (hash <= TileSize.Y)
+					{
+						for (int x = (FieldPos + loc).X; x <= (FieldPos + loc + TileSize).X; x++)
+						{
+							gfx.PutPixel(x, (FieldPos + loc).Y + hash, Colors::Black);
+						}
+						hash += 3;
+					}
+
+					break;
+				}
+				}
 			}
 			else
 			{
 				switch (tile[j * Columns + i].hasContents())
 				{
-				case Tile::TileContents::Empty:
+				case Tile::Contents::Empty:
 				{
 					gfx.DrawRect(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
 
 					break;
 				}
 
-				case Tile::TileContents::Mine:
+				case Tile::Contents::Mine:
 
 					gfx.DrawRect(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), NumColor[0]);
 					gfx.DrawCirc(FieldPos + loc + TileSize / 2 + VecI{1,1}, TileSize.X / 2 - 1, BombColor);
@@ -66,7 +101,7 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 			PlaceMines(Mines, rng);
 		}
 
-		if (tile[tpos.Y * Columns + tpos.X].hasContents() == Tile::TileContents::Empty && tile[tpos.Y * Columns + tpos.X].GetAdj() == 0)
+		if (tile[tpos.Y * Columns + tpos.X].hasContents() == Tile::Contents::Empty && tile[tpos.Y * Columns + tpos.X].GetAdj() == 0)
 		{
 			for (int i = min(abs(tpos.X - 1), tpos.X); i <= max(tpos.X, (tpos.X + 1) % Columns); i++)
 			{
@@ -79,6 +114,14 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 	}
 }
 
+void MineField::SusTile(const VecI tpos)
+{
+	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
+	{
+		tile[tpos.Y * Columns + tpos.X].CycleSus();
+	}
+}
+
 void MineField::PlaceMines(int mines, std::mt19937& rng)
 {
 	std::uniform_int_distribution<int> RandTile(0, Rows * Columns - 1);
@@ -86,7 +129,7 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 	while (mines > 0)
 	{
 		int testtile = RandTile(rng);
-		if (tile[testtile].hasContents() == Tile::TileContents::Empty && !tile[testtile].IsRevealed())
+		if (tile[testtile].hasContents() == Tile::Contents::Empty && !tile[testtile].IsRevealed())
 		{
 			tile[testtile].PlaceBomb();
 			mines--;
@@ -96,14 +139,14 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 	for (int j = 0; j < Rows; j++)
 	{
 		for (int i = 0; i < Columns; i++)
-			if (tile[j * Columns + i].hasContents() == Tile::TileContents::Empty)
+			if (tile[j * Columns + i].hasContents() == Tile::Contents::Empty)
 			{
 				int adj = 0;
 				for (int x = min(abs(i - 1), i); x <= max(i, (i + 1) % Columns); x++)
 				{
 					for (int y = min(abs(j - 1), j); y <= max(j, (j + 1) % Rows); y++)
 					{
-						if (tile[y * Columns + x].hasContents() == Tile::TileContents::Mine)
+						if (tile[y * Columns + x].hasContents() == Tile::Contents::Mine)
 						{
 							adj++;
 						}
@@ -128,7 +171,7 @@ void MineField::Tile::OpenTile()
 	isRevealed = true;
 }
 
-MineField::Tile::TileContents MineField::Tile::hasContents() const
+MineField::Tile::Contents MineField::Tile::hasContents()
 {
 	return contents;
 }
@@ -140,9 +183,9 @@ void MineField::Tile::SetAdj(const int adjacent)
 
 void MineField::Tile::PlaceBomb()
 {
-	assert(contents == TileContents::Empty);
+	assert(contents == Contents::Empty);
 
-	contents = TileContents::Mine;
+	contents = Contents::Mine;
 }
 
 int MineField::Tile::GetAdj() const
@@ -153,7 +196,35 @@ int MineField::Tile::GetAdj() const
 void MineField::Tile::CloseTile()
 {
 	isRevealed = false;
-	contents = TileContents::Empty;
+	contents = Contents::Empty;
+}
+
+MineField::Tile::Suspicion MineField::Tile::IsSus() const
+{
+	return isSus;
+}
+
+void MineField::Tile::UnSus()
+{
+	isSus = Tile::Suspicion::NoSus;
+}
+
+void MineField::Tile::CycleSus()
+{
+	switch (isSus)
+	{
+	case Tile::Suspicion::NoSus:
+		isSus = Tile::Suspicion::Mine;
+		break;
+
+	case Tile::Suspicion::Mine:
+		isSus = Tile::Suspicion::Unsure;
+		break;
+		
+	case Tile::Suspicion::Unsure:
+		isSus = Tile::Suspicion::NoSus;
+		break;
+	}
 }
 
 VecI MineField::MouseToTile(const VecI mvec) const
@@ -167,6 +238,7 @@ void MineField::ResetField()
 	{
 		tile[i].SetAdj(0);
 		tile[i].CloseTile();
+		tile[i].UnSus();
 		FreeMove = true;
 	}
 }
