@@ -89,7 +89,7 @@ void MineField::Draw(Graphics& gfx)
 
 void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 {
-	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
+	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed() && tile[tpos.Y * Columns + tpos.X].IsSus() != Tile::Suspicion::Mine)
 	{
 		tile[tpos.Y * Columns + tpos.X].OpenTile();
 
