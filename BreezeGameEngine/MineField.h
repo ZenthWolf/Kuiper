@@ -12,6 +12,7 @@ public:
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos);
 	void PlaceMines(int mines, std::mt19937& rng);
+	VecI MouseToTile(const VecI mvec) const;
 
 private:
 	class Tile 

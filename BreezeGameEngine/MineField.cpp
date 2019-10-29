@@ -55,12 +55,22 @@ void MineField::Draw(Graphics& gfx)
 
 void MineField::RevealTile(const VecI tpos)
 {
-	int X = (tpos.X - FieldPos.X) / TileSize.X;
-	int Y = (tpos.Y - FieldPos.Y) / TileSize.Y;
+	
 
-	if (X < Columns && Y < Rows)
+	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
 	{
-		tile[Y * Columns + X].OpenTile();
+		tile[tpos.Y * Columns + tpos.X].OpenTile();
+
+		if (tile[tpos.Y * Columns + tpos.X].hasContents() == Tile::TileContents::Empty && tile[tpos.Y * Columns + tpos.X].GetAdj() == 0)
+		{
+			for (int i = min(abs(tpos.X - 1), tpos.X); i <= max(tpos.X, (tpos.X + 1) % Columns); i++)
+			{
+				for (int j = min(abs(tpos.Y - 1), tpos.Y); j <= max(tpos.Y, (tpos.Y + 1) % Rows); j++)
+				{
+					RevealTile({ i, j });
+				}
+			}
+		}
 	}
 }
 
@@ -133,4 +143,9 @@ void MineField::Tile::PlaceBomb()
 int MineField::Tile::GetAdj() const
 {
 	return adj;
+}
+
+VecI MineField::MouseToTile(const VecI mvec) const
+{
+	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
 }

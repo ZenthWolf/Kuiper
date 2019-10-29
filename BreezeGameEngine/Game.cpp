@@ -45,7 +45,7 @@ void Game::UpdateModel(float dt)
 {
 	if (wnd.mouse.LeftIsPressed())
 	{
-		Field.RevealTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() });
+		Field.RevealTile( Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }) );
 	}
 }
 
