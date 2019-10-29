@@ -19,7 +19,7 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	Field({200,200}, 10, rng)
+	Field({200,200}, 10)
 {
 
 }
@@ -45,7 +45,12 @@ void Game::UpdateModel(float dt)
 {
 	if (wnd.mouse.LeftIsPressed())
 	{
-		Field.RevealTile( Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }) );
+		Field.RevealTile( Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng );
+	}
+
+	if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
+	{
+		Field.ResetField();
 	}
 }
 

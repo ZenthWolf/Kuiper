@@ -5,13 +5,10 @@ MineField::MineField()
 {
 }
 
-MineField::MineField(VecI fieldpos, int mines, std::mt19937& rng)
+MineField::MineField(VecI fieldpos, int mines)
 {
-	assert(mines < Rows * Columns);
-
+	Mines = mines;
 	FieldPos = fieldpos;
-
-	PlaceMines(mines, rng);
 }
 
 void MineField::Draw(Graphics& gfx)
@@ -53,13 +50,19 @@ void MineField::Draw(Graphics& gfx)
 	}
 }
 
-void MineField::RevealTile(const VecI tpos)
+void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 {
-	
-
 	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
 	{
 		tile[tpos.Y * Columns + tpos.X].OpenTile();
+
+		if (FreeMove)
+		{
+			assert(Mines < Rows * Columns);
+
+			FreeMove = false;
+			PlaceMines(Mines, rng);
+		}
 
 		if (tile[tpos.Y * Columns + tpos.X].hasContents() == Tile::TileContents::Empty && tile[tpos.Y * Columns + tpos.X].GetAdj() == 0)
 		{
@@ -67,7 +70,7 @@ void MineField::RevealTile(const VecI tpos)
 			{
 				for (int j = min(abs(tpos.Y - 1), tpos.Y); j <= max(tpos.Y, (tpos.Y + 1) % Rows); j++)
 				{
-					RevealTile({ i, j });
+					RevealTile({ i, j }, rng);
 				}
 			}
 		}
@@ -145,7 +148,22 @@ int MineField::Tile::GetAdj() const
 	return adj;
 }
 
+void MineField::Tile::CloseTile()
+{
+	isRevealed = false;
+}
+
 VecI MineField::MouseToTile(const VecI mvec) const
 {
 	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
+}
+
+void MineField::ResetField()
+{
+	for (int i = 0; i < Rows * Columns; i++)
+	{
+		tile[i].SetAdj(0);
+		tile[i].CloseTile();
+		FreeMove = true;
+	}
 }

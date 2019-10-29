@@ -8,11 +8,12 @@ class MineField
 {
 public:
 	MineField();
-	MineField(VecI fieldpos, int mines, std::mt19937& rng);
+	MineField(VecI fieldpos, int mines);
 	void Draw(Graphics& gfx);
-	void RevealTile(const VecI tpos);
+	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void PlaceMines(int mines, std::mt19937& rng);
 	VecI MouseToTile(const VecI mvec) const;
+	void ResetField();
 
 private:
 	class Tile 
@@ -32,6 +33,7 @@ private:
 		void SetAdj(const int adjacent);
 		void PlaceBomb();
 		int GetAdj() const;
+		void CloseTile();
 
 	private:
 		bool isRevealed = false;
@@ -58,6 +60,8 @@ private:
 						 Colors::Black
 	                    };
 	Color BombColor = Colors::Black;
+	bool FreeMove = true;
+	int Mines = 10;
 
 	Beveler Bev;
 };
