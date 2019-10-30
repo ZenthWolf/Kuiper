@@ -9,6 +9,13 @@ MineField::MineField()
 MineField::MineField( int mines )
 {
 	tile = nullptr;
+	FieldPos = { -1,-1 };
+}
+
+void MineField::SetField(int rows, int cols, int mines)
+{
+	Rows = rows;
+	Columns = cols;
 	Mines = mines;
 
 	tile = new Tile[Rows * Columns];
