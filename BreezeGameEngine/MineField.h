@@ -7,8 +7,18 @@
 class MineField
 {
 public:
-	MineField();
-	MineField(int mines);
+	enum class Difficulty
+	{
+		Beginner,
+		Intermediate,
+		Expert
+	};
+
+public:
+	MineField( Difficulty level );
+	~MineField();
+	void SetField(int rows, int cols, int mines);
+	void ClearField();
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void SusTile(const VecI tpos);
@@ -48,31 +58,33 @@ private:
 	private:
 		bool isRevealed = false;
 		Suspicion isSus = Suspicion::NoSus;
-		int adj = 5;
+		int adj = -1;
 		Contents contents = Contents::Empty;
 	};
 
-	static constexpr int Columns = 30;
-	static constexpr int Rows = 16;
-    VecI TileSize = { 25, 25 };
-	VecI FieldPos = { 0, 0 };
+private:
 
-	Tile tile[Rows * Columns];
+	int Columns;
+	int Rows;
+    VecI TileSize;
+	VecI FieldPos = { -1,-1 };
 
-	Color CoveredColor = Colors::Gray;
-	Color NumColor[9] = { Colors::White,
-						 Colors::Red,
-						 Color(240, 140, 40),
-						 Colors::Yellow,
-						 Colors::Green,
-						 Colors::Cyan,
-						 Colors::Blue,
-						 Colors::Magenta,
-						 Colors::Black
-	                    };
+	Tile* tile = nullptr;
+
+	const Color CoveredColor = Colors::Gray;
+	const Color NumColor[9] = { Colors::White,
+			         			Colors::Red,
+						        Color(240, 140, 40),
+						        Colors::Yellow,
+						        Colors::Green,
+						        Colors::Cyan,
+						        Colors::Blue,
+						        Colors::Magenta,
+						        Colors::Black
+	                          };
 	Color BombColor = Colors::Black;
-	bool FreeMove = true;
-	int Mines = 10;
+	bool FreeMove;
+	int Mines;
 
 	Beveler Bev;
 };

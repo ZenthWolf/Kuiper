@@ -1,15 +1,61 @@
 #include "MineField.h"
 #include <assert.h>
 
-MineField::MineField()
+MineField::MineField( Difficulty level )
 {
+    TileSize = { 25, 25 };
+
+	switch (level)
+	{
+	case Difficulty::Beginner:
+	{
+		Rows = 9;
+		Columns = 9;
+		Mines = 10;
+		break;
+	}
+
+	case Difficulty::Intermediate:
+	{
+		Rows = 16;
+		Columns = 16;
+		Mines = 40;
+		break;
+	}
+
+	case Difficulty::Expert:
+	{
+		Rows = 16;
+		Columns = 30;
+		Mines = 99;
+		break;
+	}
+	}
+
+	SetField(Rows, Columns, Mines);
 }
 
-MineField::MineField( int mines )
+MineField::~MineField()
 {
+	ClearField();
+}
+
+void MineField::SetField(int rows, int cols, int mines)
+{
+	FreeMove = true;
+	Rows = rows;
+	Columns = cols;
 	Mines = mines;
 
+	tile = new Tile[Rows * Columns];
+
 	FieldPos = (VecI({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - VecI({ Columns, Rows }) * TileSize.X) / 2;
+}
+
+void MineField::ClearField()
+{
+	delete [] tile;
+	tile = nullptr;
 }
 
 void MineField::Draw(Graphics& gfx)
@@ -18,27 +64,27 @@ void MineField::Draw(Graphics& gfx)
 	{
 		for (int i = 0; i < Columns; i++)
 		{
-			VecI loc = { i * TileSize.X, j * TileSize.Y };
+			VecI loc = VecI{ i * TileSize.X, j * TileSize.Y } + FieldPos;
 
 			if (!tile[j * Columns + i].IsRevealed())
 			{
 
 				Bev.ChangeBaseColor(CoveredColor);
 
-				Bev.DrawBevBrick(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), 2, gfx);
+				Bev.DrawBevBrick(RectI{ loc, loc + TileSize }.GetExpand(-1), 2, gfx);
 
 				switch (tile[j * Columns + i].IsSus())
 				{
 				case Tile::Suspicion::Mine:
 				{
-					gfx.DrawCirc(FieldPos + loc + TileSize / 2 + VecI{ 1,1 }, TileSize.X / 2 - 1, BombColor);
+					gfx.DrawCirc(loc + TileSize / 2 + VecI{ 1,1 }, TileSize.X / 2 - 1, BombColor);
 
 					int hash = 0;
 					while (hash <= TileSize.Y)
 					{
-						for (int x = (FieldPos + loc).X; x <= (FieldPos + loc + TileSize).X; x++)
+						for (int x = loc.X; x <= (loc + TileSize).X; x++)
 						{
-							gfx.PutPixel(x, (FieldPos + loc).Y + hash, CoveredColor);
+							gfx.PutPixel(x, loc.Y + hash, CoveredColor);
 						}
 						hash += 3;
 					}
@@ -51,9 +97,9 @@ void MineField::Draw(Graphics& gfx)
 					int hash = 0;
 					while (hash <= TileSize.Y)
 					{
-						for (int x = (FieldPos + loc).X; x <= (FieldPos + loc + TileSize).X; x++)
+						for (int x = loc.X; x <= (loc + TileSize).X; x++)
 						{
-							gfx.PutPixel(x, (FieldPos + loc).Y + hash, Colors::Black);
+							gfx.PutPixel(x, loc.Y + hash, Colors::Black);
 						}
 						hash += 3;
 					}
@@ -68,15 +114,15 @@ void MineField::Draw(Graphics& gfx)
 				{
 				case Tile::Contents::Empty:
 				{
-					gfx.DrawRect(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
+					gfx.DrawRect(RectI{ loc, loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
 
 					break;
 				}
 
 				case Tile::Contents::Mine:
 
-					gfx.DrawRect(RectI{ FieldPos + loc, FieldPos + loc + TileSize }.GetExpand(-1), NumColor[0]);
-					gfx.DrawCirc(FieldPos + loc + TileSize / 2 + VecI{1,1}, TileSize.X / 2 - 1, BombColor);
+					gfx.DrawRect(RectI{ loc, loc + TileSize }.GetExpand(-1), NumColor[0]);
+					gfx.DrawCirc(loc + TileSize / 2 + VecI{1,1}, TileSize.X / 2 - 1, BombColor);
 					break;
 				}
 			}
@@ -89,9 +135,11 @@ void MineField::Draw(Graphics& gfx)
 
 void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 {
-	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed() && tile[tpos.Y * Columns + tpos.X].IsSus() != Tile::Suspicion::Mine)
+	Tile& targ = tile[tpos.Y * Columns + tpos.X];
+
+	if (tpos.X < Columns && tpos.Y < Rows && !targ.IsRevealed() && targ.IsSus() != Tile::Suspicion::Mine)
 	{
-		tile[tpos.Y * Columns + tpos.X].OpenTile();
+		targ.OpenTile();
 
 		if (FreeMove)
 		{
@@ -101,11 +149,11 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 			PlaceMines(Mines, rng);
 		}
 
-		if (tile[tpos.Y * Columns + tpos.X].hasContents() == Tile::Contents::Empty && tile[tpos.Y * Columns + tpos.X].GetAdj() == 0)
+		if (targ.hasContents() == Tile::Contents::Empty && targ.GetAdj() == 0)
 		{
-			for (int i = min(abs(tpos.X - 1), tpos.X); i <= max(tpos.X, (tpos.X + 1) % Columns); i++)
+			for (int i = max(tpos.X - 1, 0); i <= min((tpos.X + 1), Columns); i++)
 			{
-				for (int j = min(abs(tpos.Y - 1), tpos.Y); j <= max(tpos.Y, (tpos.Y + 1) % Rows); j++)
+				for (int j = max(tpos.Y - 1, 0); j <= min((tpos.Y + 1), Rows); j++)
 				{
 					RevealTile({ i, j }, rng);
 				}
@@ -128,10 +176,10 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 
 	while (mines > 0)
 	{
-		int testtile = RandTile(rng);
-		if (tile[testtile].hasContents() == Tile::Contents::Empty && !tile[testtile].IsRevealed())
+		int targ = RandTile(rng);
+		if (tile[targ].hasContents() == Tile::Contents::Empty && !tile[targ].IsRevealed())
 		{
-			tile[testtile].PlaceBomb();
+			tile[targ].PlaceBomb();
 			mines--;
 		}
 	}
@@ -139,12 +187,13 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 	for (int j = 0; j < Rows; j++)
 	{
 		for (int i = 0; i < Columns; i++)
+		{
 			if (tile[j * Columns + i].hasContents() == Tile::Contents::Empty)
 			{
 				int adj = 0;
-				for (int x = min(abs(i - 1), i); x <= max(i, (i + 1) % Columns); x++)
+				for (int x = max(i - 1, 0); x <= min(i + 1, Columns); x++)
 				{
-					for (int y = min(abs(j - 1), j); y <= max(j, (j + 1) % Rows); y++)
+					for (int y = max(j - 1, 0); y <= min(j + 1, Rows); y++)
 					{
 						if (tile[y * Columns + x].hasContents() == Tile::Contents::Mine)
 						{
@@ -154,6 +203,7 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 				}
 				tile[j * Columns + i].SetAdj(adj);
 			}
+		}
 	}
 }
 
@@ -193,20 +243,9 @@ int MineField::Tile::GetAdj() const
 	return adj;
 }
 
-void MineField::Tile::CloseTile()
-{
-	isRevealed = false;
-	contents = Contents::Empty;
-}
-
 MineField::Tile::Suspicion MineField::Tile::IsSus()
 {
 	return isSus;
-}
-
-void MineField::Tile::UnSus()
-{
-	isSus = Tile::Suspicion::NoSus;
 }
 
 void MineField::Tile::CycleSus()
@@ -230,15 +269,4 @@ void MineField::Tile::CycleSus()
 VecI MineField::MouseToTile(const VecI mvec) const
 {
 	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
-}
-
-void MineField::ResetField()
-{
-	for (int i = 0; i < Rows * Columns; i++)
-	{
-		tile[i].SetAdj(0);
-		tile[i].CloseTile();
-		tile[i].UnSus();
-		FreeMove = true;
-	}
 }
