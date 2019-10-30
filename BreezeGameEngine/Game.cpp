@@ -48,18 +48,21 @@ void Game::UpdateModel(float dt)
 	case GameState::Title:
 		if (wnd.kbd.KeyIsPressed('Q'))
 		{
+			Field.ClearField();
 			Field.SetField(9, 9, 10);
 			gameState = GameState::Play;
 		}
 
 		if (wnd.kbd.KeyIsPressed('W'))
 		{
+			Field.ClearField();
 			Field.SetField(16, 16, 40);
 			gameState = GameState::Play;
 		}
 
 		if (wnd.kbd.KeyIsPressed('E'))
 		{
+			Field.ClearField();
 			Field.SetField(16, 30, 99);
 			gameState = GameState::Play;
 		}

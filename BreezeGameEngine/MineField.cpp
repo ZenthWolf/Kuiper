@@ -24,6 +24,11 @@ void MineField::SetField(int rows, int cols, int mines)
 	FieldPos = (VecI({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - VecI({ Columns, Rows }) * TileSize.X) / 2;
 }
 
+void MineField::ClearField()
+{
+	delete [] tile;
+}
+
 void MineField::Draw(Graphics& gfx)
 {
 	for (int j = 0; j < Rows; j++)

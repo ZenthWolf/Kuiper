@@ -10,6 +10,7 @@ public:
 	MineField();
 	MineField(int mines);
 	void SetField(int rows, int cols, int mines);
+	void ClearField();
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void SusTile(const VecI tpos);
