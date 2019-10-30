@@ -57,7 +57,7 @@ private:
     VecI TileSize = { 25, 25 };
 	VecI FieldPos = { 0, 0 };
 
-	Tile tile[Rows * Columns];
+	Tile* tile;
 
 	Color CoveredColor = Colors::Gray;
 	Color NumColor[9] = { Colors::White,

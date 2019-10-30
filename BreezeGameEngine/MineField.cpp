@@ -3,11 +3,15 @@
 
 MineField::MineField()
 {
+	tile = nullptr;
 }
 
 MineField::MineField( int mines )
 {
+	tile = nullptr;
 	Mines = mines;
+
+	tile = new Tile[Rows * Columns];
 
 	FieldPos = (VecI({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - VecI({ Columns, Rows }) * TileSize.X) / 2;
 }
