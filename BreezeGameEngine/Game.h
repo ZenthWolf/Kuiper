@@ -37,7 +37,11 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
-
+	enum class GameState
+	{
+		Title,
+		Play
+	};
 private:
 	MainWindow& wnd;
 	Graphics gfx;
@@ -46,6 +50,7 @@ private:
 	/********************************/
 	std::mt19937 rng;
 
+	GameState gameState = GameState::Title;
 	FrameTimer ft;
 	MineField Field;
 };

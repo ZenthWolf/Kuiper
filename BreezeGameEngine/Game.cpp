@@ -43,29 +43,54 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-	while (!wnd.mouse.IsEmpty())
+	switch (gameState)
 	{
-		const Mouse::Event e = wnd.mouse.Read();
-
-		switch (e.GetType())
+	case GameState::Title:
+		if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
 		{
-		case Mouse::Event::Type::LRelease:
-			Field.RevealTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
-			break;
-
-		case Mouse::Event::Type::RRelease:
-			Field.SusTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+			gameState = GameState::Play;
 		}
-	}
+		break;
 
-	if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
+	case GameState::Play:
 	{
-		Field.ResetField();
+		while (!wnd.mouse.IsEmpty())
+		{
+			const Mouse::Event e = wnd.mouse.Read();
+
+			switch (e.GetType())
+			{
+			case Mouse::Event::Type::LRelease:
+				Field.RevealTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+				break;
+
+			case Mouse::Event::Type::RRelease:
+				Field.SusTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+			}
+		}
+
+		if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
+		{
+			Field.ResetField();
+		}
+
+		break;
+	}
 	}
 }
 
 
 void Game::ComposeFrame()
 {
-	Field.Draw(gfx);
+	switch (gameState)
+	{
+	case GameState::Title:
+		gfx.DrawRect(0, 0, Graphics::ScreenWidth-1, Graphics::ScreenHeight-1, Colors::LightGray);
+		gfx.DrawCirc({ Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2 }, Graphics::ScreenHeight / 3, Colors::Black);
+		break;
+
+	case GameState::Play:
+		Field.Draw(gfx);
+		break;
+	}
 }
