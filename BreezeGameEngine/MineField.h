@@ -7,8 +7,16 @@
 class MineField
 {
 public:
-	MineField();
-	MineField(int mines);
+	enum class Difficulty
+	{
+		Beginner,
+		Intermediate,
+		Expert
+	};
+
+public:
+	MineField( Difficulty level );
+	~MineField();
 	void SetField(int rows, int cols, int mines);
 	void ClearField();
 	void Draw(Graphics& gfx);
@@ -54,24 +62,26 @@ private:
 		Contents contents = Contents::Empty;
 	};
 
+private:
+
 	int Columns;
 	int Rows;
-    VecI TileSize = { 25, 25 };
-	VecI FieldPos = { 0, 0 };
+    VecI TileSize;
+	VecI FieldPos = { -1,-1 };
 
-	Tile* tile;
+	Tile* tile = nullptr;
 
-	Color CoveredColor = Colors::Gray;
-	Color NumColor[9] = { Colors::White,
-						 Colors::Red,
-						 Color(240, 140, 40),
-						 Colors::Yellow,
-						 Colors::Green,
-						 Colors::Cyan,
-						 Colors::Blue,
-						 Colors::Magenta,
-						 Colors::Black
-	                    };
+	const Color CoveredColor = Colors::Gray;
+	const Color NumColor[9] = { Colors::White,
+			         			Colors::Red,
+						        Color(240, 140, 40),
+						        Colors::Yellow,
+						        Colors::Green,
+						        Colors::Cyan,
+						        Colors::Blue,
+						        Colors::Magenta,
+						        Colors::Black
+	                          };
 	Color BombColor = Colors::Black;
 	bool FreeMove;
 	int Mines;

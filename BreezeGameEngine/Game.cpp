@@ -18,10 +18,9 @@
 
 Game::Game(MainWindow& wnd)
 	:
-	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	Field(99)
+	wnd(wnd),gfx(wnd), rng(std::random_device()())
 {
-
+	Field = nullptr;
 }
 
 void Game::Play()
@@ -48,22 +47,19 @@ void Game::UpdateModel(float dt)
 	case GameState::Title:
 		if (wnd.kbd.KeyIsPressed('Q'))
 		{
-			Field.ClearField();
-			Field.SetField(9, 9, 10);
+			Field = new MineField(MineField::Difficulty::Beginner);
 			gameState = GameState::Play;
 		}
 
 		if (wnd.kbd.KeyIsPressed('W'))
 		{
-			Field.ClearField();
-			Field.SetField(16, 16, 40);
+			Field = new MineField(MineField::Difficulty::Intermediate);
 			gameState = GameState::Play;
 		}
 
 		if (wnd.kbd.KeyIsPressed('E'))
 		{
-			Field.ClearField();
-			Field.SetField(16, 30, 99);
+			Field = new MineField(MineField::Difficulty::Expert);
 			gameState = GameState::Play;
 		}
 
@@ -78,17 +74,18 @@ void Game::UpdateModel(float dt)
 			switch (e.GetType())
 			{
 			case Mouse::Event::Type::LRelease:
-				Field.RevealTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+				Field->RevealTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
 				break;
 
 			case Mouse::Event::Type::RRelease:
-				Field.SusTile(Field.MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+				Field->SusTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
 			}
 		}
 
 		if (wnd.kbd.KeyIsPressed(VK_ESCAPE))
 		{
 			gameState = GameState::Title;
+			delete Field;
 		}
 
 		break;
@@ -107,7 +104,7 @@ void Game::ComposeFrame()
 		break;
 
 	case GameState::Play:
-		Field.Draw(gfx);
+		Field->Draw(gfx);
 		break;
 	}
 }

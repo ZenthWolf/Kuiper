@@ -52,5 +52,5 @@ private:
 
 	GameState gameState = GameState::Title;
 	FrameTimer ft;
-	MineField Field;
+	MineField* Field;
 };
