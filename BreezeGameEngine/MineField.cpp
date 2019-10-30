@@ -14,6 +14,7 @@ MineField::MineField( int mines )
 
 void MineField::SetField(int rows, int cols, int mines)
 {
+	FreeMove = true;
 	Rows = rows;
 	Columns = cols;
 	Mines = mines;

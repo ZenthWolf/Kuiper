@@ -72,7 +72,7 @@ private:
 						 Colors::Black
 	                    };
 	Color BombColor = Colors::Black;
-	bool FreeMove = true;
+	bool FreeMove;
 	int Mines;
 
 	Beveler Bev;
