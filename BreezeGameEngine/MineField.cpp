@@ -151,9 +151,9 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 
 		if (targ.hasContents() == Tile::Contents::Empty && targ.GetAdj() == 0)
 		{
-			for (int i = max(tpos.X - 1, 0); i <= min((tpos.X + 1), Columns); i++)
+			for (int i = max(tpos.X - 1, 0); i <= min((tpos.X + 1), Columns-1); i++)
 			{
-				for (int j = max(tpos.Y - 1, 0); j <= min((tpos.Y + 1), Rows); j++)
+				for (int j = max(tpos.Y - 1, 0); j <= min((tpos.Y + 1), Rows-1); j++)
 				{
 					RevealTile({ i, j }, rng);
 				}
@@ -191,9 +191,9 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 			if (tile[j * Columns + i].hasContents() == Tile::Contents::Empty)
 			{
 				int adj = 0;
-				for (int x = max(i - 1, 0); x <= min(i + 1, Columns); x++)
+				for (int x = max(i - 1, 0); x <= min(i + 1, Columns-1); x++)
 				{
-					for (int y = max(j - 1, 0); y <= min(j + 1, Rows); y++)
+					for (int y = max(j - 1, 0); y <= min(j + 1, Rows-1); y++)
 					{
 						if (tile[y * Columns + x].hasContents() == Tile::Contents::Mine)
 						{
