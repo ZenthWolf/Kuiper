@@ -18,8 +18,8 @@
 #include <wrl.h>
 #include "BreezeException.h"
 #include "Colors.h"
-
 #include "RectF.h"
+#include "Surface.h"
 
 class Graphics
 {
@@ -65,6 +65,8 @@ public:
 	void DrawURIsoTri(int x, int y, int size, Color C);
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
+
+	void DrawSprite(int x, int y, const Surface& S);
 	
 	~Graphics();
 private:

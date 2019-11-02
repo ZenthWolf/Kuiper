@@ -434,6 +434,20 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 	}
 }
 
+void Graphics::DrawSprite(int x, int y, const Surface& S)
+{
+	const int width = S.Width();
+	const int height = S.Height();
+
+	for (int sy = 0; sy < height; sy++)
+	{
+		for (int sx = 0; sx < width; sx++)
+		{
+			PutPixel(x + sx, y + sy, S.GetPixel(sx, sy));
+		}
+	}
+}
+
 //////////////////////////////////////////////////
 //           Graphics Exception
 Graphics::Exception::Exception(HRESULT hr, const std::wstring& note, const wchar_t* file, unsigned int line)

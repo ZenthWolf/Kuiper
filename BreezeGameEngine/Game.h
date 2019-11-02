@@ -19,6 +19,7 @@
 #include "FrameTimer.h"
 #include <chrono>
 #include "Sound.h"
+#include "Surface.h"
 
 
 class Game
@@ -41,5 +42,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+//	Surface surf = Surface( "Images\\link90x90.bmp" );
+	Surface surf = Surface("dib32.bmp");
 	FrameTimer ft;
 };
