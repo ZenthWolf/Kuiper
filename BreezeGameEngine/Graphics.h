@@ -56,6 +56,7 @@ public:
 	void PutPixel(int x, int y, Color c);
 
 	void SwapIfGrtr(int& a, int& b);
+	RectI ScreenRect();
 	void DrawRect(int x0, int y0, int x1, int y2, Color c);
 	void DrawRect(RectI Rect, Color c);
 	void DrawRect(RectF Rect, Color c);
@@ -71,6 +72,7 @@ public:
 
 	void DrawSprite(int x, int y, const Surface& S);
 	void DrawSprite(int x, int y, const RectI& srcRect, const Surface& S);
+	void DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S);
 	
 	~Graphics();
 private:

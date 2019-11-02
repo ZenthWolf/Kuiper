@@ -311,9 +311,9 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	SwapIfGrtr(x0, x1);
 	SwapIfGrtr(y0, y1);
 
-	for (int x = x0; x <= x1; x++)
+	for (int x = x0; x < x1; x++)
 	{
-		for (int y = y0; y <= y1; y++)
+		for (int y = y0; y < y1; y++)
 		{
 			PutPixel(x, y, c);
 		}
@@ -410,6 +410,11 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 	}
 }
 
+RectI Graphics::ScreenRect()
+{
+	return { 0, 0, ScreenWidth, ScreenHeight };
+}
+
 void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
 {
 	for (int j = 0; j < size; j++)
@@ -456,28 +461,41 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 
 void Graphics::DrawSprite(int x, int y, const Surface& S)
 {
-	const int width = S.Width();
-	const int height = S.Height();
-
-	for (int sy = 0; sy < height; sy++)
-	{
-		for (int sx = 0; sx < width; sx++)
-		{
-			PutPixel(x + sx, y + sy, S.GetPixel(sx, sy));
-		}
-	}
+	DrawSprite(x, y, S.Rect(), ScreenRect(), S);
 }
 
 void Graphics::DrawSprite(int x, int y, const RectI& srcRect, const Surface& S)
 {
-	const int width = srcRect.width();
-	const int height = srcRect.height();
+	DrawSprite(x, y, srcRect, ScreenRect(), S);
+}
 
-	for (int sy = 0; sy < height; sy++)
+void Graphics::DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S)
+{
+	if (x < clip.X0)
 	{
-		for (int sx = 0; sx < width; sx++)
+		srcRect.X0 += clip.X0 - x;
+		x = clip.X0;
+	}
+	else if (x + srcRect.width() >= clip.X1)
+	{
+		srcRect.X1 -= x + srcRect.width() - clip.X1;
+	}
+
+	if (y < clip.Y0)
+	{
+		srcRect.Y0 += clip.Y0 - y;
+		y = clip.Y0;
+	}
+	else if (y + srcRect.height() >= clip.Y1)
+	{
+		srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+	}
+
+	for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+	{
+		for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
 		{
-			PutPixel(x + sx, y + sy, S.GetPixel(sx+srcRect.X0, sy+srcRect.Y0));
+			PutPixel(x + sx - srcRect.X0, y + sy - srcRect.Y0, S.GetPixel(sx, sy));
 		}
 	}
 }

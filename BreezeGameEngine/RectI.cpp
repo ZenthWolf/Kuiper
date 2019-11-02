@@ -31,12 +31,12 @@ bool RectI::CollWith(const RectI& Targ) const
 
 int RectI::width() const
 {
-	return abs(X1 - X0);
+	return X1 - X0;
 }
 
 int RectI::height() const
 {
-	return abs(Y1 - Y0);
+	return Y1 - Y0;
 }
 
 RectI RectI::GetExpand(int offset) const

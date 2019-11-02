@@ -52,5 +52,9 @@ void Game::ComposeFrame()
 {
 	gfx.DrawRect(RectI(0, 0, 100, 200), Colors::Cyan);
 	gfx.DrawRect(RectI(0, 0, 200, 100), Colors::Cyan);
-	gfx.DrawSprite(100, 100, RectI(64, 48, 96, 96), surf);
+
+	int x = wnd.mouse.GetPosX();
+	int y = wnd.mouse.GetPosY();
+
+	gfx.DrawSprite(x, y, RectI(64, 48, 96, 96), surf);
 }

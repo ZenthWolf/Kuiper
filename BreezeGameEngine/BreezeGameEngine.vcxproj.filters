@@ -69,10 +69,13 @@
     <ClInclude Include="RectI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MineField.h">
+    <ClInclude Include="Surface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Surface.h">
+    <ClInclude Include="Vec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RectF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -113,10 +116,13 @@
     <ClCompile Include="RectI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MineField.cpp">
+    <ClCompile Include="Surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Surface.cpp">
+    <ClCompile Include="Vec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RectF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
