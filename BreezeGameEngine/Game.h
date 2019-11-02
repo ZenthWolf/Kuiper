@@ -19,6 +19,7 @@
 #include "FrameTimer.h"
 #include <chrono>
 #include "Sound.h"
+#include <random>
 #include "Surface.h"
 
 
@@ -35,13 +36,20 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
-
+	enum class GameState
+	{
+		Title,
+		Play
+	};
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	std::mt19937 rng;
+	GameState gameState = GameState::Title;
+
 //	Surface surf = Surface( "Images\\link90x90.bmp" );
 	Surface surf = Surface("dib32.bmp");
 	FrameTimer ft;

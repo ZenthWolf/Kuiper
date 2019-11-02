@@ -63,10 +63,13 @@
     <ClInclude Include="Beveler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RectF.h">
+    <ClInclude Include="VecI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vec.h">
+    <ClInclude Include="RectI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MineField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Surface.h">
@@ -104,10 +107,13 @@
     <ClCompile Include="Beveler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RectF.cpp">
+    <ClCompile Include="VecI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vec.cpp">
+    <ClCompile Include="RectI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MineField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Surface.cpp">
