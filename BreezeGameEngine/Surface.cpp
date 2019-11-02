@@ -30,10 +30,10 @@ Surface::Surface(std::string filename)
 
 	/* first bitmap points are image BOTTOM */
 	int imagesgn = spriteInfo.biHeight / height;
-	int imagetop = (abs(height) + imagesgn * height - 1) / 2;
-	int imagebot = (abs(height) - imagesgn * height - 1) / 2;
+	int imagetop = (height + imagesgn * height - 1) / 2;
+	int imagebot = (height - imagesgn * height - 1) / 2;
 	int bitcount = spriteInfo.biBitCount;
-	for (int y =  imagetop; y != imagebot; y -= imagesgn)
+	for (int y =  imagetop; y != imagebot - imagesgn; y -= imagesgn)
 	{
 		for (int x = 0; x < width; x++)
 		{

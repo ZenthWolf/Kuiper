@@ -70,6 +70,7 @@ public:
 	void DrawDRIsoTri(int x, int y, int size, Color C);
 
 	void DrawSprite(int x, int y, const Surface& S);
+	void DrawSprite(int x, int y, const RectI& srcRect, const Surface& S);
 	
 	~Graphics();
 private:
