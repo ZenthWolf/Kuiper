@@ -70,9 +70,12 @@ public:
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
 
-	void DrawSprite(int x, int y, const Surface& S);
-	void DrawSprite(int x, int y, const RectI& srcRect, const Surface& S);
-	void DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S);
+	void DrawSprite(int x, int y, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSprite(int x, int y, const RectI& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteNonChrom(int x, int y, const Surface& S);
+	void DrawSpriteNonChrom(int x, int y, const RectI& srcRect, const Surface& S);
+	void DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip, const Surface& S);
 	
 	~Graphics();
 private:
