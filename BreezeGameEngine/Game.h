@@ -41,6 +41,7 @@ private:
 		Title,
 		Play
 	};
+
 private:
 	MainWindow& wnd;
 	Graphics gfx;
@@ -51,6 +52,6 @@ private:
 	GameState gameState = GameState::Title;
 
 //	Surface surf = Surface( "Images\\link90x90.bmp" );
-	Surface surf = Surface("dib32.bmp");
+	Surface surf = Surface("marle32x48.bmp");
 	FrameTimer ft;
 };
