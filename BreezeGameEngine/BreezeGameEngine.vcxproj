@@ -129,7 +129,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Beveler.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="COMInitializer.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Graphics.h" />
@@ -151,7 +153,9 @@
     <ClInclude Include="MainWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Beveler.cpp" />
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />

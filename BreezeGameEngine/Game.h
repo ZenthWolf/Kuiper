@@ -20,7 +20,7 @@
 #include <chrono>
 #include "Sound.h"
 #include <random>
-#include "Surface.h"
+#include "Character.h"
 
 
 class Game
@@ -45,13 +45,12 @@ private:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+	FrameTimer ft;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
 	std::mt19937 rng;
 	GameState gameState = GameState::Title;
 
-//	Surface surf = Surface( "Images\\link90x90.bmp" );
-	Surface surf = Surface("marle32x48.bmp");
-	FrameTimer ft;
+	Character link = Character({ 100.0f, 100.0f });
 };

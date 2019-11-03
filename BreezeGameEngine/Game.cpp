@@ -44,7 +44,26 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
+	Vec dir = { 0.0f, 0.0f };
+	if (wnd.kbd.KeyIsPressed(VK_UP))
+	{
+		dir.Y -= 1.0f;
+	}
+	if (wnd.kbd.KeyIsPressed(VK_DOWN))
+	{
+		dir.Y += 1.0f;
+	}
+	if (wnd.kbd.KeyIsPressed(VK_LEFT))
+	{
+		dir.X -= 1.0f;
+	}
+	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+	{
+		dir.X += 1.0f;
+	}
 
+	link.SetDir(dir);
+	link.Update(dt);
 }
 
 
@@ -53,8 +72,5 @@ void Game::ComposeFrame()
 	gfx.DrawRect(RectI(0, 0, 100, 200), Colors::Cyan);
 	gfx.DrawRect(RectI(0, 0, 200, 100), Colors::Cyan);
 
-	int x = wnd.mouse.GetPosX();
-	int y = wnd.mouse.GetPosY();
-
-	gfx.DrawSprite(x, y, RectI(64, 48, 96, 96), surf);
+	link.Draw(gfx);
 }

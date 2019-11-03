@@ -72,11 +72,17 @@
     <ClInclude Include="Surface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RectF.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec.h">
+      <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +129,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RectF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

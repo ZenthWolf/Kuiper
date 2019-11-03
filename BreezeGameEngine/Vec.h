@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VecI.h"
+
 class Vec
 {
 public:
@@ -13,6 +15,7 @@ public:
 	Vec& operator-=(const Vec& rhs);
 	Vec operator*(const float scale) const;
 	Vec Norm() const;
+	explicit operator VecI() const;
 
 public:
 	float X;
