@@ -15,7 +15,7 @@ public:
 private:
 	void Advance();
 
-	Color chroma;
+	Color chromakey;
 	const Surface& sprite;
 	std::vector<Rect<int>> frame;
 	int iCurFrame = 0;

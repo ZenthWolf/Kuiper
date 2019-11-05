@@ -29,5 +29,5 @@ private:
 	Vec<float> vel = { 0.0f, 0.0f };
 	std::vector<Animation> animation;
 	Sequence curSeq = Sequence::StandingDown;
-	float speed = 60.0f;
+	float speed = 100.0f;
 };

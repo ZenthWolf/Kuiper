@@ -1,8 +1,9 @@
 #include "Animation.h"
+#include "SpriteEffect.h"
 
 Animation::Animation( int x0, int y0, int width, int height, int framecount,
 	                  const Surface& sprite, float holdTime, Color chroma)
-	: chroma(chroma), sprite(sprite), holdTime(holdTime)
+	: chromakey(chroma), sprite(sprite), holdTime(holdTime)
 {
 	frame.reserve(framecount);
 	for (int i = 0; i < framecount; i++)
@@ -22,12 +23,12 @@ void Animation::Update(float dt)
 
 void Animation::Draw(const Vec<int>& pos, Graphics& gfx) const
 {
-	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, chroma);
+	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Chroma(chromakey));
 }
 
 void Animation::Draw(const Vec<int>& pos, Graphics& gfx, Rect<int>& clip) const
 {
-	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], clip, sprite, chroma);
+	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], clip, sprite, SpriteEffect::Chroma(chromakey));
 }
 
 void Animation::Advance()

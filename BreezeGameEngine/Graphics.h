@@ -53,6 +53,7 @@ public:
 		PutPixel(x, y, { unsigned char(r), unsigned char(g), unsigned char(b) });
 	}
 	void PutPixel(int x, int y, Color c);
+	Color GetPixel(int x, int y);
 
 	void SwapIfGrtr(int& a, int& b);
 	Rect<int> ScreenRect();
@@ -69,16 +70,56 @@ public:
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
 
-	void DrawSprite(int x, int y, const Surface& S, Color chromakey = Colors::Magenta);
-	void DrawSprite(int x, int y, const Rect<int>& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
-	void DrawSprite(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, Color chromakey = Colors::Magenta);
-	void DrawSpriteNonChrom(int x, int y, const Surface& S);
-	void DrawSpriteNonChrom(int x, int y, const Rect<int>& srcRect, const Surface& S);
-	void DrawSpriteNonChrom(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S);
-	/** Subs ALL colors for a font **/
-	void DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color chromakey = Colors::Magenta);
-	void DrawSpriteSubs(int x, int y, Color subs, const Rect<int>& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
-	void DrawSpriteSubs(int x, int y, Color subs, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, Color chromakey = Colors::Magenta);
+	template<typename E>
+	void DrawSprite(int x, int y, const Surface& S, E effect)
+	{
+		DrawSprite(x, y, S.Rect(), ScreenRect(), S, effect);
+	}
+
+	template<typename E>
+	void DrawSprite(int x, int y, const Rect<int>& srcRect, const Surface& S, E effect)
+	{
+		DrawSprite(x, y, srcRect, ScreenRect(), S, effect);
+	}
+
+	template<typename E>
+	void DrawSprite(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, E effect)
+	{
+		if (x < clip.X0)
+		{
+			srcRect.X0 += clip.X0 - x;
+			x = clip.X0;
+		}
+		else if (x + srcRect.width() >= clip.X1)
+		{
+			srcRect.X1 -= x + srcRect.width() - clip.X1;
+		}
+
+		if (y < clip.Y0)
+		{
+			srcRect.Y0 += clip.Y0 - y;
+			y = clip.Y0;
+		}
+		else if (y + srcRect.height() >= clip.Y1)
+		{
+			srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+		}
+
+		for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+		{
+			for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+			{
+				effect
+				(
+					S.GetPixel(sx, sy),
+					x + sx - srcRect.X0,
+					y + sy - srcRect.Y0,
+					*this
+				);
+			}
+		}
+	}
+
 
 	~Graphics();
 private:
