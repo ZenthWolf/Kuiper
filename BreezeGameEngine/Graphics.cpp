@@ -548,6 +548,51 @@ void Graphics::DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip
 	}
 }
 
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color chromakey )
+{
+	DrawSpriteSubs(x, y, subs, S.Rect(), ScreenRect(), S);
+}
+
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, const RectI& srcRect, const Surface& S, Color chromakey )
+{
+	DrawSpriteSubs( x, y, subs, srcRect, ScreenRect(), S, chromakey);
+}
+
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey )
+{
+	if (x < clip.X0)
+	{
+		srcRect.X0 += clip.X0 - x;
+		x = clip.X0;
+	}
+	else if (x + srcRect.width() >= clip.X1)
+	{
+		srcRect.X1 -= x + srcRect.width() - clip.X1;
+	}
+
+	if (y < clip.Y0)
+	{
+		srcRect.Y0 += clip.Y0 - y;
+		y = clip.Y0;
+	}
+	else if (y + srcRect.height() >= clip.Y1)
+	{
+		srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+	}
+
+	for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+	{
+		for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+		{
+			Color pix = S.GetPixel(sx, sy);
+			if (chromakey != pix)
+			{
+				PutPixel(x + sx - srcRect.X0, y + sy - srcRect.Y0, subs);
+			}
+		}
+	}
+}
+
 //////////////////////////////////////////////////
 //           Graphics Exception
 Graphics::Exception::Exception(HRESULT hr, const std::wstring& note, const wchar_t* file, unsigned int line)

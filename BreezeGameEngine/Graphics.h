@@ -76,7 +76,11 @@ public:
 	void DrawSpriteNonChrom(int x, int y, const Surface& S);
 	void DrawSpriteNonChrom(int x, int y, const RectI& srcRect, const Surface& S);
 	void DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip, const Surface& S);
-	
+	/** Subs ALL colors for a font **/
+	void DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteSubs(int x, int y, Color subs, const RectI& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteSubs(int x, int y, Color subs, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey = Colors::Magenta);
+
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;

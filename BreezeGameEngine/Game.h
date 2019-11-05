@@ -21,6 +21,7 @@
 #include "Sound.h"
 #include <random>
 #include "Character.h"
+#include "Font.h"
 
 
 class Game
@@ -53,4 +54,5 @@ private:
 	GameState gameState = GameState::Title;
 
 	Character link = Character({ 100.0f, 100.0f });
+	Font font = "Images//Fixedsys16x28.bmp";
 };
