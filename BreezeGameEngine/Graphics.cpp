@@ -320,12 +320,12 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	}
 }
 
-void Graphics::DrawRect(RectF Rect, Color c)
+void Graphics::DrawRect(Rect<float> Rect, Color c)
 {
 	DrawRect(int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c);
 }
 
-void Graphics::DrawRect(RectI Rect, Color c)
+void Graphics::DrawRect(Rect<int> Rect, Color c)
 {
 	DrawRect( int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c );
 }
@@ -369,7 +369,7 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 	}
 }
 
-void Graphics::DrawCirc(VecI pos, int r, Color c)
+void Graphics::DrawCirc(Vec<int> pos, int r, Color c)
 {
 	int rsq = r * r;
 	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)
@@ -384,14 +384,14 @@ void Graphics::DrawCirc(VecI pos, int r, Color c)
 	}
 }
 
-void Graphics::DrawCirc(Vec pos, int r, Color c)
+void Graphics::DrawCirc(Vec<float> pos, float r, Color c)
 {
-	int rsq = r * r;
-	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)
+	float rsq = r * r;
+	for (int y = int(pos.Y) - int(r) + 1; y < int(pos.Y) + int(r); y++)
 	{
-		for (int x = pos.X - r + 1; x < pos.X + r; x++)
+		for (int x = int(pos.X) - int(r) + 1; x < int(pos.X) + int(r); x++)
 		{
-			if ((x - pos.X) * (x - pos.X) + (y - pos.Y) * (y - pos.Y) <= rsq)
+			if ((float(x) - pos.X) * (float(x) - pos.X) + (float(y) - pos.Y) * (float(y) - pos.Y) <= rsq)
 			{
 				PutPixel(x, y, c);
 			}
@@ -410,7 +410,7 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 	}
 }
 
-RectI Graphics::ScreenRect()
+Rect<int> Graphics::ScreenRect()
 {
 	return { 0, 0, ScreenWidth, ScreenHeight };
 }
@@ -465,12 +465,12 @@ void Graphics::DrawSprite(int x, int y, const Surface& S, Color chromakey)
 	DrawSprite(x, y, S.Rect(), ScreenRect(), S, chromakey);
 }
 
-void Graphics::DrawSprite(int x, int y, const RectI& srcRect, const Surface& S, Color chromakey)
+void Graphics::DrawSprite(int x, int y, const Rect<int>& srcRect, const Surface& S, Color chromakey)
 {
 	DrawSprite(x, y, srcRect, ScreenRect(), S, chromakey);
 }
 
-void Graphics::DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey)
+void Graphics::DrawSprite(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, Color chromakey)
 {
 	if (x < clip.X0)
 	{
@@ -512,12 +512,12 @@ void Graphics::DrawSpriteNonChrom(int x, int y, const Surface& S)
 	DrawSpriteNonChrom(x, y, S.Rect(), ScreenRect(), S);
 }
 
-void Graphics::DrawSpriteNonChrom(int x, int y, const RectI& srcRect, const Surface& S)
+void Graphics::DrawSpriteNonChrom(int x, int y, const Rect<int>& srcRect, const Surface& S)
 {
 	DrawSpriteNonChrom(x, y, srcRect, ScreenRect(), S);
 }
 
-void Graphics::DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip, const Surface& S)
+void Graphics::DrawSpriteNonChrom(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S)
 {
 	if (x < clip.X0)
 	{
@@ -553,12 +553,12 @@ void Graphics::DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color 
 	DrawSpriteSubs(x, y, subs, S.Rect(), ScreenRect(), S);
 }
 
-void Graphics::DrawSpriteSubs(int x, int y, Color subs, const RectI& srcRect, const Surface& S, Color chromakey )
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, const Rect<int>& srcRect, const Surface& S, Color chromakey )
 {
 	DrawSpriteSubs( x, y, subs, srcRect, ScreenRect(), S, chromakey);
 }
 
-void Graphics::DrawSpriteSubs(int x, int y, Color subs, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey )
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, Color chromakey )
 {
 	if (x < clip.X0)
 	{

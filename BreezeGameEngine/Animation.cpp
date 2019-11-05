@@ -20,12 +20,12 @@ void Animation::Update(float dt)
 	}
 }
 
-void Animation::Draw(const VecI& pos, Graphics& gfx) const
+void Animation::Draw(const Vec<int>& pos, Graphics& gfx) const
 {
 	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, chroma);
 }
 
-void Animation::Draw(const VecI& pos, Graphics& gfx, RectI& clip) const
+void Animation::Draw(const Vec<int>& pos, Graphics& gfx, Rect<int>& clip) const
 {
 	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], clip, sprite, chroma);
 }

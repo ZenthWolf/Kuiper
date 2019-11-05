@@ -10,7 +10,7 @@ Font::Font(const std::string& filename, Color chroma)
 	assert(glyphHeight * nRows == fontSheet.Height());
 }
 
-void Font::DrawText(const std::string& text, const VecI& pos, Color fontCol, Graphics& gfx)
+void Font::DrawText(const std::string& text, const Vec<int>& pos, Color fontCol, Graphics& gfx)
 {
 	auto curPos = pos;
 	for (auto c : text)
@@ -29,12 +29,12 @@ void Font::DrawText(const std::string& text, const VecI& pos, Color fontCol, Gra
 	}
 }
 
-RectI Font::MapGlyphRect(char c) const
+Rect<int> Font::MapGlyphRect(char c) const
 {
 	assert(c >= firstChar && c <= lastChar);
 	const int glyphIndex = c - firstChar;
 	const int glyphX = glyphIndex % nColumns;
 	const int glyphY = glyphIndex / nColumns;
 
-	return RectI({ glyphX * glyphyWidth, glyphY * glyphHeight }, { glyphX * glyphyWidth + glyphyWidth, glyphY * glyphHeight + glyphHeight });
+	return Rect<int>({ glyphX * glyphyWidth, glyphY * glyphHeight }, { glyphX * glyphyWidth + glyphyWidth, glyphY * glyphHeight + glyphHeight });
 }

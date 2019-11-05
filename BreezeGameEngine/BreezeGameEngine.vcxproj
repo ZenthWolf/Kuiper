@@ -140,15 +140,13 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="BreezeException.h" />
-    <ClInclude Include="RectF.h" />
-    <ClInclude Include="RectI.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="Surface.h" />
-    <ClInclude Include="VecI.h" />
     <ClInclude Include="Vec.h" />
     <ClInclude Include="WinDefs.h" />
     <ClInclude Include="MainWindow.h" />
@@ -166,11 +164,7 @@
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
-    <ClCompile Include="RectF.cpp" />
-    <ClCompile Include="RectI.cpp" />
     <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="VecI.cpp" />
-    <ClCompile Include="Vec.cpp" />
     <ClCompile Include="Surface.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -2,17 +2,17 @@
 
 #include "Graphics.h"
 #include "Surface.h"
-#include "VecI.h"
+#include "Rect.h"
 #undef DrawText
 
 class Font
 {
 public:
 	Font(const std::string& filename, Color chroma = Colors::White);
-	void DrawText(const std::string& text, const VecI& pos, Color fontCol, Graphics& gfx);
+	void DrawText(const std::string& text, const Vec<int>& pos, Color fontCol, Graphics& gfx);
 
 private:
-	RectI MapGlyphRect(char c) const;
+	Rect<int> MapGlyphRect(char c) const;
 
 	Surface fontSheet;
 	/** Fixed Font width **/

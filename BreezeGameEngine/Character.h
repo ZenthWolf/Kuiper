@@ -19,14 +19,14 @@ private:
 		Count
 	};
 public:
-	Character(const Vec& pos);
+	Character(const Vec<float>& pos);
 	void Draw( Graphics& gfx ) const;
-	void SetDir( const Vec& dir );
+	void SetDir( const Vec<float>& dir );
 	void Update(float dt);
 private:
 	Surface sprite;
-	Vec pos;
-	Vec vel = { 0.0f, 0.0f };
+	Vec<float> pos;
+	Vec<float> vel = { 0.0f, 0.0f };
 	std::vector<Animation> animation;
 	Sequence curSeq = Sequence::StandingDown;
 	float speed = 60.0f;

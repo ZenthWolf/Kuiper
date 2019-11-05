@@ -1,6 +1,6 @@
 #include "Character.h"
 
-Character::Character(const Vec& pos)
+Character::Character(const Vec<float>& pos)
 	:pos(pos), sprite("Images//link90x90.bmp")
 {
 	for (int i = 0; i < (int)Sequence::StandingLeft; i++)
@@ -16,10 +16,10 @@ Character::Character(const Vec& pos)
 
 void Character::Draw(Graphics& gfx) const
 {
-	animation[(int)curSeq].Draw(VecI(pos), gfx);
+	animation[(int)curSeq].Draw( Vec<int>(pos), gfx );
 }
 
-void Character::SetDir(const Vec& dir)
+void Character::SetDir(const Vec<float>& dir)
 {
 	if (dir.X > 0.0f)
 	{
