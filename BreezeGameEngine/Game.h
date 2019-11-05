@@ -19,6 +19,9 @@
 #include "FrameTimer.h"
 #include <chrono>
 #include "Sound.h"
+#include <random>
+#include "Character.h"
+#include "Font.h"
 
 
 class Game
@@ -34,12 +37,22 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
+	enum class GameState
+	{
+		Title,
+		Play
+	};
 
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+	FrameTimer ft;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
-	FrameTimer ft;
+	std::mt19937 rng;
+	GameState gameState = GameState::Title;
+
+	Character link = Character({ 100.0f, 100.0f });
+	Font font = "Images//Fixedsys16x28.bmp";
 };

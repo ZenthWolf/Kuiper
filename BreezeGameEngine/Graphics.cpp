@@ -311,9 +311,9 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	SwapIfGrtr(x0, x1);
 	SwapIfGrtr(y0, y1);
 
-	for (int x = x0; x <= x1; x++)
+	for (int x = x0; x < x1; x++)
 	{
-		for (int y = y0; y <= y1; y++)
+		for (int y = y0; y < y1; y++)
 		{
 			PutPixel(x, y, c);
 		}
@@ -321,6 +321,11 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 }
 
 void Graphics::DrawRect(RectF Rect, Color c)
+{
+	DrawRect(int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c);
+}
+
+void Graphics::DrawRect(RectI Rect, Color c)
 {
 	DrawRect( int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c );
 }
@@ -364,6 +369,21 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 	}
 }
 
+void Graphics::DrawCirc(VecI pos, int r, Color c)
+{
+	int rsq = r * r;
+	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)
+	{
+		for (int x = pos.X - r + 1; x < pos.X + r; x++)
+		{
+			if ((x - pos.X) * (x - pos.X) + (y - pos.Y) * (y - pos.Y) <= rsq)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
+}
+
 void Graphics::DrawCirc(Vec pos, int r, Color c)
 {
 	int rsq = r * r;
@@ -388,6 +408,11 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 		a = b;
 		b = temp;
 	}
+}
+
+RectI Graphics::ScreenRect()
+{
+	return { 0, 0, ScreenWidth, ScreenHeight };
 }
 
 void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
@@ -430,6 +455,140 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 		for (int i = size-j; i <= size; i++)
 		{
 			PutPixel(x + i, y + j, C);
+		}
+	}
+}
+
+/*** Chromakeyed Sprites ***/
+void Graphics::DrawSprite(int x, int y, const Surface& S, Color chromakey)
+{
+	DrawSprite(x, y, S.Rect(), ScreenRect(), S, chromakey);
+}
+
+void Graphics::DrawSprite(int x, int y, const RectI& srcRect, const Surface& S, Color chromakey)
+{
+	DrawSprite(x, y, srcRect, ScreenRect(), S, chromakey);
+}
+
+void Graphics::DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey)
+{
+	if (x < clip.X0)
+	{
+		srcRect.X0 += clip.X0 - x;
+		x = clip.X0;
+	}
+	else if (x + srcRect.width() >= clip.X1)
+	{
+		srcRect.X1 -= x + srcRect.width() - clip.X1;
+	}
+
+	if (y < clip.Y0)
+	{
+		srcRect.Y0 += clip.Y0 - y;
+		y = clip.Y0;
+	}
+	else if (y + srcRect.height() >= clip.Y1)
+	{
+		srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+	}
+
+	for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+	{
+		for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+		{
+			Color pix = S.GetPixel(sx, sy);
+			if (chromakey != pix)
+			{
+				PutPixel(x + sx - srcRect.X0, y + sy - srcRect.Y0, pix);
+			}
+		}
+	}
+}
+
+
+/*** Nonchromakeyed Sprites ***/
+void Graphics::DrawSpriteNonChrom(int x, int y, const Surface& S)
+{
+	DrawSpriteNonChrom(x, y, S.Rect(), ScreenRect(), S);
+}
+
+void Graphics::DrawSpriteNonChrom(int x, int y, const RectI& srcRect, const Surface& S)
+{
+	DrawSpriteNonChrom(x, y, srcRect, ScreenRect(), S);
+}
+
+void Graphics::DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip, const Surface& S)
+{
+	if (x < clip.X0)
+	{
+		srcRect.X0 += clip.X0 - x;
+		x = clip.X0;
+	}
+	else if (x + srcRect.width() >= clip.X1)
+	{
+		srcRect.X1 -= x + srcRect.width() - clip.X1;
+	}
+
+	if (y < clip.Y0)
+	{
+		srcRect.Y0 += clip.Y0 - y;
+		y = clip.Y0;
+	}
+	else if (y + srcRect.height() >= clip.Y1)
+	{
+		srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+	}
+
+	for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+	{
+		for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+		{
+			PutPixel(x + sx - srcRect.X0, y + sy - srcRect.Y0, S.GetPixel(sx, sy));
+		}
+	}
+}
+
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color chromakey )
+{
+	DrawSpriteSubs(x, y, subs, S.Rect(), ScreenRect(), S);
+}
+
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, const RectI& srcRect, const Surface& S, Color chromakey )
+{
+	DrawSpriteSubs( x, y, subs, srcRect, ScreenRect(), S, chromakey);
+}
+
+void Graphics::DrawSpriteSubs(int x, int y, Color subs, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey )
+{
+	if (x < clip.X0)
+	{
+		srcRect.X0 += clip.X0 - x;
+		x = clip.X0;
+	}
+	else if (x + srcRect.width() >= clip.X1)
+	{
+		srcRect.X1 -= x + srcRect.width() - clip.X1;
+	}
+
+	if (y < clip.Y0)
+	{
+		srcRect.Y0 += clip.Y0 - y;
+		y = clip.Y0;
+	}
+	else if (y + srcRect.height() >= clip.Y1)
+	{
+		srcRect.Y1 -= y + srcRect.height() - clip.Y1;
+	}
+
+	for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+	{
+		for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+		{
+			Color pix = S.GetPixel(sx, sy);
+			if (chromakey != pix)
+			{
+				PutPixel(x + sx - srcRect.X0, y + sy - srcRect.Y0, subs);
+			}
 		}
 	}
 }

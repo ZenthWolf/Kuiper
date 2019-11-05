@@ -52,6 +52,11 @@ Vec Vec::Norm() const
 	return {X/mag, Y/mag};
 }
 
+Vec::operator VecI() const
+{
+	return { int(X), int(Y) };
+}
+
 float Vec::GetLengthSq() const
 {
 	return X * X + Y * Y;

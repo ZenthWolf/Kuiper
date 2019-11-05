@@ -42,6 +42,16 @@ public:
 		return *this;
 	}
 
+	bool operator ==(const Color& rhs) const
+	{
+		return dword == rhs.dword;
+	}
+
+	bool operator !=(const Color& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 	constexpr unsigned char GetX() const
 	{
 		return dword >> 24u;
@@ -106,4 +116,5 @@ namespace Colors
 	static constexpr Color Yellow = MakeRGB(255u, 255u, 0u);
 	static constexpr Color Cyan = MakeRGB(0u, 255u, 255u);
 	static constexpr Color Magenta = MakeRGB(255u, 0u, 255u);
+	static constexpr Color Purple = MakeRGB(255u, 140u, 40u);
 }

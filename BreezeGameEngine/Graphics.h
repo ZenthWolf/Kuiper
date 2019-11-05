@@ -18,8 +18,9 @@
 #include <wrl.h>
 #include "BreezeException.h"
 #include "Colors.h"
-
+#include "RectI.h"
 #include "RectF.h"
+#include "Surface.h"
 
 class Graphics
 {
@@ -55,17 +56,31 @@ public:
 	void PutPixel(int x, int y, Color c);
 
 	void SwapIfGrtr(int& a, int& b);
+	RectI ScreenRect();
 	void DrawRect(int x0, int y0, int x1, int y2, Color c);
+	void DrawRect(RectI Rect, Color c);
 	void DrawRect(RectF Rect, Color c);
 	void DrawCRect(int x0, int y0, int w, int h, Color c);
 	void DrawRectDim(int x0, int y0, int w, int h, Color c);
 	void DrawCirc(int x0, int y0, int r, Color C);
+	void DrawCirc(VecI pos, int r, Color C);
 	void DrawCirc(Vec pos, int r, Color C);
 	void DrawULIsoTri(int x, int y, int size, Color C);
 	void DrawURIsoTri(int x, int y, int size, Color C);
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
-	
+
+	void DrawSprite(int x, int y, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSprite(int x, int y, const RectI& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSprite(int x, int y, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteNonChrom(int x, int y, const Surface& S);
+	void DrawSpriteNonChrom(int x, int y, const RectI& srcRect, const Surface& S);
+	void DrawSpriteNonChrom(int x, int y, RectI srcRect, const RectI& clip, const Surface& S);
+	/** Subs ALL colors for a font **/
+	void DrawSpriteSubs(int x, int y, Color subs, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteSubs(int x, int y, Color subs, const RectI& srcRect, const Surface& S, Color chromakey = Colors::Magenta);
+	void DrawSpriteSubs(int x, int y, Color subs, RectI srcRect, const RectI& clip, const Surface& S, Color chromakey = Colors::Magenta);
+
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
