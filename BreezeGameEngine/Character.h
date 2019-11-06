@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Animation.h"
+#include "Keyboard.h"
 #include "Vec.h"
+#include "Animation.h"
+#include "Ground.h"
 
 class Character
 {
@@ -20,10 +22,12 @@ private:
 	};
 public:
 	Character(const Vec<float>& pos);
-	void Draw(Graphics& gfx) const;
+	void Draw(Graphics& gfx, bool showHitBox = false) const;
 	void Draw(Graphics& gfx, Color sub) const;
 	void SetDir( const Vec<float>& dir );
-	void Update(float dt);
+	void Update(float dt, Ground& gnd, Keyboard& kbd);
+	Rect<float> hitBox();
+
 private:
 	Surface sprite;
 	Vec<float> pos;

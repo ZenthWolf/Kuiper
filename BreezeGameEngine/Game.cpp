@@ -44,26 +44,7 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-	Vec<float> dir = { 0.0f, 0.0f };
-	if (wnd.kbd.KeyIsPressed(VK_UP))
-	{
-		dir.Y -= 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_DOWN))
-	{
-		dir.Y += 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_LEFT))
-	{
-		dir.X -= 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-	{
-		dir.X += 1.0f;
-	}
-
-	link.SetDir(dir);
-	link.Update(dt);
+	link.Update(dt, ground, wnd.kbd);
 }
 
 
@@ -76,9 +57,16 @@ void Game::ComposeFrame()
 	{
 		link.Draw(gfx, Colors::Red);
 	}
+	else if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	{
+		link.Draw(gfx, true);
+	}
 	else
 	{
 		link.Draw(gfx);
 	}
+
+	ground.Draw(gfx);
+
 	font.DrawText("It's alone to be dangerous. . . \nTake-a a-dis!", { 100, 175 }, Color(255, 255, 255), gfx);
 }

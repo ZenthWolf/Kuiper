@@ -20,8 +20,11 @@
 #include <chrono>
 #include "Sound.h"
 #include <random>
-#include "Character.h"
 #include "Font.h"
+
+#include "Character.h"
+#include "Ground.h"
+
 
 
 class Game
@@ -54,5 +57,6 @@ private:
 	GameState gameState = GameState::Title;
 
 	Character link = Character({ 100.0f, 100.0f });
+	Ground ground = Ground(50.0f, gfx.ScreenWidth - 50.0f, gfx.ScreenHeight - 50.0f);
 	Font font = "Images//Fixedsys16x28.bmp";
 };

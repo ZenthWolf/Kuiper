@@ -140,6 +140,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="BreezeException.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Graphics.cpp" />
