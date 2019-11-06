@@ -19,6 +19,11 @@ void Character::Draw(Graphics& gfx) const
 	animation[(int)curSeq].Draw( Vec<int>(pos), gfx );
 }
 
+void Character::Draw(Graphics& gfx, Color sub) const
+{
+	animation[(int)curSeq].Draw(Vec<int>(pos), gfx, sub);
+}
+
 void Character::SetDir(const Vec<float>& dir)
 {
 	if (dir.X > 0.0f)

@@ -72,7 +72,13 @@ void Game::ComposeFrame()
 	gfx.DrawRect(Rect<int>(0, 0, 100, 200), Colors::Cyan);
 	gfx.DrawRect(Rect<int>(0, 0, 200, 100), Colors::Cyan);
 
-	link.Draw(gfx);
-
+	if (wnd.kbd.KeyIsPressed(VK_CONTROL))
+	{
+		link.Draw(gfx, Colors::Red);
+	}
+	else
+	{
+		link.Draw(gfx);
+	}
 	font.DrawText("It's alone to be dangerous. . . \nTake-a a-dis!", { 100, 175 }, Color(255, 255, 255), gfx);
 }

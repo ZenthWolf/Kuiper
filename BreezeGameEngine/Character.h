@@ -20,7 +20,8 @@ private:
 	};
 public:
 	Character(const Vec<float>& pos);
-	void Draw( Graphics& gfx ) const;
+	void Draw(Graphics& gfx) const;
+	void Draw(Graphics& gfx, Color sub) const;
 	void SetDir( const Vec<float>& dir );
 	void Update(float dt);
 private:

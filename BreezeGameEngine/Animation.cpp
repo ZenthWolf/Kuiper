@@ -26,6 +26,11 @@ void Animation::Draw(const Vec<int>& pos, Graphics& gfx) const
 	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Chroma(chromakey));
 }
 
+void Animation::Draw(const Vec<int>& pos, Graphics& gfx, Color sub) const
+{
+	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Substitute(chromakey, sub));
+}
+
 void Animation::Draw(const Vec<int>& pos, Graphics& gfx, Rect<int>& clip) const
 {
 	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], clip, sprite, SpriteEffect::Chroma(chromakey));

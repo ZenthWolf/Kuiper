@@ -11,6 +11,7 @@ public:
 		       const Surface& sprite, float holdTime, Color chroma = Colors::Magenta);
 	void Update(float dt);
 	void Draw(const Vec<int>& pos, Graphics& gfx) const;
+	void Draw(const Vec<int>& pos, Graphics& gfx, Color sub) const;
 	void Draw(const Vec<int>& pos, Graphics& gfx, Rect<int>& clip) const;
 private:
 	void Advance();

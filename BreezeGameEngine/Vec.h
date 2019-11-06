@@ -65,8 +65,8 @@ public:
 		return { X / mag, Y / mag };
 	}
 
-    template<typename S>
-	explicit Vec(const Vec<S> src)
+    template<typename U>
+	explicit Vec(const Vec<U> src)
 	{
 		X = (T)src.X;
 		Y = (T)src.Y;
