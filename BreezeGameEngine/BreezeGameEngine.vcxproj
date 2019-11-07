@@ -23,6 +23,7 @@
     <ProjectGuid>{64264507-F654-432C-9277-52DC81E039E5}</ProjectGuid>
     <RootNamespace>BreezeGameEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Project_FUN</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
