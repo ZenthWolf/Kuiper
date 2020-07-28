@@ -73,7 +73,51 @@ void Character::Update(float dt, Ground gnd)
 
 	if (charcoll.CollWith(gndcoll))
 	{
-		pos.Y = gndcoll.Y0 - 20.0f - (charcoll.height());
+		float Deviance[4]; //0-4 Left, Up, Right, Down
+		float MinDev;
+
+		float UpDeviance = charcoll.Y1 - gndcoll.Y0;
+		if (UpDeviance > 0.0f)
+		{
+			MinDev = UpDeviance;
+		}
+		
+		float LeftDeviance = charcoll.X1 - gndcoll.X0;
+		if (LeftDeviance > 0.0f && LeftDeviance < MinDev)
+		{
+			MinDev = LeftDeviance;
+		}
+		float DownDeviance = gndcoll.Y1 - charcoll.Y0;
+		if (DownDeviance > 0.0f && DownDeviance < MinDev)
+		{
+			MinDev = DownDeviance;
+		}
+		float RightDeviance = gndcoll.X1 - charcoll.X0;
+		if (RightDeviance > 0.0f && RightDeviance < MinDev)
+		{
+			MinDev = RightDeviance;
+		}
+
+		if (MinDev == UpDeviance)
+		{
+			pos.Y += UpDeviance;
+		}
+		else if (MinDev == LeftDeviance)
+		{
+			pos.X -= LeftDeviance;
+		}
+		else if (MinDev == DownDeviance)
+		{
+			pos.Y -= DownDeviance;
+		}
+		else if(MinDev == RightDeviance)
+		{ 
+			pos.X += RightDeviance;
+		}
+		else
+		{
+			//There probably should be an error or something here...
+		}
 	}
 
 	animation[(int)curSeq].Update(dt);

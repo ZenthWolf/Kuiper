@@ -31,8 +31,8 @@ public:
 
 	bool CollWith(const Rect& targ) const
 	{
-		return ((X1 >= targ.X0) && (X0 <= targ.X1)
-			&& (Y1 >= targ.Y0) && (Y0 <= targ.Y1));
+		return ((X1 > targ.X0) && (X0 < targ.X1)
+			&& (Y1 > targ.Y0) && (Y0 < targ.Y1));
 	}
 
 	int width() const
