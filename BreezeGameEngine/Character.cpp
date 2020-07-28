@@ -100,7 +100,7 @@ void Character::Update(float dt, Ground gnd)
 
 		if (MinDev == UpDeviance)
 		{
-			pos.Y += UpDeviance;
+			pos.Y -= UpDeviance;
 		}
 		else if (MinDev == LeftDeviance)
 		{
@@ -108,7 +108,7 @@ void Character::Update(float dt, Ground gnd)
 		}
 		else if (MinDev == DownDeviance)
 		{
-			pos.Y -= DownDeviance;
+			pos.Y += DownDeviance;
 		}
 		else if(MinDev == RightDeviance)
 		{ 

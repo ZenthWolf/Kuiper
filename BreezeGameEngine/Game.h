@@ -55,6 +55,6 @@ private:
 	GameState gameState = GameState::Title;
 
 	Character link = Character({ 100.0f, 100.0f });
-	Ground floor = Ground({ 150.0f, 500.0f }, { 650.f, 600.0f });
+	Ground floor = Ground({ 300.0f, 300.0f }, { 500.f, 500.0f });
 	Font font = "Images//Fixedsys16x28.bmp";
 };
