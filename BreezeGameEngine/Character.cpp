@@ -67,5 +67,13 @@ void Character::SetDir(const Vec<float>& dir)
 void Character::Update(float dt)
 {
 	pos += vel * dt;
+
+	//if()
+
 	animation[(int)curSeq].Update(dt);
+}
+
+Rect<float> Character::GetCollBox()
+{
+	return Rect<float>( pos + Vec<float>(25.0f, 20.0f), pos + Vec<float>(65.0f, 70.0f) );
 }

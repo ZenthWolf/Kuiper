@@ -24,6 +24,8 @@ public:
 	void Draw(Graphics& gfx, Color sub) const;
 	void SetDir( const Vec<float>& dir );
 	void Update(float dt);
+	Rect<float> GetCollBox();
+
 private:
 	Surface sprite;
 	Vec<float> pos;

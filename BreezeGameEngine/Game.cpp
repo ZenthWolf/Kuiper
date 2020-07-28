@@ -74,6 +74,7 @@ void Game::ComposeFrame()
 
 	if (wnd.kbd.KeyIsPressed(VK_CONTROL))
 	{
+		gfx.DrawRect(link.GetCollBox(), Colors::Blue);
 		link.Draw(gfx, Colors::Red);
 	}
 	else
