@@ -2,6 +2,7 @@
 
 #include "Animation.h"
 #include "Vec.h"
+#include "Ground.h"
 
 class Character
 {
@@ -23,7 +24,7 @@ public:
 	void Draw(Graphics& gfx) const;
 	void Draw(Graphics& gfx, Color sub) const;
 	void SetDir( const Vec<float>& dir );
-	void Update(float dt);
+	void Update(float dt, Ground gnd);
 	Rect<float> GetCollBox();
 
 private:

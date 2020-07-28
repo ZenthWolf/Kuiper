@@ -63,7 +63,7 @@ void Game::UpdateModel(float dt)
 	}
 
 	link.SetDir(dir);
-	link.Update(dt);
+	link.Update(dt, floor);
 }
 
 
@@ -72,7 +72,8 @@ void Game::ComposeFrame()
 	gfx.DrawRect(Rect<int>(0, 0, 100, 200), Colors::Cyan);
 	gfx.DrawRect(Rect<int>(0, 0, 200, 100), Colors::Cyan);
 
-	if (wnd.kbd.KeyIsPressed(VK_CONTROL) || link.GetCollBox().CollWith(floor.GetRect()))
+//	if (wnd.kbd.KeyIsPressed(VK_CONTROL) || link.GetCollBox().CollWith(floor.GetRect()))
+	if (wnd.kbd.KeyIsPressed(VK_CONTROL) )
 	{
 		gfx.DrawRect(link.GetCollBox(), Colors::Blue);
 		link.Draw(gfx, Colors::Red);

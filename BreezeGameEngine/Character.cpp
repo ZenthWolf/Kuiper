@@ -64,11 +64,17 @@ void Character::SetDir(const Vec<float>& dir)
 	vel = dir * speed;
 }
 
-void Character::Update(float dt)
+void Character::Update(float dt, Ground gnd)
 {
 	pos += vel * dt;
 
-	//if()
+	Rect<float> charcoll = GetCollBox();
+	Rect<float> gndcoll = gnd.GetRect();
+
+	if (charcoll.CollWith(gndcoll))
+	{
+		pos.Y = gndcoll.Y0 - 20.0f - (charcoll.height());
+	}
 
 	animation[(int)curSeq].Update(dt);
 }
