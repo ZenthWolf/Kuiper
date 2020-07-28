@@ -10,3 +10,8 @@ void Ground::Draw(Graphics& gfx) const
 {
 	gfx.DrawRect(box, col);
 }
+
+Rect<float> Ground::GetRect()
+{
+	return box;
+}
