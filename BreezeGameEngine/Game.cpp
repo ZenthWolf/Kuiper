@@ -81,4 +81,6 @@ void Game::ComposeFrame()
 		link.Draw(gfx);
 	}
 	font.DrawText("It's alone to be dangerous. . . \nTake-a a-dis!", { 100, 175 }, Color(255, 255, 255), gfx);
+
+	floor.Draw(gfx);
 }
