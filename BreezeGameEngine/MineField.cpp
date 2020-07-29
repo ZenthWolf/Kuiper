@@ -2,6 +2,7 @@
 #include <assert.h>
 
 MineField::MineField( Difficulty level )
+	:LPrimed(false), RPrimed(false)
 {
     TileSize = { 25, 25 };
 
@@ -58,6 +59,36 @@ void MineField::ClearField()
 	tile = nullptr;
 }
 
+void MineField::PrimeL()
+{
+	LPrimed = true;
+}
+
+void MineField::PrimeR()
+{
+	RPrimed = true;
+}
+
+bool MineField::CheckL() const
+{
+	return LPrimed;
+}
+
+bool MineField::CheckR() const
+{
+	return RPrimed;
+}
+
+void MineField::ReliefL()
+{
+	LPrimed = false;
+}
+
+void MineField::ReliefR()
+{
+	RPrimed = false;
+}
+
 void MineField::Draw(Graphics& gfx)
 {
 	for (int j = 0; j < Rows; j++)
@@ -79,8 +110,8 @@ void MineField::Draw(Graphics& gfx)
 				{
 					gfx.DrawCirc(loc + TileSize / 2 + VecI{ 1,1 }, TileSize.X / 2 - 1, BombColor);
 
-					int hash = 0;
-					while (hash <= TileSize.Y)
+					int hash = 1;
+					while (hash <= TileSize.Y - 1)
 					{
 						for (int x = loc.X; x <= (loc + TileSize).X; x++)
 						{

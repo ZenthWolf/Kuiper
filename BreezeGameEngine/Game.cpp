@@ -73,12 +73,30 @@ void Game::UpdateModel(float dt)
 
 			switch (e.GetType())
 			{
+			case Mouse::Event::Type::LPress:
+				Field->PrimeL();
+				break;
+
+			case Mouse::Event::Type::RPress:
+				Field->PrimeR();
+				break;
+
 			case Mouse::Event::Type::LRelease:
-				Field->RevealTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+				if (Field->CheckL())
+				{
+					Field->RevealTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+
+					Field->ReliefL();
+				}
 				break;
 
 			case Mouse::Event::Type::RRelease:
-				Field->SusTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+				if (Field->CheckR())
+				{
+					Field->SusTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }));
+
+					Field->ReliefR();
+				}
 			}
 		}
 

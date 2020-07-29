@@ -19,6 +19,12 @@ public:
 	~MineField();
 	void SetField(int rows, int cols, int mines);
 	void ClearField();
+	void PrimeL();
+	void PrimeR();
+	bool CheckL() const;
+	bool CheckR() const;
+	void ReliefL();
+	void ReliefR();
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void SusTile(const VecI tpos);
@@ -66,6 +72,8 @@ private:
 
 	int Columns;
 	int Rows;
+	bool LPrimed;
+	bool RPrimed;
     VecI TileSize;
 	VecI FieldPos = { -1,-1 };
 
