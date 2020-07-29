@@ -21,6 +21,7 @@
 #include "Sound.h"
 #include <random>
 #include "Character.h"
+#include "Ground.h"
 #include "Font.h"
 
 
@@ -54,5 +55,6 @@ private:
 	GameState gameState = GameState::Title;
 
 	Character link = Character({ 100.0f, 100.0f });
+	Ground floor = Ground({ 300.0f, 300.0f }, { 500.f, 500.0f });
 	Font font = "Images//Fixedsys16x28.bmp";
 };

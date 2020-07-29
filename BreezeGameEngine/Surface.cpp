@@ -120,7 +120,7 @@ int Surface::Height() const
 	return height;
 }
 
-RectI Surface::Rect() const
+Rect<int> Surface::Rect() const
 {
 	return {0, 0, width, height};
 }

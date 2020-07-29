@@ -44,7 +44,7 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-	Vec dir = { 0.0f, 0.0f };
+	Vec<float> dir = { 0.0f, 0.0f };
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
 		dir.Y -= 1.0f;
@@ -63,16 +63,26 @@ void Game::UpdateModel(float dt)
 	}
 
 	link.SetDir(dir);
-	link.Update(dt);
+	link.Update(dt, floor);
 }
 
 
 void Game::ComposeFrame()
 {
-	gfx.DrawRect(RectI(0, 0, 100, 200), Colors::Cyan);
-	gfx.DrawRect(RectI(0, 0, 200, 100), Colors::Cyan);
+	gfx.DrawRect(Rect<int>(0, 0, 100, 200), Colors::Cyan);
+	gfx.DrawRect(Rect<int>(0, 0, 200, 100), Colors::Cyan);
 
-	link.Draw(gfx);
-
+//	if (wnd.kbd.KeyIsPressed(VK_CONTROL) || link.GetCollBox().CollWith(floor.GetRect()))
+	if (wnd.kbd.KeyIsPressed(VK_CONTROL) )
+	{
+		gfx.DrawRect(link.GetCollBox(), Colors::Blue);
+		link.Draw(gfx, Colors::Red);
+	}
+	else
+	{
+		link.Draw(gfx);
+	}
 	font.DrawText("It's alone to be dangerous. . . \nTake-a a-dis!", { 100, 175 }, Color(255, 255, 255), gfx);
+
+	floor.Draw(gfx);
 }

@@ -2,6 +2,7 @@
 
 #include "Animation.h"
 #include "Vec.h"
+#include "Ground.h"
 
 class Character
 {
@@ -19,15 +20,18 @@ private:
 		Count
 	};
 public:
-	Character(const Vec& pos);
-	void Draw( Graphics& gfx ) const;
-	void SetDir( const Vec& dir );
-	void Update(float dt);
+	Character(const Vec<float>& pos);
+	void Draw(Graphics& gfx) const;
+	void Draw(Graphics& gfx, Color sub) const;
+	void SetDir( const Vec<float>& dir );
+	void Update(float dt, Ground gnd);
+	Rect<float> GetCollBox();
+
 private:
 	Surface sprite;
-	Vec pos;
-	Vec vel = { 0.0f, 0.0f };
+	Vec<float> pos;
+	Vec<float> vel = { 0.0f, 0.0f };
 	std::vector<Animation> animation;
 	Sequence curSeq = Sequence::StandingDown;
-	float speed = 60.0f;
+	float speed = 100.0f;
 };
