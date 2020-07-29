@@ -67,6 +67,21 @@ void Game::UpdateModel(float dt)
 
 	case GameState::Play:
 	{
+		if (Field->CheckD(dt) && !wnd.mouse.IsEmpty())
+		{
+			//Forces Relief of Double Click bool
+			Field->CheckD(0.5f);
+
+			const Mouse::Event e = wnd.mouse.Read();
+
+			switch (e.GetType())
+			{
+			case Mouse::Event::Type::LPress:
+				Field->RevealAdjacent(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+				break;
+			}
+		}
+
 		while (!wnd.mouse.IsEmpty())
 		{
 			const Mouse::Event e = wnd.mouse.Read();
@@ -97,6 +112,7 @@ void Game::UpdateModel(float dt)
 
 					Field->ReliefR();
 				}
+				break;
 			}
 		}
 

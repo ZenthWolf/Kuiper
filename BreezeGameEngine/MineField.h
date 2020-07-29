@@ -23,14 +23,15 @@ public:
 	void PrimeR();
 	bool CheckL() const;
 	bool CheckR() const;
+	bool CheckD(float dt);
 	void ReliefL();
 	void ReliefR();
 	void Draw(Graphics& gfx);
 	void RevealTile(const VecI tpos, std::mt19937& rng);
+	void RevealAdjacent(const VecI tpos, std::mt19937& rng);
 	void SusTile(const VecI tpos);
 	void PlaceMines(int mines, std::mt19937& rng);
 	VecI MouseToTile(const VecI mvec) const;
-	void ResetField();
 
 private:
 	class Tile 
@@ -67,6 +68,7 @@ private:
 		int adj = -1;
 		Contents contents = Contents::Empty;
 	};
+	int AdjMarked(const VecI tpos) const;
 
 private:
 
@@ -74,6 +76,8 @@ private:
 	int Rows;
 	bool LPrimed;
 	bool RPrimed;
+	bool DClickPrimed;
+	float DClickTimer;
     VecI TileSize;
 	VecI FieldPos = { -1,-1 };
 

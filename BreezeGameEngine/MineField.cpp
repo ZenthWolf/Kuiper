@@ -2,7 +2,7 @@
 #include <assert.h>
 
 MineField::MineField( Difficulty level )
-	:LPrimed(false), RPrimed(false)
+	:LPrimed(false), RPrimed(false), DClickPrimed(false), DClickTimer(0.0f)
 {
     TileSize = { 25, 25 };
 
@@ -77,6 +77,20 @@ bool MineField::CheckL() const
 bool MineField::CheckR() const
 {
 	return RPrimed;
+}
+
+bool MineField::CheckD(float dt)
+{
+	if (DClickPrimed)
+	{
+		DClickTimer += dt;
+		//Timer out double click search after 500 ms
+		if (DClickTimer >= 0.5f)
+		{
+			DClickPrimed = false;
+		}
+	}
+	return DClickPrimed;
 }
 
 void MineField::ReliefL()
@@ -191,6 +205,29 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 			}
 		}
 	}
+
+	else if (tpos.X < Columns && tpos.Y < Rows && targ.IsRevealed() && targ.GetAdj() > 0 && targ.GetAdj() == AdjMarked(tpos))
+	{
+		DClickPrimed = true;
+		DClickTimer = 0.0f;
+	}
+}
+
+void MineField::RevealAdjacent(const VecI tpos, std::mt19937& rng)
+{
+	Tile& targ = tile[tpos.Y * Columns + tpos.X];
+
+	for (int i = max(tpos.X - 1, 0); i <= min((tpos.X + 1), Columns - 1); i++)
+	{
+		for (int j = max(tpos.Y - 1, 0); j <= min((tpos.Y + 1), Rows - 1); j++)
+		{
+			if (tile[j * Columns + i].IsSus() != MineField::Tile::Suspicion::Mine)
+			{
+				RevealTile({ i, j }, rng);
+			}
+
+		}
+	}
 }
 
 void MineField::SusTile(const VecI tpos)
@@ -301,3 +338,39 @@ VecI MineField::MouseToTile(const VecI mvec) const
 {
 	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
 }
+
+int MineField::AdjMarked(const VecI tpos) const
+{
+	//Counter for marked bombs adjacent
+	int adjcount = 0;
+
+	for (int i = max(tpos.X - 1, 0); i <= min((tpos.X + 1), Columns - 1); i++)
+	{
+		for (int j = max(tpos.Y - 1, 0); j <= min((tpos.Y + 1), Rows - 1); j++)
+		{
+			Tile& targ = tile[j * Columns + i];
+
+			if (targ.IsSus() == MineField::Tile::Suspicion::Mine)
+			{
+				adjcount++;
+			}
+/*
+			switch (targ.IsSus())
+			{
+			case MineField::Tile::Suspicion::NoSus:
+				break;
+
+			case MineField::Tile::Suspicion::Unsure:
+				break;
+
+			case MineField::Tile::Suspicion::Mine:
+				adjcount++;
+				break;
+			}
+*/
+		}
+	}
+
+	return adjcount;
+}
+
