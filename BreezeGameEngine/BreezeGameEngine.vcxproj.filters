@@ -63,13 +63,13 @@
     <ClInclude Include="Beveler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VecI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RectI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MineField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -102,12 +102,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Beveler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VecI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RectI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MineField.cpp">

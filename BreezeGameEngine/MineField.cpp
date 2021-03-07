@@ -50,7 +50,7 @@ void MineField::SetField(int rows, int cols, int mines)
 
 	tile = new Tile[Rows * Columns];
 
-	FieldPos = (VecI({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - VecI({ Columns, Rows }) * TileSize.X) / 2;
+	FieldPos = (Vec<int>({ Graphics::ScreenWidth, Graphics::ScreenHeight }) - Vec<int>({ Columns, Rows }) * TileSize.X) / 2;
 }
 
 void MineField::ClearField()
@@ -109,20 +109,20 @@ void MineField::Draw(Graphics& gfx)
 	{
 		for (int i = 0; i < Columns; i++)
 		{
-			VecI loc = VecI{ i * TileSize.X, j * TileSize.Y } + FieldPos;
+			Vec<int> loc = Vec<int>{ i * TileSize.X, j * TileSize.Y } + FieldPos;
 
 			if (!tile[j * Columns + i].IsRevealed())
 			{
 
 				Bev.ChangeBaseColor(CoveredColor);
 
-				Bev.DrawBevBrick(RectI{ loc, loc + TileSize }.GetExpand(-1), 2, gfx);
+				Bev.DrawBevBrick(Rect<int>{ loc, loc + TileSize }.GetExpand(-1), 2, gfx);
 
 				switch (tile[j * Columns + i].IsSus())
 				{
 				case Tile::Suspicion::Mine:
 				{
-					gfx.DrawCirc(loc + TileSize / 2 + VecI{ 1,1 }, TileSize.X / 2 - 1, BombColor);
+					gfx.DrawCirc(loc + TileSize / 2 + Vec<int>{ 1,1 }, TileSize.X / 2 - 1, BombColor);
 
 					int hash = 1;
 					while (hash <= TileSize.Y - 1)
@@ -159,26 +159,26 @@ void MineField::Draw(Graphics& gfx)
 				{
 				case Tile::Contents::Empty:
 				{
-					gfx.DrawRect(RectI{ loc, loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
+					gfx.DrawRect(Rect<int>{ loc, loc + TileSize }.GetExpand(-1), NumColor[tile[j * Columns + i].GetAdj()]);
 
 					break;
 				}
 
 				case Tile::Contents::Mine:
 
-					gfx.DrawRect(RectI{ loc, loc + TileSize }.GetExpand(-1), NumColor[0]);
-					gfx.DrawCirc(loc + TileSize / 2 + VecI{1,1}, TileSize.X / 2 - 1, BombColor);
+					gfx.DrawRect(Rect<int>{ loc, loc + TileSize }.GetExpand(-1), NumColor[0]);
+					gfx.DrawCirc(loc + TileSize / 2 + Vec<int>{1,1}, TileSize.X / 2 - 1, BombColor);
 					break;
 				}
 			}
 		}
 	}
 
-	Bev.DrawBevBorder(RectI({ (Graphics::ScreenWidth - Columns * TileSize.X) / 2, (Graphics::ScreenHeight - Rows * TileSize.Y) / 2 },
+	Bev.DrawBevBorder(Rect<int>({ (Graphics::ScreenWidth - Columns * TileSize.X) / 2, (Graphics::ScreenHeight - Rows * TileSize.Y) / 2 },
 		                    { (Graphics::ScreenWidth + Columns * TileSize.X) / 2, (Graphics::ScreenHeight + Rows * TileSize.Y) / 2 }), 3, gfx);
 }
 
-void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
+void MineField::RevealTile(const Vec<int> tpos, std::mt19937& rng)
 {
 	Tile& targ = tile[tpos.Y * Columns + tpos.X];
 
@@ -213,7 +213,7 @@ void MineField::RevealTile(const VecI tpos, std::mt19937& rng)
 	}
 }
 
-void MineField::RevealAdjacent(const VecI tpos, std::mt19937& rng)
+void MineField::RevealAdjacent(const Vec<int> tpos, std::mt19937& rng)
 {
 	Tile& targ = tile[tpos.Y * Columns + tpos.X];
 
@@ -230,7 +230,7 @@ void MineField::RevealAdjacent(const VecI tpos, std::mt19937& rng)
 	}
 }
 
-void MineField::SusTile(const VecI tpos)
+void MineField::SusTile(const Vec<int> tpos)
 {
 	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
 	{
@@ -371,12 +371,12 @@ void MineField::Tile::CycleSus()
 	}
 }
 
-VecI MineField::MouseToTile(const VecI mvec) const
+Vec<int> MineField::MouseToTile(const Vec<int> mvec) const
 {
 	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
 }
 
-int MineField::AdjMarked(const VecI tpos) const
+int MineField::AdjMarked(const Vec<int> tpos) const
 {
 	//Counter for marked bombs adjacent
 	int adjcount = 0;
