@@ -30,6 +30,7 @@ public:
 	void RevealTile(const VecI tpos, std::mt19937& rng);
 	void RevealAdjacent(const VecI tpos, std::mt19937& rng);
 	void SusTile(const VecI tpos);
+	bool MineField::ValidMine(int targ);
 	void PlaceMines(int mines, std::mt19937& rng);
 	VecI MouseToTile(const VecI mvec) const;
 

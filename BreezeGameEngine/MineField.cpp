@@ -238,6 +238,43 @@ void MineField::SusTile(const VecI tpos)
 	}
 }
 
+bool MineField::ValidMine(int targ)
+{
+	int XTarg = targ % Columns;
+	int YTarg = (targ - XTarg) / Columns;
+
+	if (tile[targ].hasContents() == Tile::Contents::Empty)
+	{
+		for (int x = max(XTarg - 1, 0); x <= min(XTarg + 1, Columns - 1); x++)
+		{
+			for (int y = max(YTarg - 1, 0); y <= min(YTarg + 1, Rows - 1); y++)
+			{
+				if (tile[y*Columns+x].IsRevealed())
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	if (targ > Columns&& targ < Rows * Columns - Columns)
+	{
+		return tile[targ].hasContents() == Tile::Contents::Empty && !tile[targ].IsRevealed()
+			&& !tile[targ+Columns].IsRevealed() && !tile[targ-Columns].IsRevealed()
+			&& !tile[targ-1].IsRevealed() && !tile[targ+1].IsRevealed();
+	}
+	else
+	{
+		return tile[targ].hasContents() == Tile::Contents::Empty;
+	}
+}
+
 void MineField::PlaceMines(int mines, std::mt19937& rng)
 {
 	std::uniform_int_distribution<int> RandTile(0, Rows * Columns - 1);
@@ -245,7 +282,7 @@ void MineField::PlaceMines(int mines, std::mt19937& rng)
 	while (mines > 0)
 	{
 		int targ = RandTile(rng);
-		if (tile[targ].hasContents() == Tile::Contents::Empty && !tile[targ].IsRevealed())
+		if (ValidMine(targ))
 		{
 			tile[targ].PlaceBomb();
 			mines--;
