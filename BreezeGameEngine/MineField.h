@@ -33,6 +33,7 @@ public:
 	bool MineField::ValidMine(int targ);
 	void PlaceMines(int mines, std::mt19937& rng);
 	Vec<int> MouseToTile(const Vec<int> mvec) const;
+	Vec<int> GetClaims() const;
 
 private:
 	class Tile 
@@ -97,6 +98,7 @@ private:
 	                          };
 	Color BombColor = Colors::Black;
 	bool FreeMove;
+	int Claims;
 	int Mines;
 
 	Beveler Bev;

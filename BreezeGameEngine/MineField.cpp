@@ -34,6 +34,7 @@ MineField::MineField( Difficulty level )
 	}
 
 	SetField(Rows, Columns, Mines);
+	Claims = 0;
 }
 
 MineField::~MineField()
@@ -235,6 +236,20 @@ void MineField::SusTile(const Vec<int> tpos)
 	if (tpos.X < Columns && tpos.Y < Rows && !tile[tpos.Y * Columns + tpos.X].IsRevealed())
 	{
 		tile[tpos.Y * Columns + tpos.X].CycleSus();
+		
+		switch (tile[tpos.Y * Columns + tpos.X].IsSus())
+		{
+		case Tile::Suspicion::Mine:
+		{
+			Claims++;
+			break;
+		}
+		case Tile::Suspicion::Unsure:
+		{
+			Claims--;
+			break;
+		}
+		}
 	}
 }
 
@@ -374,6 +389,11 @@ void MineField::Tile::CycleSus()
 Vec<int> MineField::MouseToTile(const Vec<int> mvec) const
 {
 	return { (mvec.X - FieldPos.X) / TileSize.X , (mvec.Y - FieldPos.Y) / TileSize.Y };
+}
+
+Vec<int> MineField::GetClaims() const
+{
+	return {Claims, Mines};
 }
 
 int MineField::AdjMarked(const Vec<int> tpos) const

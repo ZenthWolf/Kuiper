@@ -139,6 +139,11 @@ void Game::ComposeFrame()
 
 	case GameState::Play:
 		Field->Draw(gfx);
+		Vec<int> Claims = Field->GetClaims();
+
+		std::string text = "Mines: ";
+		text += std::to_string(Claims.X) + "/" + std::to_string(Claims.Y);
+		font.DrawText(text, {20,25}, Colors::White, gfx);
 		break;
 	}
 }
