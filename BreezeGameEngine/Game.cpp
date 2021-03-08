@@ -133,17 +133,21 @@ void Game::ComposeFrame()
 	switch (gameState)
 	{
 	case GameState::Title:
-		gfx.DrawRect(0, 0, Graphics::ScreenWidth-1, Graphics::ScreenHeight-1, Colors::LightGray);
+	{
+		gfx.DrawRect(0, 0, Graphics::ScreenWidth - 1, Graphics::ScreenHeight - 1, Colors::LightGray);
 		gfx.DrawCirc({ Graphics::ScreenWidth / 2, Graphics::ScreenHeight / 2 }, Graphics::ScreenHeight / 3, Colors::Black);
+		std::string menu = "Easy: Q\nMedium: W\nHard: E";
+		font.DrawText(menu, { 335,255 }, Colors::White, gfx);
 		break;
+	}
 
 	case GameState::Play:
 		Field->Draw(gfx);
 		Vec<int> Claims = Field->GetClaims();
 
-		std::string text = "Mines: ";
-		text += std::to_string(Claims.X) + "/" + std::to_string(Claims.Y);
-		font.DrawText(text, {20,25}, Colors::White, gfx);
+		std::string prog = "Mines: ";
+		prog += std::to_string(Claims.X) + "/" + std::to_string(Claims.Y);
+		font.DrawText(prog, {20,25}, Colors::White, gfx);
 		break;
 	}
 }
