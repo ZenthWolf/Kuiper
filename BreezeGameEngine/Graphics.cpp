@@ -241,12 +241,6 @@ Graphics::~Graphics()
 	if (pImmediateContext) pImmediateContext->ClearState();
 }
 
-void Graphics::BeginFrame()
-{
-	// clear the sysbuffer
-	memset(pSysBuffer, 0u, sizeof(Color) * Graphics::ScreenHeight * Graphics::ScreenWidth);
-}
-
 void Graphics::EndFrame()
 {
 	HRESULT hr;
@@ -296,20 +290,32 @@ void Graphics::EndFrame()
 	}
 }
 
-void Graphics::PutPixel(int x, int y, Color c)
-{
-	assert(x >= 0);
-	assert(x < int(Graphics::ScreenWidth));
-	assert(y >= 0);
-	assert(y < int(Graphics::ScreenHeight));
-	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
-}
-
 /* Draws rectangle from Point0 to Point 1 */
 void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 {
 	SwapIfGrtr(x0, x1);
 	SwapIfGrtr(y0, y1);
+
+	Rect<int> Screen = ScreenRect();
+
+	if (x0 < Screen.X0)
+	{
+		x0 = Screen.X0;
+	}
+	else if (x1 >= Screen.X1)
+	{
+		x1 = Screen.X1;
+	}
+
+	if (y0 < Screen.Y0)
+	{
+		y0 = Screen.Y0;
+	}
+	else if (y1 >= Screen.Y1)
+	{
+		y1 = Screen.Y1;
+	}
+
 
 	for (int x = x0; x <= x1; x++)
 	{
@@ -320,9 +326,14 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	}
 }
 
-void Graphics::DrawRect(Rect<int> rect, Color c)
+void Graphics::DrawRect(Rect<float> Rect, Color c)
 {
-	DrawRect( int(rect.X0), int(rect.Y0), int(rect.X1), int(rect.Y1), c );
+	DrawRect(int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c);
+}
+
+void Graphics::DrawRect(Rect<int> Rect, Color c)
+{
+	DrawRect( int(Rect.X0), int(Rect.Y0), int(Rect.X1), int(Rect.Y1), c );
 }
 
 /* Draws Rectangle centered at a point- best used with odd W and H */
@@ -379,6 +390,21 @@ void Graphics::DrawCirc(Vec<int> pos, int r, Color c)
 	}
 }
 
+void Graphics::DrawCirc(Vec<float> pos, float r, Color c)
+{
+	float rsq = r * r;
+	for (int y = int(pos.Y) - int(r) + 1; y < int(pos.Y) + int(r); y++)
+	{
+		for (int x = int(pos.X) - int(r) + 1; x < int(pos.X) + int(r); x++)
+		{
+			if ((float(x) - pos.X) * (float(x) - pos.X) + (float(y) - pos.Y) * (float(y) - pos.Y) <= rsq)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
+}
+
 void Graphics::SwapIfGrtr(int& a, int& b)
 {
 	//std::swap(a,b)
@@ -388,6 +414,11 @@ void Graphics::SwapIfGrtr(int& a, int& b)
 		a = b;
 		b = temp;
 	}
+}
+
+Rect<int> Graphics::ScreenRect()
+{
+	return { 0, 0, ScreenWidth, ScreenHeight };
 }
 
 void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
@@ -433,6 +464,7 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 		}
 	}
 }
+
 
 //////////////////////////////////////////////////
 //           Graphics Exception

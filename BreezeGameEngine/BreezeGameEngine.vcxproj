@@ -144,6 +144,8 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
+    <ClInclude Include="SpriteEffect.h" />
+    <ClInclude Include="Surface.h" />
     <ClInclude Include="Vec.h" />
     <ClInclude Include="WinDefs.h" />
     <ClInclude Include="MainWindow.h" />
@@ -152,6 +154,7 @@
     <ClCompile Include="Beveler.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GraphicsOPT.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -160,6 +163,8 @@
     <ClCompile Include="MineField.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Surface.cpp" />
+    <ClCompile Include="SurfaceOPT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FramebufferPS.shh" />
