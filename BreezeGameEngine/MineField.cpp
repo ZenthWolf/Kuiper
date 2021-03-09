@@ -35,6 +35,8 @@ MineField::MineField( Difficulty level )
 
 	SetField(Rows, Columns, Mines);
 	Claims = 0;
+	Score = 0;
+	Scored = false;
 }
 
 MineField::~MineField()
@@ -204,6 +206,18 @@ void MineField::RevealTile(const Vec<int> tpos, std::mt19937& rng)
 					RevealTile({ i, j }, rng);
 				}
 			}
+		}
+
+		if (targ.hasContents() == Tile::Contents::Mine && !Scored)
+		{
+			for (int i = 0; i < Columns * Rows; i++)
+			{
+				if (tile[i].IsSus() == Tile::Suspicion::Mine && tile[i].hasContents() == Tile::Contents::Mine)
+				{
+					Score++;
+				}
+			}
+			Scored = true;
 		}
 	}
 
@@ -394,6 +408,11 @@ Vec<int> MineField::MouseToTile(const Vec<int> mvec) const
 Vec<int> MineField::GetClaims() const
 {
 	return {Claims, Mines};
+}
+
+Vec<int> MineField::GetScore() const
+{
+	return { Score, Mines };
 }
 
 int MineField::AdjMarked(const Vec<int> tpos) const

@@ -148,6 +148,16 @@ void Game::ComposeFrame()
 		std::string prog = "Mines: ";
 		prog += std::to_string(Claims.X) + "/" + std::to_string(Claims.Y);
 		font.DrawText(prog, {20,25}, Colors::White, gfx);
+
+		if (Field->Scored)
+		{
+			Vec<int> Score = Field->GetScore();
+
+			std::string prog = "Score: ";
+			prog += std::to_string(Score.X) + "/" + std::to_string(Score.Y);
+			font.DrawText(prog, { 600,25 }, Colors::White, gfx);
+		}
+
 		break;
 	}
 }

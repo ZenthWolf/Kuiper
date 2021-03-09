@@ -34,6 +34,8 @@ public:
 	void PlaceMines(int mines, std::mt19937& rng);
 	Vec<int> MouseToTile(const Vec<int> mvec) const;
 	Vec<int> GetClaims() const;
+	Vec<int> GetScore() const;
+	bool Scored;
 
 private:
 	class Tile 
@@ -98,8 +100,9 @@ private:
 	                          };
 	Color BombColor = Colors::Black;
 	bool FreeMove;
-	int Claims;
 	int Mines;
+	int Claims;
+	int Score;
 
 	Beveler Bev;
 };
