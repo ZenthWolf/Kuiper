@@ -63,6 +63,39 @@ void Game::UpdateModel(float dt)
 			gameState = GameState::Play;
 		}
 
+		while (!wnd.mouse.IsEmpty())
+		{
+			const Mouse::Event e = wnd.mouse.Read();
+			if (e.GetType() == Mouse::Event::LPress)
+			{
+				Vec<int> mpos = { e.GetPosX(), e.GetPosY() };
+
+				Vec<int> menustart = { 335,255 };
+
+				Rect<int> ezbox = Rect<int>(menustart, { menustart.X + font.GetWidth() * 7, menustart.Y + font.GetHeight() });
+				Rect<int> mdbox = Rect<int>((menustart + Vec<int>(0, font.GetHeight() * 1)), { menustart.X + font.GetWidth() * 9, menustart.Y + font.GetHeight() * 2 });
+				Rect<int> hdbox = Rect<int>((menustart + Vec<int>(0, font.GetHeight() * 2)), { menustart.X + font.GetWidth() * 7, menustart.Y + font.GetHeight() * 3 });
+
+				if (ezbox.CollWith(mpos))
+				{
+					Field = new MineField(MineField::Difficulty::Beginner);
+					gameState = GameState::Play;
+				}
+
+				else if (mdbox.CollWith(mpos))
+				{
+					Field = new MineField(MineField::Difficulty::Intermediate);
+					gameState = GameState::Play;
+				}
+
+				else if (hdbox.CollWith(mpos))
+				{
+					Field = new MineField(MineField::Difficulty::Expert);
+					gameState = GameState::Play;
+				}
+			}
+		}
+
 		break;
 
 	case GameState::Play:
@@ -89,8 +122,23 @@ void Game::UpdateModel(float dt)
 			switch (e.GetType())
 			{
 			case Mouse::Event::Type::LPress:
-				Field->PrimeL();
+			{
+				Vec<int> mpos = { e.GetPosX(), e.GetPosY() };
+
+				Rect<int> qbox = Rect<int>({ 720,570 }, { 720 + font.GetWidth() * 4, 570 + font.GetHeight() });
+
+				if (qbox.CollWith(mpos))
+				{
+					gameState = GameState::Title;
+					delete Field;
+				}
+				else
+				{
+					Field->PrimeL();
+				}
+			
 				break;
+			}
 
 			case Mouse::Event::Type::RPress:
 				Field->PrimeR();
@@ -99,19 +147,12 @@ void Game::UpdateModel(float dt)
 			case Mouse::Event::Type::LRelease:
 			{
 				Vec<int> mpos = { wnd.mouse.GetPosX(), wnd.mouse.GetPosY() };
+
 				if (Field->CheckL())
 				{
 					Field->RevealTile(Field->MouseToTile(mpos), rng);
 
 					Field->ReliefL();
-				}
-
-				Rect<int> qbox = Rect<int>({ 720,570 }, { 720 + font.GetWidth() * 4, 570 + font.GetHeight() });
-
-				if (qbox.CollWith(mpos))
-				{
-					gameState = GameState::Title;
-					delete Field;
 				}
 
 				break;
