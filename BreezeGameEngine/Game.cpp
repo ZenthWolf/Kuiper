@@ -97,13 +97,25 @@ void Game::UpdateModel(float dt)
 				break;
 
 			case Mouse::Event::Type::LRelease:
+			{
+				Vec<int> mpos = { wnd.mouse.GetPosX(), wnd.mouse.GetPosY() };
 				if (Field->CheckL())
 				{
-					Field->RevealTile(Field->MouseToTile({ wnd.mouse.GetPosX(), wnd.mouse.GetPosY() }), rng);
+					Field->RevealTile(Field->MouseToTile(mpos), rng);
 
 					Field->ReliefL();
 				}
+
+				Rect<int> qbox = Rect<int>({ 720,570 }, { 720 + font.GetWidth() * 4, 570 + font.GetHeight() });
+
+				if (qbox.CollWith(mpos))
+				{
+					gameState = GameState::Title;
+					delete Field;
+				}
+
 				break;
+			}
 
 			case Mouse::Event::Type::RRelease:
 				if (Field->CheckR())
@@ -157,6 +169,8 @@ void Game::ComposeFrame()
 			prog += std::to_string(Score.X) + "/" + std::to_string(Score.Y);
 			font.DrawText(prog, { 600,25 }, Colors::White, gfx);
 		}
+
+		font.DrawText("Quit", { 720,570 }, Colors::White, gfx);
 
 		break;
 	}

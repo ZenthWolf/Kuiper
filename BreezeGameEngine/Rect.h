@@ -36,6 +36,12 @@ public:
 			&& (Y1 > targ.Y0) && (Y0 < targ.Y1));
 	}
 
+	bool CollWith(const Vec<T>& targ) const
+	{
+		return ((X1 > targ.X) && (X0 < targ.X)
+			&& (Y1 > targ.Y) && (Y0 < targ.Y));
+	}
+
 	int width() const
 	{
 		return X1 - X0;
