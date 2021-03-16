@@ -74,12 +74,22 @@ void Game::ComposeFrame()
 	}
 
 	case GameState::Play:
+	{
+		std::vector<Vec<float>> poly;
+		poly.reserve(5);
+		poly.emplace_back(300.0f, 100.0f);
+		poly.emplace_back(200.0f, 500.0f);
+		poly.emplace_back(250.0f, 450.0f);
+		poly.emplace_back(350.0f, 450.0f);
+		poly.emplace_back(400.0f, 500.0f);
+		gfx.DrawClosedPolyline(poly, Colors::Green);
 
 		if (wnd.mouse.LeftIsPressed())
 		{
 			Vec<float> pos = { (float)wnd.mouse.GetPosX(), (float)wnd.mouse.GetPosY() };
-			gfx.DrawLine( Vec<float>{ 100.0f, 100.0f }, pos, Colors::Cyan);
+			gfx.DrawLine(Vec<float>{ 100.0f, 100.0f }, pos, Colors::Cyan);
 		}
 		break;
+	}
 	}
 }

@@ -465,7 +465,7 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 	}
 }
 
-void Graphics::DrawLine( Vec<float>& p0, Vec<float>& p1, Color c)
+void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 {
 	float rise = p1.Y - p0.Y;
 	float  run = p1.X - p0.X;
@@ -509,6 +509,16 @@ void Graphics::DrawLine( Vec<float>& p0, Vec<float>& p1, Color c)
 	}
 
 
+}
+
+void Graphics::DrawClosedPolyline(const std::vector<Vec<float>>& vert, Color c)
+{
+	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	{
+		DrawLine(*i, *std::next(i), c);
+	}
+
+	DrawLine(vert.back(), vert.front(), c);
 }
 
 
