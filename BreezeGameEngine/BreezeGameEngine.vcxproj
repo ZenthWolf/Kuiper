@@ -138,7 +138,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="BreezeException.h" />
-    <ClInclude Include="MineField.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
@@ -162,7 +161,6 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="MineField.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Surface.cpp" />

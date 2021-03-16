@@ -21,7 +21,6 @@
 #include "Sound.h"
 #include <random>
 
-#include "MineField.h"
 #include "Font.h"
 
 
@@ -53,6 +52,6 @@ private:
 
 	GameState gameState = GameState::Title;
 	FrameTimer ft;
-	MineField* Field;
+
 	Font font = "Images//Fixedsys16x28.bmp";
 };

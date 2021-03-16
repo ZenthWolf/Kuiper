@@ -69,6 +69,7 @@ public:
 	void DrawURIsoTri(int x, int y, int size, Color C);
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
+	void DrawLine( Vec<float>& p0, Vec<float>& p1, Color c);
 
 	template<typename E>
 	void DrawSprite(int x, int y, const Surface& S, E effect)

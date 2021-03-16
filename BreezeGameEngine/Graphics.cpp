@@ -465,6 +465,52 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 	}
 }
 
+void Graphics::DrawLine( Vec<float>& p0, Vec<float>& p1, Color c)
+{
+	float rise = p1.Y - p0.Y;
+	float  run = p1.X - p0.X;
+
+	float slope;
+
+	if (abs(run) > abs(rise))
+	{
+		if (p0.X > p1.X)
+		{
+			std::swap(p0, p1);
+		}
+		slope = rise / run;
+
+		for (int x = 0; x <= (int)(p1.X - p0.X); x++)
+		{
+			if ((int)(p1.X - p0.X) - x == 10)
+			{
+				bool stop = true;
+			}
+
+			const int y = p0.Y + (int)(slope * x);
+
+			PutPixel(x + p0.X, y, c);
+		}
+	}
+	else
+	{
+		if (p0.Y > p1.Y)
+		{
+			std::swap(p0, p1);
+		}
+		slope = run / rise;
+
+		for (int y = 0; y <= (int)(p1.Y - p0.Y); y++)
+		{
+			const int x = p0.X + (int)(slope * y);
+
+			PutPixel(x, y + p0.Y, c);
+		}
+	}
+
+
+}
+
 
 //////////////////////////////////////////////////
 //           Graphics Exception
