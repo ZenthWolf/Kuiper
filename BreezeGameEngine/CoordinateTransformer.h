@@ -15,6 +15,7 @@ public:
 
 		for (auto& v : poly)
 		{
+			v.Y *= -1.0f;
 			v += offset;
 		}
 
