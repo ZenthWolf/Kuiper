@@ -18,7 +18,8 @@
 
 Game::Game(MainWindow& wnd)
 	:
-	wnd(wnd),gfx(wnd), rng(std::random_device()())
+	wnd(wnd),gfx(wnd), rng(std::random_device()()),
+	ct(gfx)
 {
 
 }
@@ -83,6 +84,15 @@ void Game::ComposeFrame()
 		poly.emplace_back(350.0f, 450.0f);
 		poly.emplace_back(400.0f, 500.0f);
 		gfx.DrawClosedPolyline(poly, Colors::Green);
+
+		std::vector<Vec<float>> poly2;
+		poly2.reserve(5);
+		poly2.emplace_back(0.0f, -20.0f);
+		poly2.emplace_back(-10.0f, 20.0f);
+		poly2.emplace_back(-5.0f, 15.0f);
+		poly2.emplace_back(5.0f, 15.0f);
+		poly2.emplace_back(10.0f, 20.0f);
+		ct.DrawPolylineC(poly2, Colors::LightBlue);
 
 		if (wnd.mouse.LeftIsPressed())
 		{

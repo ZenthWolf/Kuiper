@@ -20,8 +20,8 @@
 #include <chrono>
 #include "Sound.h"
 #include <random>
-
 #include "Font.h"
+#include "CoordinateTransformer.h"
 
 
 class Game
@@ -52,6 +52,7 @@ private:
 
 	GameState gameState = GameState::Title;
 	FrameTimer ft;
-
 	Font font = "Images//Fixedsys16x28.bmp";
+
+	CoordinateTransformer ct;
 };

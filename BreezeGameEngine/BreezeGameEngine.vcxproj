@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="Beveler.h" />
     <ClInclude Include="COMInitializer.h" />
+    <ClInclude Include="CoordinateTransformer.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Graphics.h" />
