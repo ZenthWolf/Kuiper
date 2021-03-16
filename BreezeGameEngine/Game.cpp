@@ -19,7 +19,7 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	ct(gfx)
+	ct(gfx), ship(Ship::Make())
 {
 
 }
@@ -53,11 +53,23 @@ void Game::UpdateModel(float dt)
 		break;
 
 	case GameState::Play:
-		if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		const float vel = 300.0f;
+		if (wnd.kbd.KeyIsPressed('W') || wnd.kbd.KeyIsPressed(VK_UP))
 		{
-			gameState = GameState::Title;
+			ship.TranslateBy({ 0.0f, dt * vel });
 		}
-
+		if (wnd.kbd.KeyIsPressed('A') || wnd.kbd.KeyIsPressed(VK_LEFT))
+		{
+			ship.TranslateBy({ -dt * vel, 0.0f });
+		}
+		if (wnd.kbd.KeyIsPressed('S') || wnd.kbd.KeyIsPressed(VK_DOWN))
+		{
+			ship.TranslateBy({ 0.0f, -dt * vel });
+		}
+		if (wnd.kbd.KeyIsPressed('D') || wnd.kbd.KeyIsPressed(VK_RIGHT))
+		{
+			ship.TranslateBy({ dt * vel, 0.0f });
+		}
 		break;
 	}
 }
@@ -85,14 +97,7 @@ void Game::ComposeFrame()
 		poly.emplace_back(400.0f, 500.0f);
 		gfx.DrawClosedPolyline(poly, Colors::Green);
 
-		std::vector<Vec<float>> poly2;
-		poly2.reserve(5);
-		poly2.emplace_back(0.0f, -20.0f);
-		poly2.emplace_back(-10.0f, 20.0f);
-		poly2.emplace_back(-5.0f, 15.0f);
-		poly2.emplace_back(5.0f, 15.0f);
-		poly2.emplace_back(10.0f, 20.0f);
-		ct.DrawPolylineC(poly2, Colors::LightBlue);
+		ct.DrawPolylineC(ship.GetPolyline(), Colors::LightBlue);
 
 		if (wnd.mouse.LeftIsPressed())
 		{

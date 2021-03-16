@@ -23,6 +23,9 @@
 #include "Font.h"
 #include "CoordinateTransformer.h"
 
+#include "Entity.h"
+#include "Ship.h"
+
 
 class Game
 {
@@ -53,6 +56,7 @@ private:
 	GameState gameState = GameState::Title;
 	FrameTimer ft;
 	Font font = "Images//Fixedsys16x28.bmp";
-
 	CoordinateTransformer ct;
+
+	Entity ship;
 };
