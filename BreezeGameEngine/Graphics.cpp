@@ -480,16 +480,14 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = rise / run;
 
-		for (int x = 0; x <= (int)(p1.X - p0.X); x++)
+		for (int x = (int)(p0.X); x <= (int)(p1.X); x++)
 		{
-			if ((int)(p1.X - p0.X) - x == 10)
+			const int y = p0.Y + (int)(slope * (x-p0.X));
+
+			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
 			{
-				bool stop = true;
+				PutPixel(x, y, c);
 			}
-
-			const int y = p0.Y + (int)(slope * x);
-
-			PutPixel(x + p0.X, y, c);
 		}
 	}
 	else
@@ -500,11 +498,14 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = run / rise;
 
-		for (int y = 0; y <= (int)(p1.Y - p0.Y); y++)
+		for (int y = (int)(p0.Y); y <= (int)(p1.Y); y++)
 		{
-			const int x = p0.X + (int)(slope * y);
+			const int x = p0.X + (int)(slope * (y-p0.Y));
 
-			PutPixel(x, y + p0.Y, c);
+			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
+			{
+				PutPixel(x, y, c);
+			}
 		}
 	}
 
