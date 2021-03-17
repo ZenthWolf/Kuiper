@@ -19,31 +19,18 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), cam(ct), ship(Ship::Make())
+	ct(gfx), cam(ct)
 {
-	ship.SetColor(Colors::Cyan);
-
-	std::vector<Vec<float>> poly;
-	poly.reserve(5);
-	poly.emplace_back(0.0f, 20.0f);
-	poly.emplace_back(-5.0f, 7.0f);
-	poly.emplace_back(-20.0f, 10.0f);
-	poly.emplace_back(-10.0f, -5.0f);
-	poly.emplace_back(-17.0f, -20.0f);
-	poly.emplace_back(0.0f, -10.0f);
-	poly.emplace_back(17.0f, -20.0f);
-	poly.emplace_back(10.0f, -5.0f);
-	poly.emplace_back(20.0f, 10.0f);
-	poly.emplace_back(5.0f, 7.0f);
-
 	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
+	std::uniform_real_distribution<float> rotDist(0, 2 * 3.1415926);
 	
 	for (int i = 0; i < 150; i++)
 	{
-		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)}, Colors::Yellow);
+		scene.emplace_back( Star(Vec<float>{xDist(rng), yDist(rng)}) );
 		scene[i].SetScale(scaleDist(rng));
+		scene[i].SetHeading(rotDist(rng));
 	}
 
 	ship.SetHeading(3.1415926 / 2);
@@ -128,7 +115,7 @@ void Game::UpdateModel(float dt)
 		break;
 	}
 
-	Rect<float> cambox = cam.GetScreenBox().GetExpand(-50.0f);
+	Rect<float> cambox = cam.GetScreenBox().GetExpand(-150.0f);
 	const float velc = 200.0f;
 
 	if (ship.GetPos().X > cambox.X0 ) 

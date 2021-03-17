@@ -146,10 +146,12 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Shapes.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
     <ClInclude Include="SpriteEffect.h" />
+    <ClInclude Include="Statics.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Vec.h" />
     <ClInclude Include="WinDefs.h" />

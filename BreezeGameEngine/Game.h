@@ -24,7 +24,7 @@
 #include "CoordinateTransformer.h"
 #include "Camera.h"
 
-#include "Entity.h"
+#include "Statics.h"
 #include "Ship.h"
 
 
@@ -60,6 +60,6 @@ private:
 	CoordinateTransformer ct;
 	Camera cam;
 
-	Entity ship;
-	std::vector<Entity> scene;
+	Ship ship;
+	std::vector<Star> scene;
 };
