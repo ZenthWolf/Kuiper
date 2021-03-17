@@ -21,9 +21,16 @@ void Animation::Update(float dt)
 	}
 }
 
-void Animation::Draw(const Vec<int>& pos, Graphics& gfx) const
+void Animation::Draw(const Vec<int>& pos, Graphics& gfx, bool drawAll) const
 {
-	gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Chroma(chromakey));
+	if (!drawAll)
+	{
+		gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Chroma(chromakey));
+	}
+	else
+	{
+		gfx.DrawSprite(pos.X, pos.Y, frame[iCurFrame], sprite, SpriteEffect::Copy());
+	}
 }
 
 void Animation::Draw(const Vec<int>& pos, Graphics& gfx, Color sub) const
