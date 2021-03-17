@@ -86,16 +86,16 @@ void Beveler::DrawInnerBev(Rect<int>& rect, int size, Graphics& gfx)
 	gfx.DrawDLIsoTri((rect.X1) - size + 1, (rect.Y1) - size + 1, size, TopColor);
 }
 
-void Beveler::DrawBevBrick(Rect<int>& Rect, int size, Graphics& gfx)
+void Beveler::DrawBevBrick(Rect<int>& rect, int size, Graphics& gfx)
 {
-	DrawInnerBev(Rect, size, gfx);
-	gfx.DrawRect(Rect.GetExpand(-(size)), BaseColor);
+	DrawInnerBev(rect, size, gfx);
+	gfx.DrawRect(rect.GetExpand(-(size)), BaseColor);
 }
 
-void Beveler::DrawBevBorder(Rect<int>& Rect, int size, Graphics& gfx)
+void Beveler::DrawBevBorder(Rect<int>& rect, int size, Graphics& gfx)
 {
-	DrawOuterBev(Rect.GetExpand((2 * size)), size, gfx);
-	DrawInnerBev(Rect.GetExpand((size)), size, gfx);
+	DrawOuterBev(rect.GetExpand((2 * size)), size, gfx);
+	DrawInnerBev(rect.GetExpand((size)), size, gfx);
 }
 
 void Beveler::ChangeBaseColor(Color newbase)

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <math.h>
 
-Surface::Surface(std::string filename)
+Surface::Surface(const std::string& filename)
 {
 
 	/* Uncompressed RGB bitmap */
@@ -21,7 +21,7 @@ Surface::Surface(std::string filename)
 	
 	width = spriteInfo.biWidth;
 	height = abs(spriteInfo.biHeight);
-	pPixel = new Color[width * height];
+	pixels.resize(width * height);
 
 	sprite.seekg(spriteHeader.bfOffBits);
 	/* Pixels aren't padded, but rows are- each row is a multiple of 4 bytes */
@@ -54,60 +54,24 @@ Surface::Surface(std::string filename)
 }
 
 Surface::Surface(int width, int height)
-	:width(width), height(height), pPixel( new Color[width*height] )
+	:width(width), height(height), pixels(width*height)
 {
 }
 
-Surface::Surface(const Surface& rhs)
-	:width(rhs.Width()), height(rhs.Height()), pPixel( new Color[width*height] )
+Surface::Surface(Surface&& donor)
 {
-	int nPixel = width * height;
-	for (int i = 0; i < nPixel; i++)
-	{
-		pPixel[i] = rhs.pPixel[i];
-	}
+	*this = std::move(donor);
 }
 
-Surface::~Surface()
-{
-	delete[] pPixel;
-	pPixel = nullptr;
-}
-
-Surface& Surface::operator=(const Surface& rhs)
+Surface& Surface::operator=( Surface&& rhs)
 {
 	width = rhs.Width();
 	height = rhs.Height();
-
-	pPixel = new Color[width * height];
-
-	int nPixel = width * height;
-	for (int i = 0; i < nPixel; i++)
-	{
-		pPixel[i] = rhs.pPixel[i];
-	}
+	pixels = std::move(rhs.pixels);
+	rhs.width = 0;
+	rhs.height = 0;
 
 	return *this;
-}
-
-void Surface::PutPixel(int x, int y, Color c)
-{
-	assert(x >= 0);
-	assert(x < width);
-	assert(y >= 0);
-	assert(y < height);
-
-	pPixel[y * width + x] = c;
-}
-
-Color Surface::GetPixel(int x, int y) const
-{
-	assert(x >= 0);
-	assert(x < width);
-	assert(y >= 0);
-	assert(y < height);
-
-	return pPixel[y * width + x];
 }
 
 int Surface::Width() const
@@ -123,4 +87,9 @@ int Surface::Height() const
 Rect<int> Surface::Rect() const
 {
 	return {0, 0, width, height};
+}
+
+const Color* Surface::Data() const
+{
+	return pixels.data();
 }

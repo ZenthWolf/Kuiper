@@ -241,12 +241,6 @@ Graphics::~Graphics()
 	if (pImmediateContext) pImmediateContext->ClearState();
 }
 
-void Graphics::BeginFrame()
-{
-	// clear the sysbuffer
-	memset(pSysBuffer, 0u, sizeof(Color) * Graphics::ScreenHeight * Graphics::ScreenWidth);
-}
-
 void Graphics::EndFrame()
 {
 	HRESULT hr;
@@ -296,34 +290,36 @@ void Graphics::EndFrame()
 	}
 }
 
-void Graphics::PutPixel(int x, int y, Color c)
-{
-	assert(x >= 0);
-	assert(x < int(Graphics::ScreenWidth));
-	assert(y >= 0);
-	assert(y < int(Graphics::ScreenHeight));
-	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
-}
-
-Color Graphics::GetPixel(int x, int y)
-{
-	assert(x >= 0);
-	assert(x < int(Graphics::ScreenWidth));
-	assert(y >= 0);
-	assert(y < int(Graphics::ScreenHeight));
-
-	return pSysBuffer[Graphics::ScreenWidth * y + x];
-}
-
 /* Draws rectangle from Point0 to Point 1 */
 void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 {
 	SwapIfGrtr(x0, x1);
 	SwapIfGrtr(y0, y1);
 
-	for (int x = x0; x < x1; x++)
+	Rect<int> Screen = ScreenRect();
+
+	if (x0 < Screen.X0)
 	{
-		for (int y = y0; y < y1; y++)
+		x0 = Screen.X0;
+	}
+	else if (x1 >= Screen.X1)
+	{
+		x1 = Screen.X1;
+	}
+
+	if (y0 < Screen.Y0)
+	{
+		y0 = Screen.Y0;
+	}
+	else if (y1 >= Screen.Y1)
+	{
+		y1 = Screen.Y1;
+	}
+
+
+	for (int x = x0; x <= x1; x++)
+	{
+		for (int y = y0; y <= y1; y++)
 		{
 			PutPixel(x, y, c);
 		}
@@ -469,6 +465,88 @@ void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 	}
 }
 
+void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
+{
+	float rise = p1.Y - p0.Y;
+	float  run = p1.X - p0.X;
+
+	float slope;
+
+	if (abs(run) > abs(rise))
+	{
+		if (p0.X > p1.X)
+		{
+			std::swap(p0, p1);
+		}
+		slope = rise / run;
+
+		for (int x = (int)(p0.X + 0.5); x <= (int)(p1.X + 0.5); x++)
+		{
+			const int y = (int)(p0.Y + slope * (x-p0.X) + 0.5);
+
+			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
+	else
+	{
+		if (p0.Y > p1.Y)
+		{
+			std::swap(p0, p1);
+		}
+		slope = run / rise;
+
+		for (int y = (int)(p0.Y+0.5); y <= (int)(p1.Y + 0.5); y++)
+		{
+			const int x = (int)(p0.X + slope * (y-p0.Y) + 0.5);
+
+			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
+
+
+}
+
+void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Color c)
+{
+	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	{
+		DrawLine(*i, *std::next(i), c);
+	}
+
+	DrawLine(vert.back(), vert.front(), c);
+}
+
+void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c)
+{
+
+	const auto xform = [&](Vec<float> v)
+	{
+		float vxtemp = v.X; float vytemp = v.Y;
+		v.X = cos(th) * vxtemp - sin(th) * vytemp;
+		v.Y = sin(th) * vxtemp + cos(th) * vytemp;
+		v.X *= sx;
+		v.Y *= sy;
+		v += translation;
+
+		return v;
+	};
+
+	const Vec<float> front = xform( vert.front() );
+	Vec<float> cur = front;
+	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	{
+		const Vec<float> next = xform( *std::next(i) );
+		DrawLine(cur, next, c);
+		cur = next;
+	}
+	DrawLine(cur, front, c);
+}
 
 //////////////////////////////////////////////////
 //           Graphics Exception

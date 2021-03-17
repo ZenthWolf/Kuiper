@@ -18,11 +18,22 @@
 
 Game::Game(MainWindow& wnd)
 	:
-	wnd(wnd),
-	gfx(wnd),
-	rng(std::random_device()())
+	wnd(wnd),gfx(wnd), rng(std::random_device()()),
+	ct(gfx), cam(ct)
 {
+	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
+	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
+	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
+	std::uniform_real_distribution<float> rotDist(0, 2 * 3.1415926);
+	
+	for (int i = 0; i < 150; i++)
+	{
+		scene.emplace_back( Star(Vec<float>{xDist(rng), yDist(rng)}) );
+		scene[i].SetScale(scaleDist(rng));
+		scene[i].SetHeading(rotDist(rng));
+	}
 
+	ship.SetHeading(3.1415926 / 2);
 }
 
 void Game::Play()
@@ -44,45 +55,126 @@ void Game::Play()
 
 void Game::UpdateModel(float dt)
 {
-	Vec<float> dir = { 0.0f, 0.0f };
-	if (wnd.kbd.KeyIsPressed(VK_UP))
+	switch (gameState)
 	{
-		dir.Y -= 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_DOWN))
-	{
-		dir.Y += 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_LEFT))
-	{
-		dir.X -= 1.0f;
-	}
-	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-	{
-		dir.X += 1.0f;
+	case GameState::Title:
+		if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		{
+			gameState = GameState::Play;
+		}
+		break;
+
+	case GameState::Play:
+		float avel = 3.0f;
+		if (wnd.kbd.KeyIsPressed('W'))
+		{
+			Vec<float> heading = ship.GetHeading();
+			ship.Thrust(dt);
+		}
+		if (wnd.kbd.KeyIsPressed('A'))
+		{
+			ship.AThrust(dt);
+		}
+		if (wnd.kbd.KeyIsPressed('D'))
+		{
+			ship.AThrust(-dt);
+		}
+
+		ship.Update(dt);
+
+		const float velc = 200.0f;
+		if (wnd.kbd.KeyIsPressed(VK_UP))
+		{
+			cam.MoveBy({ 0.0f, dt * velc });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_LEFT))
+		{
+			cam.MoveBy({ -dt * velc, 0.0f });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_DOWN))
+		{
+			cam.MoveBy({ 0.0f, -dt * velc });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+		{
+			cam.MoveBy({ dt * velc, 0.0f });
+		}
+
+		while (!wnd.mouse.IsEmpty())
+		{
+			const auto e = wnd.mouse.Read();
+			switch (e.GetType())
+			{
+			case Mouse::Event::Type::WheelUp:
+				cam.SetScale(cam.GetScale() * 1.05f);
+				break;
+			case Mouse::Event::Type::WheelDown:
+				cam.SetScale(cam.GetScale() * 0.95f);
+				break;
+			}
+		}
+		break;
 	}
 
-	link.SetDir(dir);
-	link.Update(dt, floor);
+	Rect<float> cambox = cam.GetScreenBox().GetExpand(-150.0f);
+	const float velc = 200.0f;
+
+	if (ship.GetPos().X > cambox.X0 ) 
+	{
+		cam.MoveBy({ dt * velc, 0.0f });
+	}
+
+	if (ship.GetPos().X < cambox.X1 )
+	{
+		cam.MoveBy({ -dt * velc, 0.0f });
+	}
+
+	if (ship.GetPos().Y > cambox.Y0 )
+	{
+		cam.MoveBy({ 0.0f, dt * velc });
+	}
+
+	if (ship.GetPos().Y < cambox.Y1 )
+	{
+		cam.MoveBy({ 0.0f, -dt * velc });
+	}
 }
 
 
 void Game::ComposeFrame()
 {
-	gfx.DrawRect(Rect<int>(0, 0, 100, 200), Colors::Cyan);
-	gfx.DrawRect(Rect<int>(0, 0, 200, 100), Colors::Cyan);
-
-//	if (wnd.kbd.KeyIsPressed(VK_CONTROL) || link.GetCollBox().CollWith(floor.GetRect()))
-	if (wnd.kbd.KeyIsPressed(VK_CONTROL) )
+	switch (gameState)
 	{
-		gfx.DrawRect(link.GetCollBox(), Colors::Blue);
-		link.Draw(gfx, Colors::Red);
-	}
-	else
+	case GameState::Title:
 	{
-		link.Draw(gfx);
+		std::string title = "    KUIPER\n\nW, A, D -> Move\nSpace -> Start";
+		font.DrawText(title, { 280,235 }, Colors::White, gfx);
+		break;
 	}
-	font.DrawText("It's alone to be dangerous. . . \nTake-a a-dis!", { 100, 175 }, Color(255, 255, 255), gfx);
 
-	floor.Draw(gfx);
+	case GameState::Play:
+	{
+		std::vector<Vec<float>> poly;
+		poly.reserve(5);
+		poly.emplace_back(300.0f, 100.0f);
+		poly.emplace_back(200.0f, 500.0f);
+		poly.emplace_back(250.0f, 450.0f);
+		poly.emplace_back(350.0f, 450.0f);
+		poly.emplace_back(400.0f, 500.0f);
+		cam.Draw(Drawable(poly, Colors::Green));
+
+		cam.Draw(ship.GetDrawable());
+		for (auto& e : scene)
+		{
+			cam.Draw(e.GetDrawable());
+		}
+
+		if (wnd.mouse.LeftIsPressed())
+		{
+			Vec<float> pos = { (float)wnd.mouse.GetPosX(), (float)wnd.mouse.GetPosY() };
+			gfx.DrawLine(Vec<float>{ 100.0f, 100.0f }, pos, Colors::Cyan);
+		}
+		break;
+	}
+	}
 }

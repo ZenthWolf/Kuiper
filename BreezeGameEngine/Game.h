@@ -20,9 +20,12 @@
 #include <chrono>
 #include "Sound.h"
 #include <random>
-#include "Character.h"
-#include "Ground.h"
 #include "Font.h"
+#include "CoordinateTransformer.h"
+#include "Camera.h"
+
+#include "Statics.h"
+#include "Ship.h"
 
 
 class Game
@@ -43,18 +46,20 @@ private:
 		Title,
 		Play
 	};
-
 private:
 	MainWindow& wnd;
 	Graphics gfx;
-	FrameTimer ft;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
 	std::mt19937 rng;
-	GameState gameState = GameState::Title;
 
-	Character link = Character({ 100.0f, 100.0f });
-	Ground floor = Ground({ 300.0f, 300.0f }, { 500.f, 500.0f });
+	GameState gameState = GameState::Title;
+	FrameTimer ft;
 	Font font = "Images//Fixedsys16x28.bmp";
+	CoordinateTransformer ct;
+	Camera cam;
+
+	Ship ship;
+	std::vector<Star> scene;
 };

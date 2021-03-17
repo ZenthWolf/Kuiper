@@ -53,7 +53,7 @@ public:
 		PutPixel(x, y, { unsigned char(r), unsigned char(g), unsigned char(b) });
 	}
 	void PutPixel(int x, int y, Color c);
-	Color GetPixel(int x, int y);
+	Color GetPixel(int x, int y) const;
 
 	void SwapIfGrtr(int& a, int& b);
 	Rect<int> ScreenRect();
@@ -69,7 +69,9 @@ public:
 	void DrawURIsoTri(int x, int y, int size, Color C);
 	void DrawDLIsoTri(int x, int y, int size, Color C);
 	void DrawDRIsoTri(int x, int y, int size, Color C);
-
+	void DrawLine( Vec<float> p0, Vec<float> p1, Color c);
+	void DrawPolylineC( const std::vector<Vec<float>>& vert, Color c);
+	void DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c);
 	template<typename E>
 	void DrawSprite(int x, int y, const Surface& S, E effect)
 	{
@@ -135,8 +137,18 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>			pInputLayout;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>			pSamplerState;
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
-	Color* pSysBuffer = nullptr;
+	Color*												pSysBuffer = nullptr;
 public:
 	static constexpr int ScreenWidth = 800;
 	static constexpr int ScreenHeight = 600;
 };
+
+#include "SpriteEffect.h"
+#ifndef SPRITE_OPTIMIZE
+extern template
+void Graphics::DrawSprite<SpriteEffect::Copy>(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, SpriteEffect::Copy effect);
+extern template
+void Graphics::DrawSprite<SpriteEffect::Chroma>(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, SpriteEffect::Chroma effect);
+extern template
+void Graphics::DrawSprite<SpriteEffect::Substitute>(int x, int y, Rect<int> srcRect, const Rect<int>& clip, const Surface& S, SpriteEffect::Substitute effect);
+#endif // !SPRITE_OPTIMIZE
