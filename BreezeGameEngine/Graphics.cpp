@@ -480,9 +480,9 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = rise / run;
 
-		for (int x = (int)(p0.X); x <= (int)(p1.X); x++)
+		for (int x = (int)(p0.X + 0.5); x <= (int)(p1.X + 0.5); x++)
 		{
-			const int y = p0.Y + (int)(slope * (x-p0.X));
+			const int y = (int)(p0.Y + slope * (x-p0.X) + 0.5);
 
 			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
 			{
@@ -498,9 +498,9 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = run / rise;
 
-		for (int y = (int)(p0.Y); y <= (int)(p1.Y); y++)
+		for (int y = (int)(p0.Y+0.5); y <= (int)(p1.Y + 0.5); y++)
 		{
-			const int x = p0.X + (int)(slope * (y-p0.Y));
+			const int x = (int)(p0.X + slope * (y-p0.Y) + 0.5);
 
 			if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
 			{

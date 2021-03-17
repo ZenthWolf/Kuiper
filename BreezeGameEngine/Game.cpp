@@ -21,6 +21,7 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
 	ct(gfx), cam(ct), ship(Ship::Make())
 {
+	ship.SetColor(Colors::Cyan);
 
 	std::vector<Vec<float>> poly;
 	poly.reserve(5);
@@ -41,7 +42,7 @@ Game::Game(MainWindow& wnd)
 	
 	for (int i = 0; i < 16; i++)
 	{
-		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)});
+		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)}, Colors::Yellow);
 		scene[i].SetScale(scaleDist(rng));
 	}
 }
@@ -96,19 +97,19 @@ void Game::UpdateModel(float dt)
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
 		{
-			cam.Move({ 0.0f, dt * vel });
+			cam.MoveBy({ 0.0f, dt * vel });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_LEFT))
 		{
-			cam.Move({ -dt * vel, 0.0f });
+			cam.MoveBy({ -dt * vel, 0.0f });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_DOWN))
 		{
-			cam.Move({ 0.0f, -dt * vel });
+			cam.MoveBy({ 0.0f, -dt * vel });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 		{
-			cam.Move({ dt * vel, 0.0f });
+			cam.MoveBy({ dt * vel, 0.0f });
 		}
 
 		while (!wnd.mouse.IsEmpty())
@@ -117,10 +118,10 @@ void Game::UpdateModel(float dt)
 			switch (e.GetType())
 			{
 			case Mouse::Event::Type::WheelUp:
-				ship.SetScale(ship.GetScale() * 1.05f);
+				cam.SetScale(cam.GetScale() * 1.05f);
 				break;
 			case Mouse::Event::Type::WheelDown:
-				ship.SetScale(ship.GetScale() * 0.95f);
+				cam.SetScale(cam.GetScale() * 0.95f);
 				break;
 			}
 		}
@@ -149,12 +150,12 @@ void Game::ComposeFrame()
 		poly.emplace_back(250.0f, 450.0f);
 		poly.emplace_back(350.0f, 450.0f);
 		poly.emplace_back(400.0f, 500.0f);
-		cam.DrawPolylineC(poly, Colors::Green);
+		cam.Draw(Drawable(poly, Colors::Green));
 
-		cam.DrawPolylineC(ship.GetPolyline(), Colors::LightBlue);
+		cam.Draw(ship.GetDrawable());
 		for (auto& e : scene)
 		{
-			cam.DrawPolylineC(e.GetPolyline(), Colors::Yellow);
+			cam.Draw(e.GetDrawable());
 		}
 
 		if (wnd.mouse.LeftIsPressed())

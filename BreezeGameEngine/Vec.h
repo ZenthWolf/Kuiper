@@ -45,6 +45,11 @@ public:
 		return Vec(X - rhs.X, Y - rhs.Y);
 	}
 
+	Vec operator-() const
+	{
+		return Vec<T>(-X, -Y);
+	}
+
 	Vec& operator-=(const Vec& rhs)
 	{
 		X -= rhs.X;

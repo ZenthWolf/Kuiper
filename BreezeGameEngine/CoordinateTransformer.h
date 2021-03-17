@@ -2,6 +2,7 @@
 
 #include "Vec.h"
 #include "Graphics.h"
+#include "Drawable.h"
 
 class CoordinateTransformer
 {
@@ -9,17 +10,13 @@ public:
 	CoordinateTransformer(Graphics& gfx)
 		: gfx(gfx)
 	{}
-	void DrawPolylineC(std::vector<Vec<float>> poly, Color c)
+	void Draw( Drawable& drawable ) const
 	{
-		Vec<float> offset = { float(Graphics::ScreenWidth / 2), float(Graphics::ScreenHeight / 2) };
+		const Vec<float> offset = { float(Graphics::ScreenWidth / 2), float(Graphics::ScreenHeight / 2) };
 
-		for (auto& v : poly)
-		{
-			v.Y *= -1.0f;
-			v += offset;
-		}
-
-		gfx.DrawPolylineC(poly, c);
+		drawable.ScaleY(-1.0f);
+		drawable.Translate(offset);
+		drawable.Render(gfx);
 	}
 
 private:

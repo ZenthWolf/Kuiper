@@ -35,15 +35,12 @@ public:
 		return scale;
 	}
 
-	std::vector<Vec<float>> GetPolyline() const
+	Drawable GetDrawable() const
 	{
-		auto poly = model;
-		for (auto& v : poly)
-		{
-			v *= scale;
-			v += pos;
-		}
-		return poly;
+		Drawable d(model, c);
+		d.Scale(scale);
+		d.Translate(pos);
+		return d;
 	}
 
 	void SetColor(Color cnew)

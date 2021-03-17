@@ -14,7 +14,12 @@ public:
 		return pos;
 	}
 
-	void Move(const Vec<float>& offset)
+	float GetScale() const
+	{
+		return scale;
+	}
+
+	void MoveBy(const Vec<float>& offset)
 	{
 		pos += offset;
 	}
@@ -24,17 +29,21 @@ public:
 		pos = newpos;
 	}
 
-	void DrawPolylineC(std::vector<Vec<float>> poly, Color c)
+	void SetScale(const float s)
 	{
-		for (auto& v : poly)
-		{
-			v -= pos;
-		}
+		scale = s;
+	}
 
-		ct.DrawPolylineC(std::move(poly), c);
+	void Draw( Drawable& drawable) const
+	{
+		drawable.Translate(-pos);
+		drawable.Scale(scale);
+		ct.Draw( drawable );
 	}
 
 private:
-	Vec<float> pos = {0.0f, 0.0f};
 	CoordinateTransformer& ct;
+
+	Vec<float> pos = { 0.0f, 0.0f };
+	float scale = 1.0f;
 };
