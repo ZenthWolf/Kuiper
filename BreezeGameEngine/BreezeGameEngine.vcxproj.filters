@@ -99,9 +99,6 @@
     <ClInclude Include="Statics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ground.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -146,9 +143,6 @@
     <ClCompile Include="Font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ground.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="FramebufferPS.shh">
@@ -156,6 +150,9 @@
     </None>
     <None Include="FramebufferVS.shh">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\README.md">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>
