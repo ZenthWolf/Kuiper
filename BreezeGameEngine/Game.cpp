@@ -19,9 +19,31 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), ship(Ship::Make())
+	ct(gfx), cam(ct), ship(Ship::Make())
 {
 
+	std::vector<Vec<float>> poly;
+	poly.reserve(5);
+	poly.emplace_back(0.0f, 20.0f);
+	poly.emplace_back(-5.0f, 7.0f);
+	poly.emplace_back(-20.0f, 10.0f);
+	poly.emplace_back(-10.0f, -5.0f);
+	poly.emplace_back(-17.0f, -20.0f);
+	poly.emplace_back(0.0f, -10.0f);
+	poly.emplace_back(17.0f, -20.0f);
+	poly.emplace_back(10.0f, -5.0f);
+	poly.emplace_back(20.0f, 10.0f);
+	poly.emplace_back(5.0f, 7.0f);
+
+	std::uniform_real_distribution<float> xDist(-1000.0f, 1000.0f);
+	std::uniform_real_distribution<float> yDist(-1000.0f, 1000.0f);
+	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
+	
+	for (int i = 0; i < 16; i++)
+	{
+		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)});
+		scene[i].SetScale(scaleDist(rng));
+	}
 }
 
 void Game::Play()
@@ -53,22 +75,40 @@ void Game::UpdateModel(float dt)
 		break;
 
 	case GameState::Play:
-		const float vel = 300.0f;
-		if (wnd.kbd.KeyIsPressed('W') || wnd.kbd.KeyIsPressed(VK_UP))
+		const float vel = 200.0f;
+		if (wnd.kbd.KeyIsPressed('W'))
 		{
 			ship.TranslateBy({ 0.0f, dt * vel });
 		}
-		if (wnd.kbd.KeyIsPressed('A') || wnd.kbd.KeyIsPressed(VK_LEFT))
+		if (wnd.kbd.KeyIsPressed('A'))
 		{
 			ship.TranslateBy({ -dt * vel, 0.0f });
 		}
-		if (wnd.kbd.KeyIsPressed('S') || wnd.kbd.KeyIsPressed(VK_DOWN))
+		if (wnd.kbd.KeyIsPressed('S'))
 		{
 			ship.TranslateBy({ 0.0f, -dt * vel });
 		}
-		if (wnd.kbd.KeyIsPressed('D') || wnd.kbd.KeyIsPressed(VK_RIGHT))
+		if (wnd.kbd.KeyIsPressed('D'))
 		{
 			ship.TranslateBy({ dt * vel, 0.0f });
+		}
+		
+		const float velc = 200.0f;
+		if (wnd.kbd.KeyIsPressed(VK_UP))
+		{
+			cam.Move({ 0.0f, dt * vel });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_LEFT))
+		{
+			cam.Move({ -dt * vel, 0.0f });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_DOWN))
+		{
+			cam.Move({ 0.0f, -dt * vel });
+		}
+		if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+		{
+			cam.Move({ dt * vel, 0.0f });
 		}
 
 		while (!wnd.mouse.IsEmpty())
@@ -109,9 +149,13 @@ void Game::ComposeFrame()
 		poly.emplace_back(250.0f, 450.0f);
 		poly.emplace_back(350.0f, 450.0f);
 		poly.emplace_back(400.0f, 500.0f);
-		gfx.DrawClosedPolyline(poly, Colors::Green);
+		cam.DrawPolylineC(poly, Colors::Green);
 
-		ct.DrawPolylineC(ship.GetPolyline(), Colors::LightBlue);
+		cam.DrawPolylineC(ship.GetPolyline(), Colors::LightBlue);
+		for (auto& e : scene)
+		{
+			cam.DrawPolylineC(e.GetPolyline(), Colors::Yellow);
+		}
 
 		if (wnd.mouse.LeftIsPressed())
 		{

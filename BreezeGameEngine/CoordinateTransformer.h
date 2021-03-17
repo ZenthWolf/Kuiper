@@ -19,7 +19,7 @@ public:
 			v += offset;
 		}
 
-		gfx.DrawClosedPolyline(poly, c);
+		gfx.DrawPolylineC(poly, c);
 	}
 
 private:

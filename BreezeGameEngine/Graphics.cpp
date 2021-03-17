@@ -512,7 +512,7 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 
 }
 
-void Graphics::DrawClosedPolyline(const std::vector<Vec<float>>& vert, Color c)
+void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Color c)
 {
 	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
 	{

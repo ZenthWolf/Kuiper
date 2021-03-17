@@ -22,6 +22,7 @@
 #include <random>
 #include "Font.h"
 #include "CoordinateTransformer.h"
+#include "Camera.h"
 
 #include "Entity.h"
 #include "Ship.h"
@@ -57,6 +58,8 @@ private:
 	FrameTimer ft;
 	Font font = "Images//Fixedsys16x28.bmp";
 	CoordinateTransformer ct;
+	Camera cam;
 
 	Entity ship;
+	std::vector<Entity> scene;
 };

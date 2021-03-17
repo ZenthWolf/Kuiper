@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Beveler.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="COMInitializer.h" />
     <ClInclude Include="CoordinateTransformer.h" />
     <ClInclude Include="Entity.h" />
