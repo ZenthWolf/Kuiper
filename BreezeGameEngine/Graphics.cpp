@@ -522,6 +522,31 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Color c)
 	DrawLine(vert.back(), vert.front(), c);
 }
 
+void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c)
+{
+
+	const auto xform = [&](Vec<float> v)
+	{
+		float vxtemp = v.X; float vytemp = v.Y;
+		v.X = cos(th) * vxtemp - sin(th) * vytemp;
+		v.Y = sin(th) * vxtemp + cos(th) * vytemp;
+		v.X *= sx;
+		v.Y *= sy;
+		v += translation;
+
+		return v;
+	};
+
+	const Vec<float> front = xform( vert.front() );
+	Vec<float> cur = front;
+	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	{
+		const Vec<float> next = xform( *std::next(i) );
+		DrawLine(cur, next, c);
+		cur = next;
+	}
+	DrawLine(cur, front, c);
+}
 
 //////////////////////////////////////////////////
 //           Graphics Exception

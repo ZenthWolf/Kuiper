@@ -8,8 +8,8 @@
 class Drawable
 {
 public:
-	Drawable(std::vector<Vec<float>> model, Color c)
-		:model(std::move(model)), c(c)
+	Drawable(const std::vector<Vec<float>>& model, Color c)
+		:model(&model), c(c)
 	{}
 
 	void Translate(const Vec<float> ds)
@@ -26,14 +26,7 @@ public:
 
 	void Rot(float th)
 	{
-		for (auto& v : model)
-		{
-			float vx = v.X;
-			float vy = v.Y;
-
-			v.X = vx*cos(th) - vy*sin(th);
-			v.Y = vx * sin(th) + vy * cos(th);
-		}
+		rot = th;
 	}
 
 	void ScaleInd(float sx, float sy)
@@ -56,19 +49,14 @@ public:
 
 	void Render(Graphics& gfx)
 	{
-		for (auto& v : model)
-		{
-			v.X *= scale_x;
-			v.Y *= scale_y;
-			v += translation;
-		}
-		gfx.DrawPolylineC(model, c);
+		gfx.DrawPolylineC(*model, translation, scale_x, scale_y, rot, c);
 	}
 
 private:
-	std::vector<Vec<float>> model;
+	const std::vector<Vec<float>>* model;
 	Vec<float> translation = { 0.0f, 0.0f };
 	float scale_x = 1.0f;
 	float scale_y = 1.0f;
+	float rot = 0.0f;
 	Color c;
 };
