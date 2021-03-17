@@ -128,25 +128,25 @@ void Game::UpdateModel(float dt)
 		break;
 	}
 
-	Rect<float> cambox = cam.GetScreenBox().GetExpand(-550.0f);
+	Rect<float> cambox = cam.GetScreenBox().GetExpand(-50.0f);
 	const float velc = 200.0f;
 
-	if (ship.GetPos().X > cambox.X0)
+	if (ship.GetPos().X > cambox.X0 ) 
 	{
 		cam.MoveBy({ dt * velc, 0.0f });
 	}
 
-	if (ship.GetPos().X < cambox.X1)
+	if (ship.GetPos().X < cambox.X1 )
 	{
 		cam.MoveBy({ -dt * velc, 0.0f });
 	}
 
-	if (ship.GetPos().Y > cambox.Y0)
+	if (ship.GetPos().Y > cambox.Y0 )
 	{
 		cam.MoveBy({ 0.0f, dt * velc });
 	}
 
-	if (ship.GetPos().Y < cambox.Y1)
+	if (ship.GetPos().Y < cambox.Y1 )
 	{
 		cam.MoveBy({ 0.0f, -dt * velc });
 	}
