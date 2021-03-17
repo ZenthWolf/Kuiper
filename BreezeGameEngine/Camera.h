@@ -19,6 +19,14 @@ public:
 		return scale;
 	}
 
+	Rect<float> GetScreenBox() const
+	{
+		const float zoom = 1.0f / scale;
+		return Rect<float>::FromCent(pos,
+			float(Graphics::ScreenWidth / 2 ) * zoom,
+			float(Graphics::ScreenHeight / 2)* zoom );
+	}
+
 	void MoveBy(const Vec<float>& offset)
 	{
 		pos += offset;

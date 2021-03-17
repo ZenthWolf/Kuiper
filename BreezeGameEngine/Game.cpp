@@ -36,11 +36,11 @@ Game::Game(MainWindow& wnd)
 	poly.emplace_back(20.0f, 10.0f);
 	poly.emplace_back(5.0f, 7.0f);
 
-	std::uniform_real_distribution<float> xDist(-1000.0f, 1000.0f);
-	std::uniform_real_distribution<float> yDist(-1000.0f, 1000.0f);
+	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
+	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
 	
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 150; i++)
 	{
 		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)}, Colors::Yellow);
 		scene[i].SetScale(scaleDist(rng));
@@ -126,6 +126,29 @@ void Game::UpdateModel(float dt)
 			}
 		}
 		break;
+	}
+
+	Rect<float> cambox = cam.GetScreenBox().GetExpand(-550.0f);
+	const float velc = 200.0f;
+
+	if (ship.GetPos().X > cambox.X0)
+	{
+		cam.MoveBy({ dt * velc, 0.0f });
+	}
+
+	if (ship.GetPos().X < cambox.X1)
+	{
+		cam.MoveBy({ -dt * velc, 0.0f });
+	}
+
+	if (ship.GetPos().Y > cambox.Y0)
+	{
+		cam.MoveBy({ 0.0f, dt * velc });
+	}
+
+	if (ship.GetPos().Y < cambox.Y1)
+	{
+		cam.MoveBy({ 0.0f, -dt * velc });
 	}
 }
 
