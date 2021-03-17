@@ -35,33 +35,33 @@ public:
 		return scale;
 	}
 
-	void SetRot(const float th)
+	void SetHeading(const float th)
 	{
-		rot = th;
-		while (rot > (2 * 3.1415926))
+		heading = th;
+		while (heading > (2 * 3.1415926))
 		{
-			rot -= (2 * 3.1415926);
+			heading -= (2 * 3.1415926);
 		}
 	}
 
 	void RotBy(const float th)
 	{
-		rot += th;
-		while (rot > (2 * 3.1415926))
+		heading += th;
+		while (heading > (2 * 3.1415926))
 		{
-			rot -= (2 * 3.1415926);
+			heading -= (2 * 3.1415926);
 		}
 	}
 
-	float GetRot() const
+	float GetHeading() const
 	{
-		return rot;
+		return heading;
 	}
 
 	Drawable GetDrawable() const
 	{
 		Drawable d(model, c);
-		d.Rot(rot);
+		d.Rot(heading);
 		d.Scale(scale);
 		d.Translate(pos);
 		return d;
@@ -84,5 +84,5 @@ private:
 	Color c;
 	Vec<float> pos = { 0.0f, 0.0f };
 	float scale = 1.0f;
-	float rot = 0.0f;
+	float heading = 0.0f;
 };

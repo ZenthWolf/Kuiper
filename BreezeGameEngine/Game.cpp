@@ -45,6 +45,8 @@ Game::Game(MainWindow& wnd)
 		scene.emplace_back(poly, Vec<float>{xDist(rng), yDist(rng)}, Colors::Yellow);
 		scene[i].SetScale(scaleDist(rng));
 	}
+
+	ship.SetHeading(3.1415926 / 2);
 }
 
 void Game::Play()
@@ -77,31 +79,19 @@ void Game::UpdateModel(float dt)
 
 	case GameState::Play:
 		const float vel = 200.0f;
+		float avel = 3.0f;
 		if (wnd.kbd.KeyIsPressed('W'))
 		{
-			ship.TranslateBy({ 0.0f, dt * vel });
+			float th = ship.GetHeading();
+			ship.TranslateBy({ cos(th) * dt * vel, sin(th) * dt * vel });
 		}
 		if (wnd.kbd.KeyIsPressed('A'))
 		{
-			ship.TranslateBy({ -dt * vel, 0.0f });
-		}
-		if (wnd.kbd.KeyIsPressed('S'))
-		{
-			ship.TranslateBy({ 0.0f, -dt * vel });
+			ship.RotBy(dt * avel);
 		}
 		if (wnd.kbd.KeyIsPressed('D'))
 		{
-			ship.TranslateBy({ dt * vel, 0.0f });
-		}
-
-		float avel = 3.0f;
-		if (wnd.kbd.KeyIsPressed('Q'))
-		{
-			ship.RotBy( dt * avel );
-		}
-		if (wnd.kbd.KeyIsPressed('E'))
-		{
-			ship.RotBy( -dt * avel );
+			ship.RotBy(-dt * avel);
 		}
 
 		const float velc = 200.0f;
