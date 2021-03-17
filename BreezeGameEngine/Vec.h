@@ -87,6 +87,11 @@ public:
 		}
 	}
 
+	T Dot(const Vec<T> rhs) const
+	{
+		return X * rhs.X + Y * rhs.Y;
+	}
+
 	template<typename U>
 	explicit Vec(const Vec<U> src)
 	{

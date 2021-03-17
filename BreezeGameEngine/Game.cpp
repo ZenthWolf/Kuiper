@@ -65,38 +65,39 @@ void Game::UpdateModel(float dt)
 		break;
 
 	case GameState::Play:
-		const float vel = 200.0f;
 		float avel = 3.0f;
 		if (wnd.kbd.KeyIsPressed('W'))
 		{
-			float th = ship.GetHeading();
-			ship.TranslateBy({ cos(th) * dt * vel, sin(th) * dt * vel });
+			Vec<float> heading = ship.GetHeading();
+			ship.Thrust(dt);
 		}
 		if (wnd.kbd.KeyIsPressed('A'))
 		{
-			ship.RotBy(dt * avel);
+			ship.AThrust(dt);
 		}
 		if (wnd.kbd.KeyIsPressed('D'))
 		{
-			ship.RotBy(-dt * avel);
+			ship.AThrust(-dt);
 		}
+
+		ship.Update(dt);
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
 		{
-			cam.MoveBy({ 0.0f, dt * vel });
+			cam.MoveBy({ 0.0f, dt * velc });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_LEFT))
 		{
-			cam.MoveBy({ -dt * vel, 0.0f });
+			cam.MoveBy({ -dt * velc, 0.0f });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_DOWN))
 		{
-			cam.MoveBy({ 0.0f, -dt * vel });
+			cam.MoveBy({ 0.0f, -dt * velc });
 		}
 		if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 		{
-			cam.MoveBy({ dt * vel, 0.0f });
+			cam.MoveBy({ dt * velc, 0.0f });
 		}
 
 		while (!wnd.mouse.IsEmpty())
@@ -146,8 +147,8 @@ void Game::ComposeFrame()
 	{
 	case GameState::Title:
 	{
-		std::string title = "KUIPER";
-		font.DrawText(title, { 335,255 }, Colors::White, gfx);
+		std::string title = "    KUIPER\n\nW, A, D -> Move\nSpace -> Start";
+		font.DrawText(title, { 280,235 }, Colors::White, gfx);
 		break;
 	}
 

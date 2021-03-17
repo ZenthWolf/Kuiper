@@ -19,6 +19,24 @@ public:
 		return ship;
 	}
 
+	static std::vector<Vec<float>> ShipBurn()
+	{
+		std::vector<Vec<float>> shipburn;
+		shipburn.reserve(10);
+		shipburn.emplace_back(20.0f, 0.0f);
+		shipburn.emplace_back(-20.0f, 10.0f);
+		shipburn.emplace_back(-15.0f, 5.0f);
+		shipburn.emplace_back(-19.0f, 3.0f);
+		shipburn.emplace_back(-17.0f, 1.0f);
+		shipburn.emplace_back(-18.0f, 0.0f);
+		shipburn.emplace_back(-17.0f, -1.0f);
+		shipburn.emplace_back(-19.0f, -3.0f);
+		shipburn.emplace_back(-15.0f, -5.0f);
+		shipburn.emplace_back(-20.0f, -10.0f);
+
+		return shipburn;
+	}
+
 	static std::vector<Vec<float>> Star()
 	{
 		std::vector<Vec<float>> star;

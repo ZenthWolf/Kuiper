@@ -53,9 +53,9 @@ public:
 		}
 	}
 
-	float GetHeading() const
+	Vec<float> GetHeading() const
 	{
-		return heading;
+		return {cos(heading), sin(heading)};
 	}
 
 	Drawable GetDrawable() const
