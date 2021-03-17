@@ -147,7 +147,7 @@ void Game::ComposeFrame()
 	{
 	case GameState::Title:
 	{
-		std::string title = "    KUIPER\n\nW, A, D -> Move\nSpace -> Start";
+		std::string title = "    KUIPER\n\nW, A, D -> Move\nArrows -> Pan Camera\n\nStatus: Flying only\n\nSpace -> Start";
 		font.DrawText(title, { 280,235 }, Colors::White, gfx);
 		break;
 	}
