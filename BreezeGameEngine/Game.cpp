@@ -93,7 +93,17 @@ void Game::UpdateModel(float dt)
 		{
 			ship.TranslateBy({ dt * vel, 0.0f });
 		}
-		
+
+		float avel = 3.0f;
+		if (wnd.kbd.KeyIsPressed('Q'))
+		{
+			ship.RotBy( dt * avel );
+		}
+		if (wnd.kbd.KeyIsPressed('E'))
+		{
+			ship.RotBy( -dt * avel );
+		}
+
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
 		{

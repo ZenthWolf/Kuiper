@@ -1,6 +1,7 @@
 #pragma once
 
 #include<vector>
+#include<math.h>
 #include "Vec.h"
 #include "Graphics.h"
 
@@ -21,6 +22,18 @@ public:
 		scale_x *= s;
 		scale_y *= s;
 		translation *= s;
+	}
+
+	void Rot(float th)
+	{
+		for (auto& v : model)
+		{
+			float vx = v.X;
+			float vy = v.Y;
+
+			v.X = vx*cos(th) - vy*sin(th);
+			v.Y = vx * sin(th) + vy * cos(th);
+		}
 	}
 
 	void ScaleInd(float sx, float sy)
