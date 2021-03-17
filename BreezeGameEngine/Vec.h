@@ -57,6 +57,13 @@ public:
 		return Vec<T>(X * scale, Y * scale);
 	}
 
+	Vec operator *=(const T scale)
+	{
+		X *= scale;
+		Y *= scale;
+		return *this;
+	}
+
 	Vec operator/(const T scale) const
 	{
 		return Vec(X / scale, Y / scale);

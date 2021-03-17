@@ -70,6 +70,20 @@ void Game::UpdateModel(float dt)
 		{
 			ship.TranslateBy({ dt * vel, 0.0f });
 		}
+
+		while (!wnd.mouse.IsEmpty())
+		{
+			const auto e = wnd.mouse.Read();
+			switch (e.GetType())
+			{
+			case Mouse::Event::Type::WheelUp:
+				ship.SetScale(ship.GetScale() * 1.05f);
+				break;
+			case Mouse::Event::Type::WheelDown:
+				ship.SetScale(ship.GetScale() * 0.95f);
+				break;
+			}
+		}
 		break;
 	}
 }
