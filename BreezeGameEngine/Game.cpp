@@ -79,8 +79,82 @@ void Game::UpdateModel(float dt)
 		{
 			ship.AThrust(-dt);
 		}
+		if (wnd.kbd.KeyIsPressed('C'))
+		{
+			if (spawnhalt)
+			{
+				spawnhalt = false;
+			}
+		}
+		if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		{
+			if (!spawnhalt)
+			{
+				spawnhalt = true;
+
+				Rect<float> bounds = cam.GetScreenBox();
+
+				std::uniform_int_distribution<int> side(0,3);
+				std::uniform_real_distribution<float> xDist(bounds.X0, bounds.X1);
+				std::uniform_real_distribution<float> yDist(bounds.Y0, bounds.Y1);
+				std::uniform_real_distribution<float> vDist(-300.0f, 300.0f);
+				std::uniform_real_distribution<float> sDist(0.75f, 5.0f);
+				std::uniform_real_distribution<float> thDist(-5.0f, 5.0f);
+
+				int spawnside = side(rng);
+
+				if (spawnside == 0) //TOP
+				{
+					float scale = sDist(rng);
+					Vec<float> pos = { xDist(rng), bounds.Y1 };
+					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+					vel.Y = -abs(vel.Y);
+					float rot = thDist(rng) / scale;
+					belt.emplace_back(Asteroid(pos, vel, rot));
+					belt[belt.size() - 1].SetScale(scale);
+				}
+
+				if (spawnside == 1) //BOTTOM
+				{
+					float scale = sDist(rng);
+					Vec<float> pos = { xDist(rng), bounds.Y0 };
+					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+					vel.Y = abs(vel.Y);
+					float rot = thDist(rng) / scale;
+					belt.emplace_back(Asteroid(pos, vel, rot));
+					belt[belt.size() - 1].SetScale(scale);
+				}
+
+				if (spawnside == 2) //LEFT
+				{
+					float scale = sDist(rng);
+					Vec<float> pos = { bounds.X0, yDist(rng) };
+					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+					vel.X = abs(vel.X);
+					float rot = thDist(rng) / scale;
+					belt.emplace_back(Asteroid(pos, vel, rot));
+					belt[belt.size() - 1].SetScale(scale);
+				}
+
+				if (spawnside == 3) //RIGHT
+				{
+					float scale = sDist(rng);
+					Vec<float> pos = { bounds.X1, yDist(rng) };
+					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+					vel.X = -abs(vel.X);
+					float rot = thDist(rng) / scale;
+					belt.emplace_back(Asteroid(pos, vel, rot));
+					belt[belt.size() - 1].SetScale(scale);
+				}
+			}
+		}
 
 		ship.Update(dt);
+		
+		for (auto& e : belt)
+		{
+			e.Update(dt);
+		}
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
@@ -169,10 +243,9 @@ void Game::ComposeFrame()
 			cam.Draw(e.GetDrawable());
 		}
 
-		if (wnd.mouse.LeftIsPressed())
+		for (auto& e : belt)
 		{
-			Vec<float> pos = { (float)wnd.mouse.GetPosX(), (float)wnd.mouse.GetPosY() };
-			gfx.DrawLine(Vec<float>{ 100.0f, 100.0f }, pos, Colors::Cyan);
+			cam.Draw(e.GetDrawable());
 		}
 		break;
 	}

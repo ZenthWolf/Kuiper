@@ -26,6 +26,7 @@
 
 #include "Statics.h"
 #include "Ship.h"
+#include "Asteroid.h"
 
 
 class Game
@@ -62,4 +63,7 @@ private:
 
 	Ship ship;
 	std::vector<Star> scene;
+	std::vector<Asteroid> belt;
+
+	bool spawnhalt = false;
 };

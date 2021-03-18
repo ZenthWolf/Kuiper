@@ -8,7 +8,18 @@ class Entity
 public:
 	Entity(std::vector<Vec<float>> model, const Vec<float>& pos = {0.0f, 0.0f}, Color c = Colors::White)
 		:model(std::move(model)), pos(pos), c(c)
-	{}
+	{
+		for (auto v : model)
+		{
+			float vrad = v.GetLengthSq();
+			if (vrad > boundingrad)
+			{
+				boundingrad = vrad;
+			}
+		}
+
+		boundingrad = sqrtf(boundingrad);
+	}
 
 	const Vec<float>& GetPos() const
 	{
@@ -85,4 +96,5 @@ private:
 	Vec<float> pos = { 0.0f, 0.0f };
 	float scale = 1.0f;
 	float heading = 0.0f;
+	float boundingrad = 0.0f;
 };

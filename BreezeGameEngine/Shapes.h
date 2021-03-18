@@ -53,4 +53,24 @@ public:
 
 		return star;
 	}
+
+	static std::vector<Vec<float>> Asteroid()
+	{
+		std::vector<Vec<float>> asteroid;
+		asteroid.reserve(11);
+		asteroid.emplace_back(-12.0f, -5.0f);
+		asteroid.emplace_back(0.0f, -7.0f);
+		asteroid.emplace_back(12.0f, -5.0f);
+		asteroid.emplace_back(17.0f, 6.0f);
+		asteroid.emplace_back(20.0f, 12.0f);
+		asteroid.emplace_back(14.0f, 18.0f);
+		asteroid.emplace_back(9.0f, 16.0f);
+		asteroid.emplace_back(0.0f, 12.0f);
+		asteroid.emplace_back(-4.0f, 15.0f);
+		asteroid.emplace_back(-9.0f, 3.0f);
+		asteroid.emplace_back(-11.0f, -2.0f);
+
+		return asteroid;
+	}
+
 };
