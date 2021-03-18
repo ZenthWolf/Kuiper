@@ -42,7 +42,7 @@ public:
 		scale = s;
 	}
 
-	void Draw( Drawable& drawable) const
+	void Draw( Drawable& drawable ) const
 	{
 		drawable.Translate(-pos);
 		drawable.Scale(scale);

@@ -63,7 +63,7 @@ private:
 
 	Ship ship;
 	std::vector<Star> scene;
-	std::vector<Asteroid> belt;
+	std::vector<std::unique_ptr<Asteroid>> belt;
 
 	bool spawnhalt = false;
 };

@@ -369,7 +369,10 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 		{
 			if ((x-x0) * (x-x0) + (y-y0) * (y-y0) <= rsq)
 			{
-				PutPixel(x, y, c);
+				if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
+				{
+					PutPixel(x, y, c);
+				}
 			}
 		}
 	}

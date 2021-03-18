@@ -92,6 +92,12 @@ public:
 		return X * rhs.X + Y * rhs.Y;
 	}
 
+	//for 2D vector, can only give magnitude (aka, the only component)!
+	T Cross(const Vec<T> rhs) const
+	{
+		return X*rhs.Y - Y*rhs.X;
+	}
+
 	template<typename U>
 	explicit Vec(const Vec<U> src)
 	{

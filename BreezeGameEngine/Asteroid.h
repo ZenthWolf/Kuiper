@@ -12,6 +12,16 @@ public:
 	{
 	}
 
+	Vec<float> GetVel() const
+	{
+		return vel;
+	}
+
+	void SetVel(Vec<float> newvel)
+	{
+		vel = newvel;
+	}
+
 	void Update(float dt)
 	{
 		TranslateBy(vel * dt);

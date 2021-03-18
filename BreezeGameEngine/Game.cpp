@@ -86,6 +86,10 @@ void Game::UpdateModel(float dt)
 				spawnhalt = false;
 			}
 		}
+		if (wnd.kbd.KeyIsPressed('V'))
+		{
+			belt.clear();
+		}
 		if (wnd.kbd.KeyIsPressed(VK_SPACE))
 		{
 			if (!spawnhalt)
@@ -110,10 +114,10 @@ void Game::UpdateModel(float dt)
 					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
 					vel.Y = -abs(vel.Y);
 					float rot = thDist(rng) / scale;
-					belt.emplace_back(Asteroid(pos, vel, rot));
-					belt[belt.size() - 1].SetScale(scale);
+					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+					belt[belt.size() - 1]->SetScale(scale);
 				}
-
+				
 				if (spawnside == 1) //BOTTOM
 				{
 					float scale = sDist(rng);
@@ -121,8 +125,8 @@ void Game::UpdateModel(float dt)
 					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
 					vel.Y = abs(vel.Y);
 					float rot = thDist(rng) / scale;
-					belt.emplace_back(Asteroid(pos, vel, rot));
-					belt[belt.size() - 1].SetScale(scale);
+					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+					belt[belt.size() - 1]->SetScale(scale);
 				}
 
 				if (spawnside == 2) //LEFT
@@ -132,8 +136,8 @@ void Game::UpdateModel(float dt)
 					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
 					vel.X = abs(vel.X);
 					float rot = thDist(rng) / scale;
-					belt.emplace_back(Asteroid(pos, vel, rot));
-					belt[belt.size() - 1].SetScale(scale);
+					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+					belt[belt.size() - 1]->SetScale(scale);
 				}
 
 				if (spawnside == 3) //RIGHT
@@ -143,8 +147,8 @@ void Game::UpdateModel(float dt)
 					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
 					vel.X = -abs(vel.X);
 					float rot = thDist(rng) / scale;
-					belt.emplace_back(Asteroid(pos, vel, rot));
-					belt[belt.size() - 1].SetScale(scale);
+					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+					belt[belt.size() - 1]->SetScale(scale);
 				}
 			}
 		}
@@ -153,7 +157,25 @@ void Game::UpdateModel(float dt)
 		
 		for (auto& e : belt)
 		{
-			e.Update(dt);
+			e->Update(dt);
+		}
+
+		for (int i = 0; i < int(belt.size()); i++)
+		{
+			for (int j = i + 1; j < belt.size(); j++)
+			{
+				float dist2 = ( belt[i]->GetPos() - belt[j]->GetPos() ).GetLengthSq();
+				float radi2 = belt[i]->GetRadius() + belt[j]->GetRadius();
+				radi2 = radi2 * radi2;
+				if (radi2 > dist2)
+				{
+					if ( belt[i]->CollWith(*belt[j]) )
+					{
+						belt[i]->SetVel(-belt[i]->GetVel());
+						belt[j]->SetVel(-belt[j]->GetVel());
+					}
+				}
+			}
 		}
 
 		const float velc = 200.0f;
@@ -245,7 +267,7 @@ void Game::ComposeFrame()
 
 		for (auto& e : belt)
 		{
-			cam.Draw(e.GetDrawable());
+			cam.Draw(e->GetDrawable());
 		}
 		break;
 	}
