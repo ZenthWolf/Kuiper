@@ -14,6 +14,20 @@ public:
 		Y0 = y0;
 		X1 = x1;
 		Y1 = y1;
+
+		if (X0 > X1)
+		{
+			T temp = X1;
+			X1 = X0;
+			X0 = temp;
+		}
+
+		if (Y0 > Y1)
+		{
+			T temp = Y1;
+			Y1 = Y0;
+			Y0 = temp;
+		}
 	}
 
 	Rect(Vec<T> v0, Vec<T> v1)
@@ -22,6 +36,20 @@ public:
 		Y0 = v0.Y;
 		X1 = v1.X;
 		Y1 = v1.Y;
+
+		if (X0 > X1)
+		{
+			T temp = X1;
+			X1 = X0;
+			X0 = temp;
+		}
+
+		if (Y0 > Y1)
+		{
+			T temp = Y1;
+			Y1 = Y0;
+			Y0 = temp;
+		}
 	}
 
 	static Rect FromCent(Vec<T> center, T halfWidth, T halfHeight)
