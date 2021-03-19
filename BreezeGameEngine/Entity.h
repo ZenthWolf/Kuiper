@@ -148,12 +148,42 @@ public:
 	{
 		Vec<float> impact = (targ.pos - pos).Norm();
 
+		Vec<float> xtest;
+
 		if (impact.Dot(vel) > 0.0f || impact.Dot(targ.vel) < 0.0f)
 		{
 			Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
 
 			targ.vel += xfer;
 			vel -= xfer;
+
+			xtest = xfer;
+
+
+			float angimpact = impact.Cross(targ.vel + vel);
+			float aimp0 = angimpact / targ.boundingrad;
+			float aimp1 = angimpact / boundingrad;
+
+			if (rot > 0.0f && targ.rot > 0.0f)
+			{
+				targ.rot += aimp0;
+				rot += aimp1;
+			}
+			else if (rot < 0.0f && targ.rot < 0.0f)
+			{
+				targ.rot -= aimp0;
+				rot -= aimp1;
+			}
+			else if (rot < 0.0f && targ.rot > 0.0f)
+			{
+				targ.rot -= aimp0;
+				rot += aimp1;
+			}
+			else
+			{
+				targ.rot += aimp0;
+				rot -= aimp1;
+			}
 		}
 	}
 
