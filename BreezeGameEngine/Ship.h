@@ -6,8 +6,8 @@
 class Ship : public Entity
 {
 public:
-	Ship(Vec<float> pos = { 0.0f, 0.0f }, Color c = Colors::Cyan)
-		:Entity(Shapes::Ship(), pos, c)
+	Ship(Vec<float> pos = { 0.0f, 0.0f }, Vec<float> vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::Cyan)
+		:Entity(Shapes::Ship(), pos, vel, rot, c)
 	{
 		modelburn = Shapes::ShipBurn();
 	}
@@ -62,13 +62,12 @@ public:
 
 private:
 	std::vector<Vec<float>> modelburn;
-	Vec<float> vel = { 0.0f, 0.0f };
+	
+
 	float thrust = .5f;
-	float vmax = 200.0f;
 	float vdecay = 0.075f;
-	float rot = 0.0f;
 	float athrust = 2.0f;
-	float rotmax = 3.0f;
+
 	float rotdecay = 0.5f;
 
 	bool burn = false;

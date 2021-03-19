@@ -6,8 +6,8 @@
 class Entity
 {
 public:
-	Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = {0.0f, 0.0f}, Color c = Colors::White)
-		:model(std::move(modl)), pos(pos), c(c)
+	Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, const Vec<float>& vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::White)
+		:model(std::move(modl)), pos(pos), vel(vel), rot(rot), c(c)
 	{
 		for (auto v : model)
 		{
@@ -144,6 +144,19 @@ public:
 		return xmodel;
 	}
 
+	void Recoil(Entity& targ)
+	{
+		Vec<float> impact = (targ.pos - pos).Norm();
+
+		if (impact.Dot(vel) > 0.0f || impact.Dot(targ.vel) < 0.0f)
+		{
+			Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
+
+			targ.vel += xfer;
+			vel -= xfer;
+		}
+	}
+
 protected:
 	void SetModel(std::vector<Vec<float>> modelnew)
 	{
@@ -158,12 +171,18 @@ protected:
 		return side0.Cross(side1);
 	}
 
-private:
 	std::vector<Vec<float>> model;
 
 	Color c;
+
 	Vec<float> pos = { 0.0f, 0.0f };
-	float scale = 1.0f;
+	Vec<float> vel = { 0.0f, 0.0f };
+	float vmax = 200.0f;
+
 	float heading = 0.0f;
+	float rot = 0.0f;
+	float rotmax = 3.0f;
+
+	float scale = 1.0f;
 	float boundingrad = 0.0f;
 };

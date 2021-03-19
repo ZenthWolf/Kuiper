@@ -150,6 +150,25 @@ void Game::UpdateModel(float dt)
 					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
 					belt[belt.size() - 1]->SetScale(scale);
 				}
+
+				int index = belt.size() - 1;
+
+				for (int i = 0; i < index; i++)
+				{
+					float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
+					float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
+					radi2 = radi2 * radi2;
+					if (radi2 > dist2)
+					{
+						if (belt[i]->CollWith(*belt[index]))
+						{
+							belt.pop_back();
+							spawnhalt = false;
+							break;
+						}
+					}
+				}
+
 			}
 		}
 
@@ -171,8 +190,9 @@ void Game::UpdateModel(float dt)
 				{
 					if ( belt[i]->CollWith(*belt[j]) )
 					{
-						belt[i]->SetVel(-belt[i]->GetVel());
-						belt[j]->SetVel(-belt[j]->GetVel());
+						belt[i]->Recoil(*belt[j]);
+						//belt[i]->SetVel(-belt[i]->GetVel());
+						//belt[j]->SetVel(-belt[j]->GetVel());
 					}
 				}
 			}

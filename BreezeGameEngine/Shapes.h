@@ -58,17 +58,17 @@ public:
 	{
 		std::vector<Vec<float>> asteroid;
 		asteroid.reserve(11);
-		asteroid.emplace_back(-12.0f, -5.0f);
-		asteroid.emplace_back(0.0f, -7.0f);
-		asteroid.emplace_back(12.0f, -5.0f);
-		asteroid.emplace_back(17.0f, 6.0f);
-		asteroid.emplace_back(20.0f, 12.0f);
-		asteroid.emplace_back(14.0f, 18.0f);
-		asteroid.emplace_back(9.0f, 16.0f);
-		asteroid.emplace_back(0.0f, 12.0f);
-		asteroid.emplace_back(-4.0f, 15.0f);
-		asteroid.emplace_back(-9.0f, 3.0f);
-		asteroid.emplace_back(-11.0f, -2.0f);
+		asteroid.emplace_back(-16.72727272f, -11.27272727f);
+		asteroid.emplace_back(-4.72727272f, -13.27272727f);
+		asteroid.emplace_back(8.72727272f, -11.27272727f);
+		asteroid.emplace_back(13.72727272f, 0.27272727f);
+		asteroid.emplace_back(16.72727272f, 6.27272727f);
+		asteroid.emplace_back(10.72727272f, 12.27272727f);
+		asteroid.emplace_back(5.72727272f, 10.27272727f);
+		asteroid.emplace_back(-2.72727272f, 6.27272727f);
+		asteroid.emplace_back(-6.72727272f, 9.27272727f);
+		asteroid.emplace_back(-11.72727272f, -3.27272727f);
+		asteroid.emplace_back(-13.72727272f, -8.27272727f);
 
 		return asteroid;
 	}

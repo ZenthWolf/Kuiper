@@ -8,7 +8,7 @@ class Asteroid : public Entity
 {
 public:
 	Asteroid(Vec<float> pos = { 0.0f, 0.0f }, Vec<float> vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::LightGray)
-		:Entity(Shapes::Asteroid(), pos, c), vel(vel), rot(rot)
+		:Entity(Shapes::Asteroid(), pos, vel, rot, c)
 	{
 	}
 
@@ -27,8 +27,4 @@ public:
 		TranslateBy(vel * dt);
 		RotBy(rot * dt);
 	}
-
-private:
-	Vec<float> vel;
-	float rot;
 };
