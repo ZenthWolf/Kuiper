@@ -151,6 +151,7 @@
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundEffect.h" />
+    <ClInclude Include="Spawner.h" />
     <ClInclude Include="SpriteEffect.h" />
     <ClInclude Include="Statics.h" />
     <ClInclude Include="Surface.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="Surface.cpp" />
     <ClCompile Include="SurfaceOPT.cpp" />
   </ItemGroup>

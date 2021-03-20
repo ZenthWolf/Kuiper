@@ -24,9 +24,9 @@
 #include "CoordinateTransformer.h"
 #include "Camera.h"
 
+#include "Spawner.h"
 #include "Statics.h"
 #include "Ship.h"
-#include "Asteroid.h"
 
 
 class Game
@@ -64,6 +64,7 @@ private:
 	Ship ship;
 	std::vector<Star> scene;
 	std::vector<std::unique_ptr<Asteroid>> belt;
+	Spawner spawner;
 
 	bool spawnhalt = false;
 };

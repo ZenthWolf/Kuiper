@@ -19,7 +19,7 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), cam(ct)
+	ct(gfx), cam(ct), spawner(belt)
 {
 	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
@@ -90,113 +90,10 @@ void Game::UpdateModel(float dt)
 		{
 			belt.clear();
 		}
-		if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		{
-			if (!spawnhalt)
-			{
-				spawnhalt = true;
-
-				Rect<float> bounds = cam.GetScreenBox();
-
-				std::uniform_int_distribution<int> side(0,3);
-				std::uniform_real_distribution<float> xDist(bounds.X0, bounds.X1);
-				std::uniform_real_distribution<float> yDist(bounds.Y0, bounds.Y1);
-				std::uniform_real_distribution<float> vDist(-300.0f, 300.0f);
-				std::uniform_real_distribution<float> sDist(0.75f, 5.0f);
-				std::uniform_real_distribution<float> thDist(-5.0f, 5.0f);
-
-				int spawnside = side(rng);
-
-				if (spawnside == 0) //TOP
-				{
-					float scale = sDist(rng);
-					Vec<float> pos = { xDist(rng), bounds.Y1 };
-					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-					vel.Y = -abs(vel.Y);
-					float rot = thDist(rng) / scale;
-					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-					belt[belt.size() - 1]->SetScale(scale);
-				}
-				
-				if (spawnside == 1) //BOTTOM
-				{
-					float scale = sDist(rng);
-					Vec<float> pos = { xDist(rng), bounds.Y0 };
-					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-					vel.Y = abs(vel.Y);
-					float rot = thDist(rng) / scale;
-					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-					belt[belt.size() - 1]->SetScale(scale);
-				}
-
-				if (spawnside == 2) //LEFT
-				{
-					float scale = sDist(rng);
-					Vec<float> pos = { bounds.X0, yDist(rng) };
-					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-					vel.X = abs(vel.X);
-					float rot = thDist(rng) / scale;
-					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-					belt[belt.size() - 1]->SetScale(scale);
-				}
-
-				if (spawnside == 3) //RIGHT
-				{
-					float scale = sDist(rng);
-					Vec<float> pos = { bounds.X1, yDist(rng) };
-					Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-					vel.X = -abs(vel.X);
-					float rot = thDist(rng) / scale;
-					belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-					belt[belt.size() - 1]->SetScale(scale);
-				}
-
-				int index = belt.size() - 1;
-
-				for (int i = 0; i < index; i++)
-				{
-					float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
-					float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
-					radi2 = radi2 * radi2;
-					if (radi2 > dist2)
-					{
-						if (belt[i]->CollWith(*belt[index]))
-						{
-							belt.pop_back();
-							spawnhalt = false;
-							break;
-						}
-					}
-				}
-
-			}
-		}
 
 		ship.Update(dt);
 		
-		for (auto& e : belt)
-		{
-			e->Update(dt);
-		}
-
-		for (int i = 0; i < int(belt.size()); i++)
-		{
-			for (int j = i + 1; j < belt.size(); j++)
-			{
-				float dist2 = ( belt[i]->GetPos() - belt[j]->GetPos() ).GetLengthSq();
-				float radi2 = belt[i]->GetRadius() + belt[j]->GetRadius();
-				radi2 = radi2 * radi2;
-				if (radi2 > dist2)
-				{
-					if ( belt[i]->CollWith(*belt[j]) )
-					{
-						belt[i]->Recoil(*belt[j]);
-						//belt[i]->SetVel(-belt[i]->GetVel());
-						//belt[j]->SetVel(-belt[j]->GetVel());
-					}
-				}
-			}
-		}
+		spawner.Update(dt, cam.GetScreenBox());
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
@@ -280,15 +177,17 @@ void Game::ComposeFrame()
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		cam.Draw(ship.GetDrawable());
-		for (auto& e : scene)
+		for (auto& s : scene)
 		{
-			cam.Draw(e.GetDrawable());
+			cam.Draw(s.GetDrawable());
 		}
 
-		for (auto& e : belt)
+		for (auto& a : belt)
 		{
-			cam.Draw(e->GetDrawable());
+			cam.Draw(a->GetDrawable());
 		}
+
+		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
 		break;
 	}
 	}

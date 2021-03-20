@@ -2,6 +2,8 @@
 
 #include <vector>
 #include "Vec.h"
+#include "Colors.h"
+#include "Drawable.h"
 
 class Entity
 {
