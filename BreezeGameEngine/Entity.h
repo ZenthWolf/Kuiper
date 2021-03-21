@@ -97,15 +97,15 @@ public:
 		std::vector<Vec<float>>& source = GetTransformedModel();
 		std::vector<Vec<float>>& target = targ.GetTransformedModel();
 
-		for (int i = 0; i < int(source.size()) - 1; i++)
+		for (int i = 0; i < int(source.size()); i++)
 		{
 			Vec<float> s0 = source[i];
-			Vec<float> s1 = source[i+1];
+			Vec<float> s1 = source[(i+1) % source.size()];
 
-			for (int j = 0; j < int(target.size()) - 1; j++)
+			for (int j = 0; j < int(target.size()); j++)
 			{
 				Vec<float> t0 = target[j];
-				Vec<float> t1 = target[j + 1];
+				Vec<float> t1 = target[(j+1) % source.size()];
 
 				if ((ClusterArea(s0, s1, t0) > 0.0f && ClusterArea(s0, s1, t1) < 0.0f) ||
 					(ClusterArea(s0, s1, t0) < 0.0f && ClusterArea(s0, s1, t1) > 0.0f))
@@ -118,7 +118,6 @@ public:
 				}
 			}
 		}
-		bool therearefalses = false;
 		return false;
 	}
 
@@ -150,31 +149,21 @@ public:
 	{
 		Vec<float> impact = (targ.pos - pos).Norm();
 
-		Vec<float> xtest;
-
-		if (impact.Dot(vel) > 0.0f || impact.Dot(targ.vel) < 0.0f)
+		if (impact.Dot(targ.vel - vel) < 0.0f)
 		{
-			Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
-
-			targ.vel += xfer;
-			vel -= xfer;
-
-			xtest = xfer;
-
-
 			float angimpact = impact.Cross(targ.vel + vel);
-			float aimp0 = angimpact / targ.boundingrad;
-			float aimp1 = angimpact / boundingrad;
+			float aimp0 = angimpact / (targ.boundingrad* targ.boundingrad);
+			float aimp1 = angimpact / (boundingrad*boundingrad);
 
 			if (rot > 0.0f && targ.rot > 0.0f)
 			{
-				targ.rot += aimp0;
-				rot += aimp1;
+				targ.rot -= aimp0;
+				rot -= aimp1;
 			}
 			else if (rot < 0.0f && targ.rot < 0.0f)
 			{
-				targ.rot -= aimp0;
-				rot -= aimp1;
+				targ.rot += aimp0;
+				rot += aimp1;
 			}
 			else if (rot < 0.0f && targ.rot > 0.0f)
 			{
@@ -186,6 +175,11 @@ public:
 				targ.rot += aimp0;
 				rot -= aimp1;
 			}
+
+			Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
+
+			targ.vel += xfer;
+			vel -= xfer;
 		}
 	}
 

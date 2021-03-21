@@ -38,7 +38,7 @@ void Spawner::Update(float dt, Rect<float> cambox)
 
 			GenerateAsteroid(cambox);
 
-			std::uniform_real_distribution<float> nextAst(1.0f, 5.0f);
+			std::uniform_real_distribution<float> nextAst(.3f, 2.0f);
 			GenTime = nextAst(rng);
 		}
 	}
