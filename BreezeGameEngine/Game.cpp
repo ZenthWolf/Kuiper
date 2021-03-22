@@ -176,11 +176,14 @@ void Game::ComposeFrame()
 		poly.emplace_back(400.0f, 500.0f);
 		cam.Draw(Drawable(poly, Colors::Green));
 
-		cam.Draw(ship.GetDrawable());
 		for (auto& s : scene)
 		{
 			cam.Draw(s.GetDrawable());
 		}
+
+		cam.Draw(Drawable(poly, Colors::Green));
+
+		cam.Draw(ship.GetDrawable());
 
 		for (auto& a : belt)
 		{
@@ -188,6 +191,25 @@ void Game::ComposeFrame()
 		}
 
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
+
+		if (wnd.mouse.LeftIsPressed())
+		{
+			std::vector<Vec<float>> testLine;
+			Vec<float> pos = { (float)wnd.mouse.GetPosX(), (float)wnd.mouse.GetPosY() };
+			testLine.emplace_back(cam.TransformToRealSpace(pos));
+			testLine.emplace_back(cam.TransformToRealSpace(Vec<float>{ 100.0f, 100.0f }));
+
+			if (ship.CollPoint(testLine[0]))
+			{
+				cam.Draw(Drawable(testLine, Colors::Cyan));
+			}
+			else
+			{
+				cam.Draw(Drawable(testLine, Colors::Red));
+			}
+			
+		}
+
 		break;
 	}
 	}

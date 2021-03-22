@@ -57,9 +57,23 @@ void Spawner::CollCheck()
 			radi2 = radi2 * radi2;
 			if (radi2 > dist2)
 			{
-				if (belt[i]->CollWith(*belt[j]))
+				Entity::Intersection collider = belt[i]->CollWith(*belt[j]);
+
+				if (collider.sourceLinesIndex.size() != 0)
 				{
-					belt[i]->Recoil(*belt[j]);
+					belt[i]->Recoil(collider, *belt[j]);
+				}
+				/*Costly debugger*/
+				else
+				{
+					std::vector<Vec<float>> reference = belt[i]->GetTransformedModel();
+					for (int i = 0; i<int(reference.size()); i++)
+					{
+						if (belt[j]->CollPoint(reference[i]))
+						{
+							bool scream = true;
+						}
+					}
 				}
 			}
 		}
@@ -132,7 +146,8 @@ void Spawner::GenerateAsteroid(Rect<float> cambox)
 		radi2 = radi2 * radi2;
 		if (radi2 > dist2)
 		{
-			if (belt[i]->CollWith(*belt[index]))
+			Entity::Intersection collider = belt[i]->CollWith(*belt[index]);
+			if (collider.sourceLinesIndex.size() != 0)
 			{
 				belt.pop_back();
 				break;

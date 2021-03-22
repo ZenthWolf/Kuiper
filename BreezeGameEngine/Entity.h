@@ -5,10 +5,26 @@
 #include "Colors.h"
 #include "Drawable.h"
 
+#include "BreezeException.h"
+
+
 class Entity
 {
 public:
 	Entity(std::vector<Vec<float>> modl, const Vec<float>& pos, const Vec<float>& vel, float rot, Color c);
+
+	class ColliderException : public BreezeException
+	{
+	public:
+		ColliderException(const std::wstring& note, const wchar_t* file, unsigned int line)
+			:BreezeException(file, line, note)
+		{}
+
+		virtual std::wstring GetFullMessage() const override;
+		virtual std::wstring GetExceptionType() const override;
+	};
+
+	enum class vertexType { outside, unchecked, inside };
 
 	const Vec<float>& GetPos() const;
 	void SetPos(const Vec<float> newpos);
@@ -26,9 +42,24 @@ public:
 	Drawable GetDrawable() const;
 	void SetColor(Color cnew);
 
-	bool CollWith(Entity targ);
+	struct Intersection
+	{
+		std::vector <Vec<int>> sourceLinesIndex;
+		std::vector <Vec<int>> targetLinesIndex;
+		std::vector<Vec<float>> sourceTrans;
+		std::vector<Vec<float>> targetTrans;
+		int passed = 0;
+	};
+
+	Intersection CollWith(const Entity& targ);
+	void Recoil(Intersection intersection, Entity& targ);
+	std::vector<vertexType> ResolveInternalVertex(Intersection intersection, Entity& targ);
+	Vec<float> MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, Entity& targ);
+
+	bool CollPoint(const Vec<float> targ);
 	std::vector<Vec<float>> GetTransformedModel() const;
-	void Recoil(Entity& targ);
+	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
+	
 
 protected:
 	void SetModel(std::vector<Vec<float>> modelnew);

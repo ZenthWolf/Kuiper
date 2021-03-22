@@ -161,6 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Beveler.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CoordinateTransformer.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FrameTimer.cpp" />

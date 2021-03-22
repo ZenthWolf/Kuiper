@@ -5,49 +5,19 @@
 class Camera
 {
 public:
-	Camera( CoordinateTransformer& ct)
-		:ct(ct)
-	{}
+	Camera(CoordinateTransformer& ct);
 
-	Vec<float> GetPos() const
-	{
-		return pos;
-	}
+	Vec<float> GetPos() const;
+	void MoveBy(const Vec<float>& offset);
+	void MoveTo(const Vec<float>& newpos);
+	float GetScale() const;
+	void SetScale(const float s);
 
-	float GetScale() const
-	{
-		return scale;
-	}
+	Vec<float> TransformToRealSpace(const Vec<float> pnt) const;
 
-	Rect<float> GetScreenBox() const
-	{
-		const float zoom = 1.0f / scale;
-		return Rect<float>::FromCent(pos,
-			float(Graphics::ScreenWidth / 2 ) * zoom,
-			float(Graphics::ScreenHeight / 2)* zoom );
-	}
-
-	void MoveBy(const Vec<float>& offset)
-	{
-		pos += offset;
-	}
-
-	void MoveTo(const Vec<float>& newpos)
-	{
-		pos = newpos;
-	}
-
-	void SetScale(const float s)
-	{
-		scale = s;
-	}
-
-	void Draw( Drawable& drawable ) const
-	{
-		drawable.Translate(-pos);
-		drawable.Scale(scale);
-		ct.Draw( drawable );
-	}
+	Rect<float> GetScreenBox() const;
+	
+	void Draw(Drawable& drawable) const;
 
 private:
 	CoordinateTransformer& ct;

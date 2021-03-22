@@ -402,7 +402,10 @@ void Graphics::DrawCirc(Vec<float> pos, float r, Color c)
 		{
 			if ((float(x) - pos.X) * (float(x) - pos.X) + (float(y) - pos.Y) * (float(y) - pos.Y) <= rsq)
 			{
-				PutPixel(x, y, c);
+				if (x >= 0 && x < ScreenWidth && y >= 0 && y < ScreenHeight)
+				{
+					PutPixel(x, y, c);
+				}
 			}
 		}
 	}
@@ -542,8 +545,27 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 
 	const Vec<float> front = xform( vert.front() );
 	Vec<float> cur = front;
+
+	int colcount = 0;
 	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
 	{
+		std::vector<Color> colArr;
+		colArr.emplace_back(Colors::White);
+		colArr.emplace_back(Colors::Red);
+		colArr.emplace_back(Colors::Yellow);
+		colArr.emplace_back(Colors::Green);
+		colArr.emplace_back(Colors::Cyan);
+		colArr.emplace_back(Colors::LightBlue);
+		colArr.emplace_back(Colors::Blue);
+		colArr.emplace_back(Colors::Magenta);
+		colArr.emplace_back(Colors::Purple);
+		colArr.emplace_back(Colors::LightGray);
+		colArr.emplace_back(Colors::Gray);
+		colArr.emplace_back(Colors::DarkGray);
+
+		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
+		colcount++;
+
 		const Vec<float> next = xform( *std::next(i) );
 		DrawLine(cur, next, c);
 		cur = next;
