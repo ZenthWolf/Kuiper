@@ -13,6 +13,8 @@ public:
 
 	void Update(float dt, Rect<float> cambox);
 
+	void CollideShip(Entity& ship);
+
 private:
 	void CollCheck();
 	void GenerateAsteroid(Rect<float> cambox);

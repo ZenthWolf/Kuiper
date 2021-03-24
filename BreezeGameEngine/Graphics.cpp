@@ -559,9 +559,9 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 		colArr.emplace_back(Colors::Blue);
 		colArr.emplace_back(Colors::Magenta);
 		colArr.emplace_back(Colors::Purple);
-		colArr.emplace_back(Colors::LightGray);
-		colArr.emplace_back(Colors::Gray);
-		colArr.emplace_back(Colors::DarkGray);
+		colArr.emplace_back(Colors::LightGrey);
+		colArr.emplace_back(Colors::Grey);
+		colArr.emplace_back(Colors::DarkGrey);
 
 		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
 		colcount++;

@@ -1,6 +1,7 @@
+#define NOMINMAX // I just want std::min to work, Windows...
+
 #include "Entity.h"
 #include<algorithm>
-#include<iostream>
 
 #define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
 
@@ -105,58 +106,108 @@ void Entity::SetColor(Color cnew)
 }
 
 
-Entity::Intersection Entity::CollWith(const Entity& targ)
+std::vector<int> Entity::CollWith(const Entity& targ) const
 {
-	std::vector<Vec<float>>& source = GetTransformedModel();
-	std::vector<Vec<float>>& target = targ.GetTransformedModel();
+	std::vector<int> interiorVerts;
 
-	std::vector<Vec<int>> sourceLinesIndex;
-	std::vector<Vec<int>> targetLinesIndex;
+	std::vector<Vec<float>>& source = GetTransformedModel();
+
+	float txMin = targ.pos.X - targ.boundingrad;
+	float txMax = targ.pos.X + targ.boundingrad;
+	float tyMin = targ.pos.Y - targ.boundingrad;
+	float tyMax = targ.pos.Y + targ.boundingrad;
 
 	for (int i = 0; i < int(source.size()); i++)
 	{
 		Vec<float> s0 = source[i];
-		Vec<float> s1 = source[(i + 1) % int(source.size())];
-
-		for (int j = 0; j < int(target.size()); j++)
+		
+		if ( s0.X > txMin && s0.X < txMax)
 		{
-			Vec<float> t0 = target[j];
-			Vec<float> t1 = target[(j + 1) % target.size()];
-
-			if ((ClusterArea(s0, s1, t0) > 0.0f && ClusterArea(s0, s1, t1) < 0.0f) ||
-				(ClusterArea(s0, s1, t0) < 0.0f && ClusterArea(s0, s1, t1) > 0.0f))
+			if (s0.Y > tyMin && s0.Y < tyMax)
 			{
-				if ((ClusterArea(t0, t1, s0) > 0.0f && ClusterArea(t0, t1, s1) < 0.0f) ||
-					(ClusterArea(t0, t1, s0) < 0.0f && ClusterArea(t0, t1, s1) > 0.0f))
+				if (targ.CollPoint(s0))
 				{
-					sourceLinesIndex.emplace_back(Vec<int>{ i, (i + 1) % int(source.size()) });
-
-					targetLinesIndex.emplace_back(Vec<int>{ j, (j + 1) % int(target.size()) });
+					interiorVerts.emplace_back(i);
 				}
 			}
 		}
 	}
 
-	return Intersection{ sourceLinesIndex,targetLinesIndex, source, target };
+	return std::move(interiorVerts);
 }
 
-void Entity::Recoil(Entity::Intersection intersection, Entity& targ)
+
+
+void Entity::Recoil(std::vector<int> collider, Entity& targ)
 {
-	assert(intersection.passed < 2);
+	float impactTime = 2 * targ.boundingrad;
+	Vec<int> contactSide;
+	int contactPoint;
+
+	/**************************************************/
+	/*****COLLINFO RETURNS DEPTH NOT TIME**************/
+	/**************************************************/
+
+
+	for (auto vertInd : collider)
+	{
+		Vec<float> vert = GetTransformedVertex(vertInd);
+		Vec<float> vertVel = vel + Vec<float>{-vert.Y, vert.X} *rot;
+		CollInfo collision = targ.CalculateImpact(vert, -vel);
+
+		if (impactTime > collision.impactTime)
+		{
+			impactTime = collision.impactTime;
+			contactSide = collision.impactSide;
+			contactPoint = vertInd;
+		}
+	}
+
+	Vec<float> t0 = targ.GetTransformedVertex(contactSide.X);
+	Vec<float> t1 = targ.GetTransformedVertex(contactSide.Y);
+	Vec<float> contact = GetTransformedVertex(contactPoint);
+	Vec<float> sourceRad = contact - pos;
+	Vec<float> targetRad = contact - targ.pos;
+	Vec<float> edge = { t1 - t0 };
+	Vec<float> norm = Vec<float>{ -edge.Y, edge.X }.Norm();
+	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
+	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
+	Vec<float> rvel = vContactTarget - vContactSource;
+
+	if(rvel.Dot(norm) < 0.0f)
+	{
+		TranslateBy(-norm * impactTime / 2);
+		targ.TranslateBy(norm * impactTime / 2);
+
+		float momInertiaFactor = Vec<float>{ sourceRad.Y, -sourceRad.X }.Dot(norm) / sourceRad.GetLengthSq()
+			+ Vec<float>{targetRad.Y, -targetRad.X }.Dot(norm) / targetRad.GetLengthSq();
+
+
+		float impulse = -2 * rvel.Dot(norm) / (1 + 1 + momInertiaFactor);
+
+
+		vel -= norm * impulse;
+		targ.vel += norm * impulse;
+		rot -= impulse * sourceRad.Cross(norm) / sourceRad.GetLengthSq();
+		targ.rot += impulse * targetRad.Cross(norm) / targetRad.GetLengthSq();
+	}
+	/*
+	//	assert(intersection.passed < 2);
 	intersection.passed++;
 
-	std::vector<Entity::vertexType> pntloc = ResolveInternalVertex(intersection, targ);
-
-	if (pntloc.size() == 0)
+	if (intersection.passed > 2)
 	{
-		if (intersection.passed < 2)
-		{
-			bool scream = true;
-			std::swap(intersection.sourceLinesIndex, intersection.targetLinesIndex);
-			std::swap(intersection.sourceTrans, intersection.targetTrans);
-			targ.Recoil(intersection, *this);
-		}
-		else
+		bool scream = true;
+	}
+
+	if (!(targ.CollPoint(intersection.sourceTrans[intersection.sourceLinesIndex[0].X]) ||
+		targ.CollPoint(intersection.sourceTrans[intersection.sourceLinesIndex[0].Y])))
+	{
+		std::swap(intersection.sourceLinesIndex, intersection.targetLinesIndex);
+		std::swap(intersection.sourceTrans, intersection.targetTrans);
+		targ.Recoil(intersection, *this);
+
+		if (intersection.passed >= 2)
 		{
 			throw BREEZE_COLLIDER_EXCEPTION(L"Collider failed to resolve interior vertecies");
 		}
@@ -164,118 +215,161 @@ void Entity::Recoil(Entity::Intersection intersection, Entity& targ)
 
 	else
 	{
-		int counter = 0;
-		for (auto v : pntloc)
-		{
-			if (v == Entity::vertexType::inside)
-			{
-				counter++;
-			}
-		}
-		std::cout << counter;
+		std::vector<int> intVertIndex = ResolveInternalVertex(intersection, targ);
+
 		std::vector<Vec<int>> sourceLinesIndex = intersection.sourceLinesIndex;
 		std::vector<Vec<int>> targetLinesIndex = intersection.targetLinesIndex;
 		std::vector<Vec<float>> sourceTrans = intersection.sourceTrans;
 		std::vector<Vec<float>> targetTrans = intersection.targetTrans;
 
+		int contactPoint = -1;
+		Vec<int> contactSide;
+		float impactTime = 0.0f;
+		float impactDepth;
 
-		Vec<float> debugshift = { 0.0f, 0.0f };
-
-		for (int i = 0; i<int(sourceLinesIndex.size()); i++)
+		//find the longest time for which vertex to leave
+		for (auto vertIndex : intVertIndex)
 		{
-			int s0i = sourceLinesIndex[i].X;
-			int s1i = sourceLinesIndex[i].Y;
+			Vec<float> s0 = sourceTrans[vertIndex];
+			float dtVert = -1.0f;
+			float depthVert;
+			Vec<int> sideVert;
 
-			int t0i = targetLinesIndex[i].X;
-			int t1i = targetLinesIndex[i].Y;
-
-			if (pntloc[s0i] == Entity::vertexType::inside)
+			//find the shortest time for this vert to leave
+			for (int i = 0; i<int(targetTrans.size()); i++)
 			{
-				Vec<float> s0 = sourceTrans[s0i];
+				int t0i = i; int t1i = (i + 1) % int(targetTrans.size());
 				Vec<float> t0 = targetTrans[t0i];
 				Vec<float> t1 = targetTrans[t1i];
-				pntloc[s0i] = Entity::vertexType::outside;
 
-				debugshift += MomentumTransfer(s0, t0, t1, targ);
+				Vec<float> edge = { t1 - t0 };
+				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
+
+				Vec<float> rvel = (targ.vel - vel);
+
+				float depthFromSide = abs((t0 - s0).Cross(t1 - s0)) / edge.GetLength();
+				float impactVel = rvel.Dot(norm);
+				float dt = depthFromSide / impactVel;
+
+				if (impactVel > 0.0f)
+				{
+					bool Krezk = true;
+				}
+
+				if ( (dt > 0) && ((dt < dtVert) || (dtVert == -1.0f)) )
+				{
+					dtVert = dt;
+					depthVert = depthFromSide;
+					sideVert = { t0i, t1i };
+				}
+			}
+
+			if (dtVert > impactTime)
+			{
+				contactPoint = vertIndex;
+				contactSide = sideVert;
+				impactTime = dtVert;
+				impactDepth = depthVert;
 			}
 		}
 
-		for (int i = 0; i<int(model.size()); i++)
+		if (contactPoint == -1)
 		{
-			if (targ.CollPoint(model[i]))
+			bool beSad = true;
+		}
+
+		TranslateBy(vel * impactTime);
+		targ.TranslateBy(-targ.vel * impactTime);
+
+		Vec<float> t0 = targetTrans[contactSide.X];
+		Vec<float> t1 = targetTrans[contactSide.Y];
+		Vec<float> contact = sourceTrans[contactPoint];
+		Vec<float> sourceRad = contact - pos;
+		Vec<float> targetRad = contact - targ.pos;
+
+		Vec<float> contactVel = vel;
+
+		Vec<float> edge = { t1 - t0 };
+		Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
+		*/
+		/*
+		for (auto vertIndex : intVertIndex)
+		{
+			Vec<float> s0 = sourceTrans[vertIndex];
+			float bestImpact = 0.0f;
+
+			for (int i = 0; i<int(targetTrans.size()); i++)
 			{
-				bool scream = true;
-				pos -= debugshift / 2;
-				targ.pos += debugshift / 2;
-				intersection.passed = 0;
-				//Recoil(intersection, targ);
+				Vec<int> side = { i, (i + 1) % int(targetTrans.size()) };
+				Vec<float> t0 = targetTrans[side.X];
+				Vec<float> t1 = targetTrans[side.Y];
+
+				Vec<float> edge = { t1 - t0 };
+				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
+
+				Vec<float> rvel = (targ.vel - vel);
+
+				float depth = abs((t0 - s0).Cross(t1 - s0)) / edge.GetLength();
+				float impact = rvel.Dot(norm);
+
+				if (impact > 0.0f)
+				{
+					float dt = depth / rvel.GetLength();
+
+					if (dt < impactTime)
+					{
+						bestImpact = impact;
+						impactDepth = depth;
+						contactPoint = vertIndex;
+						contactSide = side;
+					}
+				}
+			}
+		}
+
+		if (contactPoint == -1)
+		{
+			bool scream = true;
+		}
+
+		
+		TranslateBy(-vel * dt);
+		targ.TranslateBy(targ.vel * dt);
+
+		Vec<float> t0 = targetTrans[contactSide.X];
+		Vec<float> t1 = targetTrans[contactSide.Y];
+		Vec<float> contact = sourceTrans[contactPoint];
+		Vec<float> sourceRad = contact - pos;
+		Vec<float> targetRad = contact - targ.pos;
+
+		Vec<float> contactVel = vel;
+
+		Vec<float> edge = { t1 - t0 };
+		Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
+
+		if (!norm.Dot(contactVel))
+		{
+			float momInertiaFactor = Vec<float>{ -sourceRad.Y, sourceRad.X }.Dot(norm) / sourceRad.GetLengthSq()
+				+ Vec<float>{-targetRad.Y, contact.X }.Dot(norm) / (targetRad - pos).GetLengthSq();
+
+			float impulse = -rvel.Dot(norm) / (1 + 1 + momInertiaFactor);
+
+			vel += norm * impulse;
+			targ.vel -= norm * impulse;
+			rot -= impulse * sourceRad.Cross(norm);
+			targ.rot += impulse * targetRad.Cross(norm);
+			Intersection test = CollWith(targ);
+			if (test.sourceLinesIndex.size() > 0)
+			{
+				bool screm = false;
 			}
 		}
 	}
+	*/
 }
 
-std::vector<Entity::vertexType> Entity::ResolveInternalVertex(Entity::Intersection intersection, Entity& targ)
-{
 
-	std::vector<Vec<int>> sourceLinesIndex = intersection.sourceLinesIndex;
-	std::vector<Vec<int>> targetLinesIndex = intersection.targetLinesIndex;
-	std::vector<Vec<float>> sourceTrans = intersection.sourceTrans;
-
-
-	std::vector<Entity::vertexType> pntloc;
-
-	for (int i = 0; i<int(model.size()); i++)
-	{
-		pntloc.emplace_back(Entity::vertexType::unchecked);
-	}
-
-	bool pntFound = false;
-
-	for (int i = 0; i<int(sourceLinesIndex.size()); i++)
-	{
-		int s0 = sourceLinesIndex[i].X;
-		int s1 = sourceLinesIndex[i].Y;
-
-		if (pntloc[s0] == vertexType::unchecked)
-		{
-			Vec<float> vertex0 = sourceTrans[s0];
-			if (targ.CollPoint(vertex0))
-			{
-				pntloc[s0] = vertexType::inside;
-				pntFound = true;
-			}
-			else
-			{
-				pntloc[s0] = vertexType::outside;
-			}
-		}
-
-		if (pntloc[s1] == vertexType::unchecked)
-		{
-			Vec<float> vertex1 = sourceTrans[s1];
-			if (targ.CollPoint(vertex1))
-			{
-				pntloc[s1] = vertexType::inside;
-				pntFound = true;
-			}
-			else
-			{
-				pntloc[s1] = vertexType::outside;
-			}
-		}
-	}
-
-	if (!pntFound)
-	{
-		return std::vector<Entity::vertexType>();
-	}
-
-	else
-	{
-		return pntloc;
-	}
-}
-
+//??Defunct???
 Vec<float> Entity::MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, Entity& targ)
 {
 	Vec<float> edge = { t1 - t0 };
@@ -288,42 +382,52 @@ Vec<float> Entity::MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, 
 	Vec<float> vs0 = vel - Vec<float>{s0.Y, -s0.X} *rot;
 	if (vs0.Dot(tang) < 0.0f)
 	{
-		/*Olde*/
+		Vec<float> impact = (targ.pos - pos).Norm();
+		Vec<float> fulcrum = (targ.pos - s0);
+
+		float angimp = fulcrum.Cross(targ.vel - vel) / (boundingrad * boundingrad);
+		targ.rot += angimp / (targ.boundingrad * targ.boundingrad);
+		rot -= angimp / (boundingrad * boundingrad);
+
+		Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
+
+		targ.vel += xfer;
+		vel -= xfer;
+
+		/*Olde*
 		Vec<float> impact = (targ.pos - pos).Norm();
 
-		if (impact.Dot(targ.vel - vel) < 0.0f)
+
+		float angimpact = impact.Cross(targ.vel + vel);
+		float aimp0 = angimpact / (targ.boundingrad * targ.boundingrad);
+		float aimp1 = angimpact / (boundingrad * boundingrad);
+
+		if (rot > 0.0f && targ.rot > 0.0f)
 		{
-			float angimpact = impact.Cross(targ.vel + vel);
-			float aimp0 = angimpact / (targ.boundingrad * targ.boundingrad);
-			float aimp1 = angimpact / (boundingrad * boundingrad);
-
-			if (rot > 0.0f && targ.rot > 0.0f)
-			{
-				targ.rot -= aimp0;
-				rot -= aimp1;
-			}
-			else if (rot < 0.0f && targ.rot < 0.0f)
-			{
-				targ.rot += aimp0;
-				rot += aimp1;
-			}
-			else if (rot < 0.0f && targ.rot > 0.0f)
-			{
-				targ.rot -= aimp0;
-				rot += aimp1;
-			}
-			else
-			{
-				targ.rot += aimp0;
-				rot -= aimp1;
-			}
-
-			Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
-
-			targ.vel += xfer;
-			vel -= xfer;
-			/*OLDE*/
+			targ.rot -= aimp0;
+			rot -= aimp1;
 		}
+		else if (rot < 0.0f && targ.rot < 0.0f)
+		{
+			targ.rot += aimp0;
+			rot += aimp1;
+		}
+		else if (rot < 0.0f && targ.rot > 0.0f)
+		{
+			targ.rot -= aimp0;
+			rot += aimp1;
+		}
+		else
+		{
+			targ.rot += aimp0;
+			rot -= aimp1;
+		}
+
+		Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
+
+		targ.vel += xfer;
+		vel -= xfer;
+		/*OLDE*/
 	}
 	//2*A
 	float scaledimpact = abs((t0 - s0).Cross(t1 - s0));
@@ -340,23 +444,23 @@ Vec<float> Entity::MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, 
 
 
 
-bool Entity::CollPoint(const Vec<float> targ)
+bool Entity::CollPoint(const Vec<float> targ) const
 {
-	Vec<float> target = UntransformPoint(targ);
-	Vec<float> refpoint = { boundingrad/scale + 1.0f, 0.0f };
+	std::vector<Vec<float>> sourceTrans = GetTransformedModel();
+	Vec<float> refpoint = Vec<float>{ boundingrad + 1.0f, 0.0f } + pos;
 
 	int CollCount = 0;
 
 	for (int i = 0; i < int(model.size()); i++)
 	{
-		Vec<float> t0 = model[i];
-		Vec<float> t1 = model[(i + 1) % model.size()];
+		Vec<float> t0 = sourceTrans[i];
+		Vec<float> t1 = sourceTrans[(i + 1) % model.size()];
 
-		if ((ClusterArea(target, refpoint, t0) > 0.0f && ClusterArea(target, refpoint, t1) < 0.0f) ||
-			(ClusterArea(target, refpoint, t0) < 0.0f && ClusterArea(target, refpoint, t1) > 0.0f))
+		if ((ClusterArea(targ, refpoint, t0) > 0.0f && ClusterArea(targ, refpoint, t1) < 0.0f) ||
+			(ClusterArea(targ, refpoint, t0) < 0.0f && ClusterArea(targ, refpoint, t1) > 0.0f))
 		{
-			if ((ClusterArea(t0, t1, target) > 0.0f && ClusterArea(t0, t1, refpoint) < 0.0f) ||
-				(ClusterArea(t0, t1, target) < 0.0f && ClusterArea(t0, t1, refpoint) > 0.0f))
+			if ((ClusterArea(t0, t1, targ) > 0.0f && ClusterArea(t0, t1, refpoint) < 0.0f) ||
+				(ClusterArea(t0, t1, targ) < 0.0f && ClusterArea(t0, t1, refpoint) > 0.0f))
 			{
 				CollCount++;
 			}
@@ -366,7 +470,7 @@ bool Entity::CollPoint(const Vec<float> targ)
 	return (bool(CollCount % 2));
 }
 
-float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C)
+float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C) const
 {
 	Vec<float> side0 = { B.X - A.X, B.Y - A.Y };
 	Vec<float> side1{ C.X - B.X, C.Y - B.Y };
@@ -374,26 +478,26 @@ float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C)
 	return side0.Cross(side1);
 }
 
+Vec<float> Entity::GetTransformedVertex(int vert) const
+{
+	Vec<float> v = model[vert];
+	float vxtemp = v.X; float vytemp = v.Y;
+	v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
+	v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
+	v.X *= scale;
+	v.Y *= scale;
+	v += pos;
+
+	return v;
+}
 
 std::vector<Vec<float>> Entity::GetTransformedModel() const
 {
-	const auto xform = [&](Vec<float> v)
-	{
-		float vxtemp = v.X; float vytemp = v.Y;
-		v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
-		v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
-		v.X *= scale;
-		v.Y *= scale;
-		v += pos;
-
-		return v;
-	};
-
 	std::vector<Vec<float>> xmodel;
 
 	for (int i = 0; i < model.size(); i++)
 	{
-		xmodel.emplace_back(xform(model[i]));
+		xmodel.emplace_back(GetTransformedVertex(i));
 	}
 
 	return xmodel;
@@ -411,6 +515,68 @@ Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
 	return relpnt;
 }
 
+
+
+Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float> velocity) const
+{
+	std::vector<Vec<float>> source = GetTransformedModel();
+	Vec<float> rvel = velocity - vel;
+	float scaleTime;
+
+	if (abs(rvel.X) > abs(rvel.Y))
+	{
+		scaleTime = 2 * boundingrad / abs(rvel.X);
+	}
+	else if(abs(rvel.Y) > abs(rvel.X))
+	{
+		scaleTime = 2 * boundingrad / abs(rvel.Y);
+	}
+
+	Vec<float> refpoint = point + rvel * scaleTime;
+
+	//float impactTime = 0.0f;
+	float impactTime = 200.0 * boundingrad;
+	Vec<int> impactSide;
+
+	for (int s0i = 0; s0i<int(source.size()); s0i++)
+	{
+		int s1i = (s0i + 1) % int(model.size());
+		Vec<float> s0 = source[s0i];
+		Vec<float> s1 = source[s1i];
+
+		if ((ClusterArea(point, refpoint, s0) > 0.0f && ClusterArea(point, refpoint, s1) < 0.0f) ||
+			(ClusterArea(point, refpoint, s0) < 0.0f && ClusterArea(point, refpoint, s1) > 0.0f))
+		{
+			if ((ClusterArea(s0, s1, point) > 0.0f && ClusterArea(s0, s1, refpoint) < 0.0f) ||
+				(ClusterArea(s0, s1, point) < 0.0f && ClusterArea(s0, s1, refpoint) > 0.0f))
+			{
+				Vec<float> edge = { s1 - s0 };
+				float sideLength = edge.GetLength();
+				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }/sideLength;
+
+
+				float depthFromSide = abs((s0 - point).Cross(s1 - point)) / sideLength;
+				float impactVel = rvel.Dot(norm);
+				float dt = depthFromSide / impactVel;
+
+				/*
+				if ( dt > impactTime )
+				{
+					impactTime = dt;
+					impactSide = { s0i, s1i };
+				}
+				*/
+				if (depthFromSide < impactTime)
+				{
+					impactTime = depthFromSide;
+					impactSide = { s0i, s1i };
+				}
+			}
+		}
+	}
+
+	return std::move(CollInfo{ impactTime, impactSide });
+}
 
 
 void Entity::SetModel(std::vector<Vec<float>> modelnew)

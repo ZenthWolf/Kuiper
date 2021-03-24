@@ -3,6 +3,8 @@
 #include<vector>
 #include "Vec.h"
 
+/* Shapes use counterclockwise unwinding. Important for defining normals */
+
 class Shapes 
 {
 public:

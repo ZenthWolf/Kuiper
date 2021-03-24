@@ -51,20 +51,27 @@ public:
 		int passed = 0;
 	};
 
-	Intersection CollWith(const Entity& targ);
-	void Recoil(Intersection intersection, Entity& targ);
-	std::vector<vertexType> ResolveInternalVertex(Intersection intersection, Entity& targ);
+	struct CollInfo
+	{
+		float impactTime;
+		Vec<int> impactSide;
+	};
+
+	std::vector<int> CollWith(const Entity& targ) const;
+	void Recoil(std::vector<int> intersection, Entity& targ);
 	Vec<float> MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, Entity& targ);
 
-	bool CollPoint(const Vec<float> targ);
+	bool CollPoint(const Vec<float> targ) const;
+	Vec<float> GetTransformedVertex(int vert) const;
 	std::vector<Vec<float>> GetTransformedModel() const;
 	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
 	
+	CollInfo CalculateImpact(const Vec<float> point, const Vec<float> Velocity) const;
 
 protected:
 	void SetModel(std::vector<Vec<float>> modelnew);
 
-	float ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C);
+	float ClusterArea(const Vec<float> A, const Vec<float> B, const Vec<float> C) const;
 
 	std::vector<Vec<float>> model;
 

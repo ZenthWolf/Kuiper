@@ -57,28 +57,56 @@ void Spawner::CollCheck()
 			radi2 = radi2 * radi2;
 			if (radi2 > dist2)
 			{
-				Entity::Intersection collider = belt[i]->CollWith(*belt[j]);
+				std::vector<int> collider = belt[i]->CollWith(*belt[j]);
 
-				if (collider.sourceLinesIndex.size() != 0)
+				if (collider.size() != 0)
 				{
 					belt[i]->Recoil(collider, *belt[j]);
 				}
-				/*Costly debugger*/
+
 				else
 				{
-					std::vector<Vec<float>> reference = belt[i]->GetTransformedModel();
-					for (int i = 0; i<int(reference.size()); i++)
+					std::vector<int> collider = belt[j]->CollWith(*belt[i]);
+					if (collider.size() != 0)
 					{
-						if (belt[j]->CollPoint(reference[i]))
-						{
-							bool scream = true;
-						}
+						belt[j]->Recoil(collider, *belt[i]);
 					}
 				}
 			}
 		}
 	}
 }
+
+void Spawner::CollideShip(Entity& ship)
+{
+	{
+		for (int i = 0; i < int(belt.size()); i++)
+		{
+			float dist2 = (belt[i]->GetPos() - ship.GetPos()).GetLengthSq();
+			float radi2 = belt[i]->GetRadius() + ship.GetRadius();
+			radi2 = radi2 * radi2;
+			if (radi2 > dist2)
+			{
+				std::vector<int> collider = belt[i]->CollWith(ship);
+
+				if (collider.size() != 0)
+				{
+					belt[i]->Recoil(collider, ship);
+				}
+				/*Costly debugger*/
+				else
+				{
+					std::vector<int> collider = ship.CollWith(*belt[i]);
+					if (collider.size() != 0)
+					{
+						ship.Recoil(collider, *belt[i]);
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void Spawner::GenerateAsteroid(Rect<float> cambox)
 {
@@ -146,8 +174,8 @@ void Spawner::GenerateAsteroid(Rect<float> cambox)
 		radi2 = radi2 * radi2;
 		if (radi2 > dist2)
 		{
-			Entity::Intersection collider = belt[i]->CollWith(*belt[index]);
-			if (collider.sourceLinesIndex.size() != 0)
+			std::vector<int> collider = belt[i]->CollWith(*belt[index]);
+			if (collider.size() != 0)
 			{
 				belt.pop_back();
 				break;

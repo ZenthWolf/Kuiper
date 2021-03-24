@@ -61,10 +61,12 @@ private:
 	CoordinateTransformer ct;
 	Camera cam;
 
+	Sound mus;
+
 	Ship ship;
 	std::vector<Star> scene;
 	std::vector<std::unique_ptr<Asteroid>> belt;
 	Spawner spawner;
 
-	bool spawnhalt = false;
+	bool collship = false;
 };

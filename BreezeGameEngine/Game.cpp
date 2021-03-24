@@ -19,7 +19,7 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), cam(ct), spawner(belt)
+	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
 {
 	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
@@ -61,6 +61,8 @@ void Game::UpdateModel(float dt)
 		if (wnd.kbd.KeyIsPressed(VK_SPACE))
 		{
 			gameState = GameState::Play;
+
+			mus.Play(1.0f, 0.3f);
 		}
 		break;
 
@@ -79,21 +81,30 @@ void Game::UpdateModel(float dt)
 		{
 			ship.AThrust(-dt);
 		}
-		if (wnd.kbd.KeyIsPressed('C'))
-		{
-			if (spawnhalt)
-			{
-				spawnhalt = false;
-			}
-		}
-		if (wnd.kbd.KeyIsPressed('V'))
-		{
-			belt.clear();
-		}
 
 		ship.Update(dt);
 		
 		spawner.Update(dt, cam.GetScreenBox());
+
+		if (!wnd.kbd.KeyIsEmpty())
+		{
+			auto e = wnd.kbd.ReadKey();
+			switch (e.GetCode())
+			{
+			case VK_SHIFT:
+				if (e.IsPress())
+				{
+					collship = !collship;
+				}
+				break;
+			}
+		}
+
+		if (collship)
+		{
+			spawner.CollideShip(ship);
+		}
+
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
@@ -188,10 +199,22 @@ void Game::ComposeFrame()
 		for (auto& a : belt)
 		{
 			cam.Draw(a->GetDrawable());
+
+			std::vector<Vec<float>> test;
+
+			test.emplace_back(a->GetPos() + Vec<float>{1.0f, 0.0f});
+			test.emplace_back(a->GetPos() - Vec<float>{1.0f, 0.0f});
+
+			Drawable d(test, Colors::LightBlue);
+			cam.Draw(d);
 		}
 
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
-
+		if (collship)
+		{
+			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
+		}
+		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;
