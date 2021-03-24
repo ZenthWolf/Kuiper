@@ -21,6 +21,8 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),gfx(wnd), rng(std::random_device()()),
 	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
 {
+	SoundSystem::SetMasterVolume(vol);
+
 	std::uniform_real_distribution<float> xDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> yDist(-3000.0f, 3000.0f);
 	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
@@ -58,11 +60,36 @@ void Game::UpdateModel(float dt)
 	switch (gameState)
 	{
 	case GameState::Title:
-		if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		{
-			gameState = GameState::Play;
 
-			mus.Play(1.0f, 0.3f);
+		if (!wnd.kbd.KeyIsEmpty())
+		{
+			auto e = wnd.kbd.ReadKey();
+
+			switch (e.GetCode())
+			{
+			case 'E':
+				vol += 0.05f;
+				if (vol > 1.0f)
+				{
+					vol = 1.0f;
+				}
+				SoundSystem::SetMasterVolume(vol);
+				break;
+
+			case 'Q':
+				vol -= 0.05f;
+				if (vol < 0.0f)
+				{
+					vol = 0.0f;
+				}
+				SoundSystem::SetMasterVolume(vol);
+				break;
+			case VK_SPACE:
+				gameState = GameState::Play;
+				mus.Play(1.0f, 1.0f);
+				break;
+			}
+
 		}
 		break;
 
@@ -97,6 +124,27 @@ void Game::UpdateModel(float dt)
 					collship = !collship;
 				}
 				break;
+			case 'E':
+				if (e.IsPress())
+				{
+					vol += 0.05f;
+					if (vol > 1.0f)
+					{
+						vol = 1.0f;
+					}
+					SoundSystem::SetMasterVolume(vol);
+					break;
+				}
+			case 'Q':
+				if (e.IsPress())
+				{
+					vol -= 0.05f;
+					if (vol < 0.0f)
+					{
+						vol = 0.0f;
+					}
+					SoundSystem::SetMasterVolume(vol);
+				}
 			}
 		}
 
@@ -171,6 +219,8 @@ void Game::ComposeFrame()
 	{
 	case GameState::Title:
 	{
+		font.DrawText("Volume: " + std::to_string(int(vol*100)) + "\n Q/E = Up/Down", {28,28}, Colors::White, gfx);
+
 		std::string title = "    KUIPER\n\nW, A, D -> Move\nArrows -> Pan Camera\n\nStatus: Flying only\n\nSpace -> Start";
 		font.DrawText(title, { 280,235 }, Colors::White, gfx);
 		break;

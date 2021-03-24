@@ -60,6 +60,7 @@ private:
 	Font font = "Images//Fixedsys16x28.bmp";
 	CoordinateTransformer ct;
 	Camera cam;
+	float vol = 0.3f;
 
 	Sound mus;
 
