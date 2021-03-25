@@ -7,17 +7,14 @@
 class Spawner
 {
 public:
-	Spawner(std::vector<std::unique_ptr<Asteroid>>& belt)
-		:belt(belt), rng(std::random_device()())
-	{}
+	Spawner(std::vector<std::unique_ptr<Asteroid>>& belt);
 
-	void Update(float dt, Rect<float> cambox);
-
+	void Update(const float dt, const Rect<float> cambox);
 	void CollideShip(Entity& ship);
 
 private:
 	void CollCheck();
-	void GenerateAsteroid(Rect<float> cambox);
+	void GenerateAsteroid(const Rect<float> cambox);
 
 	std::vector<std::unique_ptr<Asteroid>>& belt;
 	float GenTime = 0.0f;

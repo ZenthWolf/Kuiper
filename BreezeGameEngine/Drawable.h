@@ -4,53 +4,22 @@
 #include<math.h>
 #include "Vec.h"
 #include "Graphics.h"
+#include "Colors.h"
 
 class Drawable
 {
 public:
-	Drawable(const std::vector<Vec<float>>& model, Color c)
-		:model(&model), c(c)
-	{}
+	Drawable(const std::vector<Vec<float>>& model, Color c);
 
-	void Translate(const Vec<float> ds)
-	{
-		translation += ds;
-	}
+	void Translate(const Vec<float> ds);
+	void Scale(const float s);
+	void Rot(const float th);
 
-	void Scale(float s)
-	{
-		scale_x *= s;
-		scale_y *= s;
-		translation *= s;
-	}
+	void ScaleInd(const float sx, const float sy);
+	void ScaleX(const float sx);
+	void ScaleY(const float sy);
 
-	void Rot(float th)
-	{
-		rot = th;
-	}
-
-	void ScaleInd(float sx, float sy)
-	{
-		scale_x *= sx;
-		scale_y *= sy;
-		translation.X *= sx;
-		translation.Y *= sy;
-	}
-
-	void ScaleX(float sx)
-	{
-		ScaleInd(sx, 1.0f);
-	}
-
-	void ScaleY(float sy)
-	{
-		ScaleInd(1.0f, sy);
-	}
-
-	void Render(Graphics& gfx)
-	{
-		gfx.DrawPolylineC(*model, translation, scale_x, scale_y, rot, c);
-	}
+	void Render(Graphics& gfx) const;
 
 private:
 	const std::vector<Vec<float>>* model;

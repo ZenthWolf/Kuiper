@@ -7,9 +7,7 @@
 class CoordinateTransformer
 {
 public:
-	CoordinateTransformer(Graphics& gfx)
-		: gfx(gfx)
-	{}
+	CoordinateTransformer(Graphics& gfx);
 
 	void Draw(Drawable& drawable) const;
 

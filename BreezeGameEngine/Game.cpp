@@ -16,9 +16,9 @@
 #include "Game.h"
 
 
-Game::Game(MainWindow& wnd)
+Game::Game(MainWindow& AFakeName)
 	:
-	wnd(wnd),gfx(wnd), rng(std::random_device()()),
+	wnd(AFakeName),gfx(wnd), rng(std::random_device()()),
 	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
 {
 	SoundSystem::SetMasterVolume(vol);
@@ -59,42 +59,44 @@ void Game::UpdateModel(float dt)
 {
 	switch (gameState)
 	{
-	case GameState::Title:
 
+	case GameState::Title:
 		if (!wnd.kbd.KeyIsEmpty())
 		{
 			auto e = wnd.kbd.ReadKey();
 
-			switch (e.GetCode())
+			if (e.IsPress())
 			{
-			case 'E':
-				vol += 0.05f;
-				if (vol > 1.0f)
+				switch (e.GetCode())
 				{
-					vol = 1.0f;
-				}
-				SoundSystem::SetMasterVolume(vol);
-				break;
+				case 'E':
+					vol += 0.05f;
+					if (vol > 1.0f)
+					{
+						vol = 1.0f;
+					}
+					SoundSystem::SetMasterVolume(vol);
+					break;
 
-			case 'Q':
-				vol -= 0.05f;
-				if (vol < 0.0f)
-				{
-					vol = 0.0f;
+				case 'Q':
+					vol -= 0.05f;
+					if (vol < 0.0f)
+					{
+						vol = 0.0f;
+					}
+					SoundSystem::SetMasterVolume(vol);
+					break;
+				case VK_SPACE:
+					gameState = GameState::Play;
+					mus.Play(1.0f, 1.0f);
+					break;
 				}
-				SoundSystem::SetMasterVolume(vol);
-				break;
-			case VK_SPACE:
-				gameState = GameState::Play;
-				mus.Play(1.0f, 1.0f);
-				break;
 			}
-
 		}
 		break;
 
+
 	case GameState::Play:
-		float avel = 3.0f;
 		if (wnd.kbd.KeyIsPressed('W'))
 		{
 			Vec<float> heading = ship.GetHeading();
@@ -110,23 +112,20 @@ void Game::UpdateModel(float dt)
 		}
 
 		ship.Update(dt);
-		
 		spawner.Update(dt, cam.GetScreenBox());
 
 		if (!wnd.kbd.KeyIsEmpty())
 		{
 			auto e = wnd.kbd.ReadKey();
-			switch (e.GetCode())
+			if (e.IsPress())
 			{
-			case VK_SHIFT:
-				if (e.IsPress())
+				switch (e.GetCode())
 				{
+				case VK_SHIFT:
+
 					collship = !collship;
-				}
-				break;
-			case 'E':
-				if (e.IsPress())
-				{
+					break;
+				case 'E':
 					vol += 0.05f;
 					if (vol > 1.0f)
 					{
@@ -134,16 +133,14 @@ void Game::UpdateModel(float dt)
 					}
 					SoundSystem::SetMasterVolume(vol);
 					break;
-				}
-			case 'Q':
-				if (e.IsPress())
-				{
+				case 'Q':
 					vol -= 0.05f;
 					if (vol < 0.0f)
 					{
 						vol = 0.0f;
 					}
 					SoundSystem::SetMasterVolume(vol);
+					break;
 				}
 			}
 		}
@@ -221,8 +218,8 @@ void Game::ComposeFrame()
 	{
 		font.DrawText("Volume: " + std::to_string(int(vol*100)) + "\n Q/E = Up/Down", {28,28}, Colors::White, gfx);
 
-		std::string title = "    KUIPER\n\nW, A, D -> Move\nArrows -> Pan Camera\n\nStatus: Flying only\n\nSpace -> Start";
-		font.DrawText(title, { 280,235 }, Colors::White, gfx);
+		std::string title = "    KUIPER\n\n\nW, A, D -> Move\nArrows -> Pan Camera\n(Autopans at edge)\n\nSpace -> Start\n\nShift -> Toggle Ship Collision";
+		font.DrawText(title, { 220,235 }, Colors::White, gfx);
 		break;
 	}
 

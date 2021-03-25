@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{47bde5e8-1749-4ea5-ad2c-e162c52447ad}</UniqueIdentifier>
     </Filter>
@@ -27,6 +23,10 @@
     </Filter>
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{01b38053-5d03-4719-a6fd-c8cc9cb385ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documents">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,10 +170,13 @@
     <ClCompile Include="Ship.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="CoordinateTransformer.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawable.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,7 +188,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\README.md">
-      <Filter>Resource Files</Filter>
+      <Filter>Documents</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="MusicCredit.txt">
+      <Filter>Documents</Filter>
+    </Text>
+    <Text Include="TechnicalDetails.txt">
+      <Filter>Documents</Filter>
+    </Text>
   </ItemGroup>
 </Project>

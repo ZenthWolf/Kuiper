@@ -24,8 +24,6 @@ public:
 		virtual std::wstring GetExceptionType() const override;
 	};
 
-	enum class vertexType { outside, unchecked, inside };
-
 	const Vec<float>& GetPos() const;
 	void SetPos(const Vec<float> newpos);
 	void TranslateBy(const Vec<float> dpos);
@@ -40,29 +38,19 @@ public:
 	void SetVel(const Vec<float> newvel);
 
 	Drawable GetDrawable() const;
-	void SetColor(Color cnew);
-
-	struct Intersection
-	{
-		std::vector <Vec<int>> sourceLinesIndex;
-		std::vector <Vec<int>> targetLinesIndex;
-		std::vector<Vec<float>> sourceTrans;
-		std::vector<Vec<float>> targetTrans;
-		int passed = 0;
-	};
+	void SetColor(const Color cnew);
 
 	struct CollInfo
 	{
-		float impactTime;
+		float impactDepth;
 		Vec<int> impactSide;
 	};
 
 	std::vector<int> CollWith(const Entity& targ) const;
-	void Recoil(std::vector<int> intersection, Entity& targ);
-	Vec<float> MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, Entity& targ);
+	void Recoil(const std::vector<int>& intersection, Entity& targ);
 
 	bool CollPoint(const Vec<float> targ) const;
-	Vec<float> GetTransformedVertex(int vert) const;
+	Vec<float> GetTransformedVertex(const int vert) const;
 	std::vector<Vec<float>> GetTransformedModel() const;
 	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
 	

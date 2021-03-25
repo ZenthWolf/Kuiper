@@ -163,6 +163,7 @@
     <ClCompile Include="Beveler.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CoordinateTransformer.cpp" />
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FrameTimer.cpp" />
@@ -184,6 +185,10 @@
     <None Include="..\README.md" />
     <None Include="FramebufferPS.shh" />
     <None Include="FramebufferVS.shh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="MusicCredit.txt" />
+    <Text Include="TechnicalDetails.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

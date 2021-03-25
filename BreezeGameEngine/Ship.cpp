@@ -7,7 +7,7 @@ Ship::Ship(Vec<float> pos, Vec<float> vel, float rot, Color c)
 {
 }
 
-void Ship::Thrust(float dt)
+void Ship::Thrust(const float dt)
 {
 	if (vel.GetLengthSq() < vmax * vmax)
 	{
@@ -29,21 +29,29 @@ void Ship::Thrust(float dt)
 	}
 }
 
-void Ship::AThrust(float dt)
+void Ship::AThrust(const float dt)
 {
-	rot = std::min(rot + athrust * dt, rotmax);
+	if (abs(rot) < rotmax)
+	{
+		rot += athrust * dt;
+	}
+	else if (signbit(rot) != signbit(dt))
+	{
+		rot += athrust * dt;
+	}
 }
 
-void Ship::Update(float dt)
+void Ship::Update(const float dt)
 {
 	TranslateBy(vel * dt);
 	RotBy(rot * dt);
 	DriftDecay(dt);
 }
 
-void Ship::DriftDecay(float dt)
+void Ship::DriftDecay(const float dt)
 {
-	Vec<float> nvel = vel - vel.Norm() * vdecay;
+	Vec<float> nvel = vel - vel.Norm() * vdecay * dt;
+
 	if (nvel.Dot(vel) <= 0.0f)
 	{
 		vel = { 0.0f, 0.0f };
@@ -53,7 +61,7 @@ void Ship::DriftDecay(float dt)
 		vel = nvel;
 	}
 
-	float dth = dt * rotdecay;
+	float dth = rotdecay * dt;
 	if (abs(rot) < dth)
 	{
 		rot = 0.0f;

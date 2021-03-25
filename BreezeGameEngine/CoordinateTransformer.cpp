@@ -1,5 +1,9 @@
 #include "CoordinateTransformer.h"
 
+CoordinateTransformer::CoordinateTransformer(Graphics& gfx)
+	: gfx(gfx)
+{}
+
 void CoordinateTransformer::Draw(Drawable& drawable) const
 {
 	const Vec<float> offset = { float(Graphics::ScreenWidth / 2), float(Graphics::ScreenHeight / 2) };

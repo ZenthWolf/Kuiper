@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "Entity.h"
 #include "Shapes.h"
@@ -12,7 +11,7 @@ public:
 	{
 	}
 
-	void Update(float dt)
+	void Update(const float dt)
 	{
 		TranslateBy(vel * dt);
 		RotBy(rot * dt);

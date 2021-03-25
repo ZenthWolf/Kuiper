@@ -100,7 +100,7 @@ Drawable Entity::GetDrawable() const
 	return d;
 }
 
-void Entity::SetColor(Color cnew)
+void Entity::SetColor(const Color cnew)
 {
 	c = cnew;
 }
@@ -138,16 +138,11 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 
 
 
-void Entity::Recoil(std::vector<int> collider, Entity& targ)
+void Entity::Recoil(const std::vector<int>& collider, Entity& targ)
 {
-	float impactTime = 2 * targ.boundingrad;
+	float impactDepth = 2.0f * targ.boundingrad;
 	Vec<int> contactSide;
 	int contactPoint;
-
-	/**************************************************/
-	/*****COLLINFO RETURNS DEPTH NOT TIME**************/
-	/**************************************************/
-
 
 	for (auto vertInd : collider)
 	{
@@ -155,9 +150,9 @@ void Entity::Recoil(std::vector<int> collider, Entity& targ)
 		Vec<float> vertVel = vel + Vec<float>{-vert.Y, vert.X} *rot;
 		CollInfo collision = targ.CalculateImpact(vert, -vel);
 
-		if (impactTime > collision.impactTime)
+		if (impactDepth > collision.impactDepth)
 		{
-			impactTime = collision.impactTime;
+			impactDepth = collision.impactDepth;
 			contactSide = collision.impactSide;
 			contactPoint = vertInd;
 		}
@@ -176,8 +171,8 @@ void Entity::Recoil(std::vector<int> collider, Entity& targ)
 
 	if(rvel.Dot(norm) < 0.0f)
 	{
-		TranslateBy(-norm * impactTime / 2);
-		targ.TranslateBy(norm * impactTime / 2);
+		TranslateBy(-norm * impactDepth / 2);
+		targ.TranslateBy(norm * impactDepth / 2);
 
 		float momInertiaFactor = Vec<float>{ sourceRad.Y, -sourceRad.X }.Dot(norm) / sourceRad.GetLengthSq()
 			+ Vec<float>{targetRad.Y, -targetRad.X }.Dot(norm) / targetRad.GetLengthSq();
@@ -191,255 +186,6 @@ void Entity::Recoil(std::vector<int> collider, Entity& targ)
 		rot -= impulse * sourceRad.Cross(norm) / sourceRad.GetLengthSq();
 		targ.rot += impulse * targetRad.Cross(norm) / targetRad.GetLengthSq();
 	}
-	/*
-	//	assert(intersection.passed < 2);
-	intersection.passed++;
-
-	if (intersection.passed > 2)
-	{
-		bool scream = true;
-	}
-
-	if (!(targ.CollPoint(intersection.sourceTrans[intersection.sourceLinesIndex[0].X]) ||
-		targ.CollPoint(intersection.sourceTrans[intersection.sourceLinesIndex[0].Y])))
-	{
-		std::swap(intersection.sourceLinesIndex, intersection.targetLinesIndex);
-		std::swap(intersection.sourceTrans, intersection.targetTrans);
-		targ.Recoil(intersection, *this);
-
-		if (intersection.passed >= 2)
-		{
-			throw BREEZE_COLLIDER_EXCEPTION(L"Collider failed to resolve interior vertecies");
-		}
-	}
-
-	else
-	{
-		std::vector<int> intVertIndex = ResolveInternalVertex(intersection, targ);
-
-		std::vector<Vec<int>> sourceLinesIndex = intersection.sourceLinesIndex;
-		std::vector<Vec<int>> targetLinesIndex = intersection.targetLinesIndex;
-		std::vector<Vec<float>> sourceTrans = intersection.sourceTrans;
-		std::vector<Vec<float>> targetTrans = intersection.targetTrans;
-
-		int contactPoint = -1;
-		Vec<int> contactSide;
-		float impactTime = 0.0f;
-		float impactDepth;
-
-		//find the longest time for which vertex to leave
-		for (auto vertIndex : intVertIndex)
-		{
-			Vec<float> s0 = sourceTrans[vertIndex];
-			float dtVert = -1.0f;
-			float depthVert;
-			Vec<int> sideVert;
-
-			//find the shortest time for this vert to leave
-			for (int i = 0; i<int(targetTrans.size()); i++)
-			{
-				int t0i = i; int t1i = (i + 1) % int(targetTrans.size());
-				Vec<float> t0 = targetTrans[t0i];
-				Vec<float> t1 = targetTrans[t1i];
-
-				Vec<float> edge = { t1 - t0 };
-				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
-
-				Vec<float> rvel = (targ.vel - vel);
-
-				float depthFromSide = abs((t0 - s0).Cross(t1 - s0)) / edge.GetLength();
-				float impactVel = rvel.Dot(norm);
-				float dt = depthFromSide / impactVel;
-
-				if (impactVel > 0.0f)
-				{
-					bool Krezk = true;
-				}
-
-				if ( (dt > 0) && ((dt < dtVert) || (dtVert == -1.0f)) )
-				{
-					dtVert = dt;
-					depthVert = depthFromSide;
-					sideVert = { t0i, t1i };
-				}
-			}
-
-			if (dtVert > impactTime)
-			{
-				contactPoint = vertIndex;
-				contactSide = sideVert;
-				impactTime = dtVert;
-				impactDepth = depthVert;
-			}
-		}
-
-		if (contactPoint == -1)
-		{
-			bool beSad = true;
-		}
-
-		TranslateBy(vel * impactTime);
-		targ.TranslateBy(-targ.vel * impactTime);
-
-		Vec<float> t0 = targetTrans[contactSide.X];
-		Vec<float> t1 = targetTrans[contactSide.Y];
-		Vec<float> contact = sourceTrans[contactPoint];
-		Vec<float> sourceRad = contact - pos;
-		Vec<float> targetRad = contact - targ.pos;
-
-		Vec<float> contactVel = vel;
-
-		Vec<float> edge = { t1 - t0 };
-		Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
-		*/
-		/*
-		for (auto vertIndex : intVertIndex)
-		{
-			Vec<float> s0 = sourceTrans[vertIndex];
-			float bestImpact = 0.0f;
-
-			for (int i = 0; i<int(targetTrans.size()); i++)
-			{
-				Vec<int> side = { i, (i + 1) % int(targetTrans.size()) };
-				Vec<float> t0 = targetTrans[side.X];
-				Vec<float> t1 = targetTrans[side.Y];
-
-				Vec<float> edge = { t1 - t0 };
-				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
-
-				Vec<float> rvel = (targ.vel - vel);
-
-				float depth = abs((t0 - s0).Cross(t1 - s0)) / edge.GetLength();
-				float impact = rvel.Dot(norm);
-
-				if (impact > 0.0f)
-				{
-					float dt = depth / rvel.GetLength();
-
-					if (dt < impactTime)
-					{
-						bestImpact = impact;
-						impactDepth = depth;
-						contactPoint = vertIndex;
-						contactSide = side;
-					}
-				}
-			}
-		}
-
-		if (contactPoint == -1)
-		{
-			bool scream = true;
-		}
-
-		
-		TranslateBy(-vel * dt);
-		targ.TranslateBy(targ.vel * dt);
-
-		Vec<float> t0 = targetTrans[contactSide.X];
-		Vec<float> t1 = targetTrans[contactSide.Y];
-		Vec<float> contact = sourceTrans[contactPoint];
-		Vec<float> sourceRad = contact - pos;
-		Vec<float> targetRad = contact - targ.pos;
-
-		Vec<float> contactVel = vel;
-
-		Vec<float> edge = { t1 - t0 };
-		Vec<float> norm = Vec<float>{ edge.Y, -edge.X }.Norm();
-
-		if (!norm.Dot(contactVel))
-		{
-			float momInertiaFactor = Vec<float>{ -sourceRad.Y, sourceRad.X }.Dot(norm) / sourceRad.GetLengthSq()
-				+ Vec<float>{-targetRad.Y, contact.X }.Dot(norm) / (targetRad - pos).GetLengthSq();
-
-			float impulse = -rvel.Dot(norm) / (1 + 1 + momInertiaFactor);
-
-			vel += norm * impulse;
-			targ.vel -= norm * impulse;
-			rot -= impulse * sourceRad.Cross(norm);
-			targ.rot += impulse * targetRad.Cross(norm);
-			Intersection test = CollWith(targ);
-			if (test.sourceLinesIndex.size() > 0)
-			{
-				bool screm = false;
-			}
-		}
-	}
-	*/
-}
-
-
-//??Defunct???
-Vec<float> Entity::MomentumTransfer(Vec<float> s0, Vec<float> t0, Vec<float>t1, Entity& targ)
-{
-	Vec<float> edge = { t1 - t0 };
-	Vec<float> tang = { edge.Y, -edge.X };
-	if (tang.Dot(s0 - t0) > 0.0f)
-	{
-		tang *= -1;
-	}
-
-	Vec<float> vs0 = vel - Vec<float>{s0.Y, -s0.X} *rot;
-	if (vs0.Dot(tang) < 0.0f)
-	{
-		Vec<float> impact = (targ.pos - pos).Norm();
-		Vec<float> fulcrum = (targ.pos - s0);
-
-		float angimp = fulcrum.Cross(targ.vel - vel) / (boundingrad * boundingrad);
-		targ.rot += angimp / (targ.boundingrad * targ.boundingrad);
-		rot -= angimp / (boundingrad * boundingrad);
-
-		Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
-
-		targ.vel += xfer;
-		vel -= xfer;
-
-		/*Olde*
-		Vec<float> impact = (targ.pos - pos).Norm();
-
-
-		float angimpact = impact.Cross(targ.vel + vel);
-		float aimp0 = angimpact / (targ.boundingrad * targ.boundingrad);
-		float aimp1 = angimpact / (boundingrad * boundingrad);
-
-		if (rot > 0.0f && targ.rot > 0.0f)
-		{
-			targ.rot -= aimp0;
-			rot -= aimp1;
-		}
-		else if (rot < 0.0f && targ.rot < 0.0f)
-		{
-			targ.rot += aimp0;
-			rot += aimp1;
-		}
-		else if (rot < 0.0f && targ.rot > 0.0f)
-		{
-			targ.rot -= aimp0;
-			rot += aimp1;
-		}
-		else
-		{
-			targ.rot += aimp0;
-			rot -= aimp1;
-		}
-
-		Vec<float> xfer = impact * abs((targ.vel - vel).Dot(impact));
-
-		targ.vel += xfer;
-		vel -= xfer;
-		/*OLDE*/
-	}
-	//2*A
-	float scaledimpact = abs((t0 - s0).Cross(t1 - s0));
-
-	Vec<float> shift = tang * scaledimpact;
-	shift *= 1 / tang.GetLengthSq();
-
-	pos += shift / 2;
-	targ.pos -= shift / 2;
-	Vec<float> debugshift = shift;
-
-	return debugshift;
 }
 
 
@@ -534,8 +280,7 @@ Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float
 
 	Vec<float> refpoint = point + rvel * scaleTime;
 
-	//float impactTime = 0.0f;
-	float impactTime = 200.0 * boundingrad;
+	float impactDepth = 2.0 * boundingrad;
 	Vec<int> impactSide;
 
 	for (int s0i = 0; s0i<int(source.size()); s0i++)
@@ -557,25 +302,17 @@ Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float
 
 				float depthFromSide = abs((s0 - point).Cross(s1 - point)) / sideLength;
 				float impactVel = rvel.Dot(norm);
-				float dt = depthFromSide / impactVel;
 
-				/*
-				if ( dt > impactTime )
+				if (depthFromSide < impactDepth)
 				{
-					impactTime = dt;
-					impactSide = { s0i, s1i };
-				}
-				*/
-				if (depthFromSide < impactTime)
-				{
-					impactTime = depthFromSide;
+					impactDepth = depthFromSide;
 					impactSide = { s0i, s1i };
 				}
 			}
 		}
 	}
 
-	return std::move(CollInfo{ impactTime, impactSide });
+	return std::move(CollInfo{ impactDepth, impactSide });
 }
 
 

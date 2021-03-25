@@ -1,0 +1,18 @@
+2D Wireframe collider in this project is intended to  work with arbitrary, polygonal shapes.
+
+==========Current methodology==========
+
+Colliding entities check if they have any verticies inside the target.
+
+Primary collision vertex is identified as that which has the furthest distance to the outside
+---Outside in this sense is necessarily along the negative velocity of said point. This is something like Separting Axis Theorem, but it is hoped this can handle concavity
+
+Impulse is calculated and applied at this vertex point, if and only if the vertex is actually moving into the surface was calculated to have passed through.
+
+Current performance shows abberant behavior, including very high impulses being registered (possibly as a result of multiple collisions)
+
+==========For future consideration==========
+
+1) It seems like the right thing to do is decompose colliding polygons into convex only polygons.
+
+2) Currently, polygon clipping is resolved after the timestep update, but it seems suggested to find collisions beforehand. Need to consider efficient method for projecting angular rotation at low cost.

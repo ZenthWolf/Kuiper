@@ -1,8 +1,13 @@
 #include<algorithm>
 #include "Spawner.h"
 
-void Spawner::Update(float dt, Rect<float> cambox)
+Spawner::Spawner(std::vector<std::unique_ptr<Asteroid>>& belt)
+	:belt(belt), rng(std::random_device()())
+{}
+
+void Spawner::Update(const float dt, const Rect<float> cambox)
 {
+	//Cull distant asteroids
 	for (auto& a : belt)
 	{
 		a->Update(dt);
@@ -21,7 +26,11 @@ void Spawner::Update(float dt, Rect<float> cambox)
 
 	belt.erase(std::remove_if(belt.begin(), belt.end(),
 		removecheck), belt.end());
-
+	
+	//Check Collisions
+	CollCheck();
+	
+	//Generate new asteroid, if appropriate
 	GenTime -= dt;
 	if (GenTime <= 0.0f)
 	{
@@ -42,8 +51,6 @@ void Spawner::Update(float dt, Rect<float> cambox)
 			GenTime = nextAst(rng);
 		}
 	}
-
-	CollCheck();
 }
 
 void Spawner::CollCheck()
@@ -93,7 +100,6 @@ void Spawner::CollideShip(Entity& ship)
 				{
 					belt[i]->Recoil(collider, ship);
 				}
-				/*Costly debugger*/
 				else
 				{
 					std::vector<int> collider = ship.CollWith(*belt[i]);
@@ -108,7 +114,7 @@ void Spawner::CollideShip(Entity& ship)
 }
 
 
-void Spawner::GenerateAsteroid(Rect<float> cambox)
+void Spawner::GenerateAsteroid(const Rect<float> cambox)
 {
 	Rect<float> bounds = cambox;
 
@@ -167,6 +173,7 @@ void Spawner::GenerateAsteroid(Rect<float> cambox)
 
 	int index = belt.size() - 1;
 
+	//ensure no collision
 	for (int i = 0; i < index; i++)
 	{
 		float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
