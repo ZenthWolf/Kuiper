@@ -175,6 +175,7 @@
     <ClCompile Include="DXErr.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Spawner.cpp" />

@@ -180,6 +180,29 @@ void Entity::Recoil(const std::vector<int>& collider, Entity& targ)
 
 		float impulse = -2 * rvel.Dot(norm) / (1 + 1 + momInertiaFactor);
 
+		if ( (impulse > 700.0f) && ( (didColl == true) || (targ.didColl == true) ) )
+		{
+			bool desired = false;
+
+			if (desired)
+			{
+				targ.ResetHistory();
+				ResetHistory();
+
+				std::vector<int> collider = CollWith(targ);
+
+				if (collider.size() != 0)
+				{
+					Recoil(collider, targ);
+				}
+				else
+				{
+					collider = targ.CollWith(*this);
+					targ.Recoil(collider, *this);
+				}
+			}
+		}
+
 
 		vel -= norm * impulse;
 		targ.vel += norm * impulse;
@@ -329,4 +352,21 @@ std::wstring Entity::ColliderException::GetFullMessage() const
 std::wstring Entity::ColliderException::GetExceptionType() const
 {
 	return L"Breeze Physics Exception";
+}
+
+void Entity::SetHistory()
+{
+	History.pos = pos;
+	History.vel = vel;
+	History.heading = heading;
+	History.rot = rot;
+	History.model = GetTransformedModel();
+}
+
+void Entity::ResetHistory()
+{
+	pos = History.pos = pos;
+	vel = History.vel = vel;
+	heading = History.heading = heading;
+	rot = History.rot = rot;
 }

@@ -64,11 +64,22 @@ void Game::UpdateModel(float dt)
 		if (!wnd.kbd.KeyIsEmpty())
 		{
 			auto e = wnd.kbd.ReadKey();
+			
+			bool isWorking;
+			std::list<std::vector<Vec<float>>> VexStar;
+			std::list<std::vector<Vec<float>>> VexRoid;
+			std::list<std::vector<Vec<float>>> VexShip;
 
 			if (e.IsPress())
 			{
 				switch (e.GetCode())
 				{
+				case 'P':
+					VexStar = Shapes::ConvexSeparator(Shapes::Star());
+					VexRoid = Shapes::ConvexSeparator(Shapes::Asteroid());
+					VexShip = Shapes::ConvexSeparator(Shapes::Ship());
+					isWorking = true;
+					break;
 				case 'E':
 					vol += 0.05f;
 					if (vol > 1.0f)

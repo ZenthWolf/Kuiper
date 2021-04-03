@@ -69,6 +69,8 @@ void Spawner::CollCheck()
 				if (collider.size() != 0)
 				{
 					belt[i]->Recoil(collider, *belt[j]);
+					belt[i]->SetHistory();
+					belt[j]->SetHistory();
 				}
 
 				else
@@ -77,6 +79,8 @@ void Spawner::CollCheck()
 					if (collider.size() != 0)
 					{
 						belt[j]->Recoil(collider, *belt[i]);
+						belt[i]->SetHistory();
+						belt[j]->SetHistory();
 					}
 				}
 			}
@@ -87,6 +91,7 @@ void Spawner::CollCheck()
 void Spawner::CollideShip(Entity& ship)
 {
 	{
+		bool collision = false;
 		for (int i = 0; i < int(belt.size()); i++)
 		{
 			float dist2 = (belt[i]->GetPos() - ship.GetPos()).GetLengthSq();
@@ -99,6 +104,9 @@ void Spawner::CollideShip(Entity& ship)
 				if (collider.size() != 0)
 				{
 					belt[i]->Recoil(collider, ship);
+					belt[i]->SetHistory();
+					ship.SetHistory();
+					collision = true;
 				}
 				else
 				{
@@ -106,10 +114,15 @@ void Spawner::CollideShip(Entity& ship)
 					if (collider.size() != 0)
 					{
 						ship.Recoil(collider, *belt[i]);
+						belt[i]->SetHistory();
+						ship.SetHistory();
+						collision = true;
 					}
 				}
 			}
 		}
+
+		ship.didColl = collision;
 	}
 }
 

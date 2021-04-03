@@ -7,6 +7,14 @@
 
 #include "BreezeException.h"
 
+struct LastColl
+{
+	Vec<float> pos;
+	Vec<float> vel;
+	float heading;
+	float rot;
+	std::vector<Vec<float>> model;
+};
 
 class Entity
 {
@@ -56,6 +64,11 @@ public:
 	
 	CollInfo CalculateImpact(const Vec<float> point, const Vec<float> Velocity) const;
 
+	void SetHistory();
+	void ResetHistory();
+
+	bool didColl = false;
+
 protected:
 	void SetModel(std::vector<Vec<float>> modelnew);
 
@@ -75,4 +88,6 @@ protected:
 
 	float scale = 1.0f;
 	float boundingrad = 0.0f;
+
+	LastColl History;
 };

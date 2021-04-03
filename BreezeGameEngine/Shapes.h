@@ -1,6 +1,7 @@
 #pragma once
 
 #include<vector>
+#include<list>
 #include "Vec.h"
 
 /* Shapes use counterclockwise unwinding. Important for defining normals */
@@ -74,4 +75,9 @@ public:
 		return asteroid;
 	}
 
+	static std::list<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
+
+	static Vec<float> FindIntersection(const Vec<float>& p0, const Vec<float>& p1, const Vec<float>& r0, const Vec<float>& r1);
+	static bool IsOnSegment(const Vec<float>& p, const Vec<float>& l0, const Vec<float>& l1);
+	static bool IsSamePoint(const Vec<float>& p, const Vec<float>& r);
 };
