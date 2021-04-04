@@ -1,5 +1,6 @@
 #pragma once
 
+#include<list>
 #include "CoordinateTransformer.h"
 
 class Camera
@@ -18,6 +19,7 @@ public:
 	Rect<float> GetScreenBox() const;
 	
 	void Draw(Drawable& drawable) const;
+	void Draw(std::list<Drawable>& drawable) const;
 
 private:
 	CoordinateTransformer& ct;

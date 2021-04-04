@@ -59,3 +59,11 @@ void Camera::Draw(Drawable& drawable) const
 	drawable.Scale(scale);
 	ct.Draw(drawable);
 }
+
+void Camera::Draw(std::list<Drawable>& drawable) const
+{
+	for (auto d : drawable)
+	{
+		Draw(d);
+	}
+}

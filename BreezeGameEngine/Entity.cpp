@@ -1,7 +1,8 @@
 #define NOMINMAX // I just want std::min to work, Windows...
 
-#include "Entity.h"
 #include<algorithm>
+#include "Shapes.h"
+#include "Entity.h"
 
 #define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
 
@@ -18,6 +19,8 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	}
 
 	boundingrad = sqrtf(boundingrad);
+
+	modelprimitives = Shapes::ConvexSeparator(model);
 }
 
 
@@ -98,6 +101,37 @@ Drawable Entity::GetDrawable() const
 	d.Scale(scale);
 	d.Translate(pos);
 	return d;
+}
+
+std::list<Drawable> Entity::GetDrawList() const
+{
+	std::list<Drawable> drawlist;
+
+	std::vector<Color> c;
+
+	c.emplace_back(Colors::Red);
+	c.emplace_back(Colors::Yellow);
+	c.emplace_back(Colors::Green);
+	c.emplace_back(Colors::LightBlue);
+	c.emplace_back(Colors::Blue);
+	c.emplace_back(Colors::Magenta);
+	c.emplace_back(Colors::DarkGrey);
+	c.emplace_back(Colors::White);
+
+	int i = 0;
+
+	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); it++)
+	{
+		Drawable d(*it, c[i % 8]);
+		d.Rot(heading);
+		d.Scale(scale);
+		d.Translate(pos);
+		i++;
+
+		drawlist.emplace_back(std::move(d));
+	}
+
+	return drawlist;
 }
 
 void Entity::SetColor(const Color cnew)

@@ -1,6 +1,9 @@
 #include <algorithm>
 #include "Shapes.h"
 
+//Tolerance 
+#define EPS 0.1
+
 std::list<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float>>& model)
 {
 	std::list<std::vector<Vec<float>>> primitives;
@@ -159,20 +162,20 @@ Vec<float> Shapes::FindIntersection(const Vec<float>& p0, const Vec<float>& p1, 
 
 bool Shapes::IsOnSegment(const Vec<float>& p, const Vec<float>& l0, const Vec<float>& l1)
 {
-	if ((l0.X + 0.1 >= p.X && p.X >= l1.X - 0.1) || (l0.X - 0.1 <= p.X && p.X <= l1.X + 0.1))
+	if ((l0.X + EPS >= p.X && p.X >= l1.X - EPS) || (l0.X - EPS <= p.X && p.X <= l1.X + EPS))
 	{
-		if ((l0.Y + 0.1 >= p.Y && p.Y >= l1.Y - 0.1) || (l0.Y - 0.1 <= p.Y && p.Y <= l1.Y + 0.1))
+		if ((l0.Y + EPS >= p.Y && p.Y >= l1.Y - EPS) || (l0.Y - EPS <= p.Y && p.Y <= l1.Y + EPS))
 		{
-			if (abs(l0.X - l1.X) > 0.1)
+			if (abs(l0.X - l1.X) > EPS)
 			{
 				float slope = (l1.Y - l0.Y) / (l1.X - l0.X);
 				float testY = slope * (p.X - l0.X) + l0.Y;
 
 				float diff = abs(testY - p.Y);
-				return (diff < 0.1);
+				return (diff < EPS);
 			}
 
-			return (abs(p.X - l0.X) < 0.1);
+			return (abs(p.X - l0.X) < EPS);
 		}
 	}
 	return false;
@@ -182,7 +185,7 @@ bool Shapes::IsSamePoint(const Vec<float>& p, const Vec<float>& r)
 {
 	float dx = abs(p.X - r.X);
 	float dy = abs(p.Y - r.Y);
-	return (dx < 0.1 && dy < 0.1);
+	return (dx < EPS && dy < EPS);
 }
 
 	

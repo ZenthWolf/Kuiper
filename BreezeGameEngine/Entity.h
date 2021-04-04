@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include "Vec.h"
 #include "Colors.h"
 #include "Drawable.h"
@@ -46,6 +47,7 @@ public:
 	void SetVel(const Vec<float> newvel);
 
 	Drawable GetDrawable() const;
+	std::list<Drawable> GetDrawList() const;
 	void SetColor(const Color cnew);
 
 	struct CollInfo
@@ -75,6 +77,7 @@ protected:
 	float ClusterArea(const Vec<float> A, const Vec<float> B, const Vec<float> C) const;
 
 	std::vector<Vec<float>> model;
+	std::list<std::vector<Vec<float>>> modelprimitives;
 
 	Color c;
 

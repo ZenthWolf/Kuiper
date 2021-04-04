@@ -253,10 +253,12 @@ void Game::ComposeFrame()
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		cam.Draw(ship.GetDrawable());
+		//cam.Draw(ship.GetDrawList());
 
 		for (auto& a : belt)
 		{
 			cam.Draw(a->GetDrawable());
+			//cam.Draw(a->GetDrawList());
 
 			std::vector<Vec<float>> test;
 
