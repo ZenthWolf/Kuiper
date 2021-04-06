@@ -1,5 +1,5 @@
 #include "Surface.h"
-#include "WinDefs.h"
+#include "../Engine/WinDefs.h"
 #include <cassert>
 #include <fstream>
 #include <math.h>
@@ -35,7 +35,7 @@ Surface::Surface(const std::string& filename)
 	int bitcount = spriteInfo.biBitCount;
 	for (int y =  imagetop; y != imagebot - imagesgn; y -= imagesgn)
 	{
-		for (int x = 0; x < width; x++)
+		for (int x = 0; x < width; ++x)
 		{
 			if (bitcount == 24)
 			{

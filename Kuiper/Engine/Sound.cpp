@@ -184,7 +184,7 @@ SoundSystem::SoundSystem()
 	}
 
 	// create channel objects
-	for (int i = 0; i < nChannels; i++)
+	for (int i = 0; i < nChannels; ++i)
 	{
 		idleChannelPtrs.push_back(std::make_unique<Channel>(*this));
 	}
@@ -351,7 +351,7 @@ Sound::Sound(const std::wstring& fileName, LoopType loopType,
 	const auto IsFourCC = [](const BYTE* pData, const char* pFourcc)
 	{
 		assert(strlen(pFourcc) == 4);
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 4; ++i)
 		{
 			if (char(pData[i]) != pFourcc[i])
 			{

@@ -28,7 +28,7 @@ Game::Game(MainWindow& AFakeName)
 	std::uniform_real_distribution<float> scaleDist(0.3f, 10.0f);
 	std::uniform_real_distribution<float> rotDist(0, 2 * 3.1415926);
 	
-	for (int i = 0; i < 150; i++)
+	for (int i = 0; i < 150; ++i)
 	{
 		scene.emplace_back( Star(Vec<float>{xDist(rng), yDist(rng)}) );
 		scene[i].SetScale(scaleDist(rng));

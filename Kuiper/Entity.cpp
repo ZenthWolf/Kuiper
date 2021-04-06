@@ -132,13 +132,13 @@ std::list<Drawable> Entity::GetDrawList() const
 
 	int i = 0;
 
-	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); it++)
+	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); ++it)
 	{
 		Drawable d(*it, c[i % 8]);
 		d.Rot(heading);
 		d.Scale(scale);
 		d.Translate(pos);
-		i++;
+		++i;
 
 		drawlist.emplace_back(std::move(d));
 	}
@@ -169,7 +169,7 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 	float tyMin = targ.pos.Y - targ.boundingrad;
 	float tyMax = targ.pos.Y + targ.boundingrad;
 
-	for (int i = 0; i < int(source.size()); i++)
+	for (int i = 0; i < int(source.size()); ++i)
 	{
 		Vec<float> s0 = source[i];
 		
@@ -272,7 +272,7 @@ bool Entity::CollPoint(const Vec<float> targ) const
 
 	int CollCount = 0;
 
-	for (int i = 0; i < int(model.size()); i++)
+	for (int i = 0; i < int(model.size()); ++i)
 	{
 		Vec<float> t0 = sourceTrans[i];
 		Vec<float> t1 = sourceTrans[(i + 1) % model.size()];
@@ -283,7 +283,7 @@ bool Entity::CollPoint(const Vec<float> targ) const
 			if ((ClusterArea(t0, t1, targ) > 0.0f && ClusterArea(t0, t1, refpoint) < 0.0f) ||
 				(ClusterArea(t0, t1, targ) < 0.0f && ClusterArea(t0, t1, refpoint) > 0.0f))
 			{
-				CollCount++;
+				++CollCount;
 			}
 		}
 	}
@@ -316,7 +316,7 @@ std::vector<Vec<float>> Entity::GetTransformedModel() const
 {
 	std::vector<Vec<float>> xmodel;
 
-	for (int i = 0; i < model.size(); i++)
+	for (int i = 0; i < model.size(); ++i)
 	{
 		xmodel.emplace_back(GetTransformedVertex(i));
 	}
@@ -358,7 +358,7 @@ Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float
 	float impactDepth = 2.0 * boundingrad;
 	Vec<int> impactSide;
 
-	for (int s0i = 0; s0i<int(source.size()); s0i++)
+	for (int s0i = 0; s0i<int(source.size()); ++s0i)
 	{
 		int s1i = (s0i + 1) % int(model.size());
 		Vec<float> s0 = source[s0i];

@@ -9,7 +9,7 @@ std::list<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float
 	std::list<std::vector<Vec<float>>> primitives;
 
 	int nverts = model.size();
-	for (int i = 0; i < nverts; i++)
+	for (int i = 0; i < nverts; ++i)
 	{
 		//indecies
 		int i0 = i;
@@ -37,7 +37,7 @@ std::list<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float
 
 			float minLength = FLT_MAX;
 
-			for (int j = 0; j < nverts; j++)
+			for (int j = 0; j < nverts; ++j)
 			{
 				if (j != i0 && j != i1)
 				{

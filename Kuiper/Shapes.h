@@ -2,7 +2,7 @@
 
 #include<vector>
 #include<list>
-#include "Vec.h"
+#include "Engine/Vec.h"
 
 /* Shapes use counterclockwise unwinding. Important for defining normals */
 
@@ -47,7 +47,7 @@ public:
 
 		const float dtheta = 2.0f * 3.1415926f / 10.0f;
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 10; ++i)
 		{
 			star.emplace_back(
 				20.0f / (float(i % 2 + 1)) * cos(float(i+5) * dtheta ),

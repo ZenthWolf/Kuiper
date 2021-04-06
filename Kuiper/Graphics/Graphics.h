@@ -16,9 +16,9 @@
 
 #include <d3d11.h>
 #include <wrl.h>
-#include "BreezeException.h"
+#include "../engine/BreezeException.h"
 #include "Colors.h"
-#include "Rect.h"
+#include "../Engine/Rect.h"
 #include "Surface.h"
 
 class Graphics
@@ -107,9 +107,9 @@ public:
 			srcRect.Y1 -= y + srcRect.height() - clip.Y1;
 		}
 
-		for (int sy = srcRect.Y0; sy < srcRect.Y1; sy++)
+		for (int sy = srcRect.Y0; sy < srcRect.Y1; ++sy)
 		{
-			for (int sx = srcRect.X0; sx < srcRect.X1; sx++)
+			for (int sx = srcRect.X0; sx < srcRect.X1; ++sx)
 			{
 				effect
 				(

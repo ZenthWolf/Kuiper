@@ -2,11 +2,11 @@
 
 #include <vector>
 #include <list>
-#include "Vec.h"
-#include "Colors.h"
-#include "Drawable.h"
+#include "Engine/Vec.h"
+#include "Graphics/Colors.h"
+#include "Graphics/Drawable.h"
 
-#include "BreezeException.h"
+#include "Engine/BreezeException.h"
 
 struct LastColl
 {

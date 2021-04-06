@@ -13,16 +13,16 @@
 /***************************************************************************/
 #pragma once
 
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Graphics.h"
-#include "FrameTimer.h"
+#include "Engine/Keyboard.h"
+#include "Engine/Mouse.h"
+#include "Graphics/Graphics.h"
+#include "Engine/FrameTimer.h"
 #include <chrono>
-#include "Sound.h"
+#include "Engine/Sound.h"
 #include <random>
-#include "Font.h"
-#include "CoordinateTransformer.h"
-#include "Camera.h"
+#include "Graphics/Font.h"
+#include "Graphics/CoordinateTransformer.h"
+#include "Graphics/Camera.h"
 
 #include "Spawner.h"
 #include "Statics.h"

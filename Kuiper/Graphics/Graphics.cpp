@@ -257,7 +257,7 @@ void Graphics::EndFrame()
 	const size_t srcPitch = Graphics::ScreenWidth;
 	const size_t rowBytes = srcPitch * sizeof(Color);
 	// perform the copy line-by-line
-	for (size_t y = 0u; y < Graphics::ScreenHeight; y++)
+	for (size_t y = 0u; y < Graphics::ScreenHeight; ++y)
 	{
 		memcpy(&pDst[y * dstPitch], &pSysBuffer[y * srcPitch], rowBytes);
 	}
@@ -317,9 +317,9 @@ void Graphics::DrawRect(int x0, int y0, int x1, int y1, Color c)
 	}
 
 
-	for (int x = x0; x <= x1; x++)
+	for (int x = x0; x <= x1; ++x)
 	{
-		for (int y = y0; y <= y1; y++)
+		for (int y = y0; y <= y1; ++y)
 		{
 			PutPixel(x, y, c);
 		}
@@ -363,9 +363,9 @@ void Graphics::DrawRectDim(int x0, int y0, int w, int h, Color c)
 void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 {
 	int rsq = r * r;
-	for (int y = y0 - r+1; y < y0 + r; y++)
+	for (int y = y0 - r+1; y < y0 + r; ++y)
 	{
-		for (int x = x0 - r+1; x < x0 + r; x++)
+		for (int x = x0 - r+1; x < x0 + r; ++x)
 		{
 			if ((x-x0) * (x-x0) + (y-y0) * (y-y0) <= rsq)
 			{
@@ -381,9 +381,9 @@ void Graphics::DrawCirc(int x0, int y0, int r, Color c)
 void Graphics::DrawCirc(Vec<int> pos, int r, Color c)
 {
 	int rsq = r * r;
-	for (int y = pos.Y - r + 1; y < pos.Y + r; y++)
+	for (int y = pos.Y - r + 1; y < pos.Y + r; ++y)
 	{
-		for (int x = pos.X - r + 1; x < pos.X + r; x++)
+		for (int x = pos.X - r + 1; x < pos.X + r; ++x)
 		{
 			if ((x - pos.X) * (x - pos.X) + (y - pos.Y) * (y - pos.Y) <= rsq)
 			{
@@ -396,9 +396,9 @@ void Graphics::DrawCirc(Vec<int> pos, int r, Color c)
 void Graphics::DrawCirc(Vec<float> pos, float r, Color c)
 {
 	float rsq = r * r;
-	for (int y = int(pos.Y) - int(r) + 1; y < int(pos.Y) + int(r); y++)
+	for (int y = int(pos.Y) - int(r) + 1; y < int(pos.Y) + int(r); ++y)
 	{
-		for (int x = int(pos.X) - int(r) + 1; x < int(pos.X) + int(r); x++)
+		for (int x = int(pos.X) - int(r) + 1; x < int(pos.X) + int(r); ++x)
 		{
 			if ((float(x) - pos.X) * (float(x) - pos.X) + (float(y) - pos.Y) * (float(y) - pos.Y) <= rsq)
 			{
@@ -429,9 +429,9 @@ Rect<int> Graphics::ScreenRect()
 
 void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
 {
-	for (int j = 0; j < size; j++)
+	for (int j = 0; j < size; ++j)
 	{
-		for (int i = 0; i < size - j; i++)
+		for (int i = 0; i < size - j; ++i)
 		{
 			PutPixel( x + i, y + j, C );
 		}
@@ -440,9 +440,9 @@ void Graphics::DrawULIsoTri(int x, int y, int size, Color C)
 
 void Graphics::DrawURIsoTri(int x, int y, int size, Color C)
 {
-	for (int j = 0; j < size; j++)
+	for (int j = 0; j < size; ++j)
 	{
-		for (int i = j; i < size; i++)
+		for (int i = j; i < size; ++i)
 		{
 			PutPixel(x + i, y + j, C);
 		}
@@ -451,9 +451,9 @@ void Graphics::DrawURIsoTri(int x, int y, int size, Color C)
 
 void Graphics::DrawDLIsoTri(int x, int y, int size, Color C)
 {
-	for (int j = 0; j < size; j++)
+	for (int j = 0; j < size; ++j)
 	{
-		for (int i = 0; i <= j; i++)
+		for (int i = 0; i <= j; ++i)
 		{
 			PutPixel(x + i, y + j, C);
 		}
@@ -462,9 +462,9 @@ void Graphics::DrawDLIsoTri(int x, int y, int size, Color C)
 
 void Graphics::DrawDRIsoTri(int x, int y, int size, Color C)
 {
-	for (int j = 0; j < size; j++)
+	for (int j = 0; j < size; ++j)
 	{
-		for (int i = size-j; i <= size; i++)
+		for (int i = size-j; i <= size; ++i)
 		{
 			PutPixel(x + i, y + j, C);
 		}
@@ -486,7 +486,7 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = rise / run;
 
-		for (int x = (int)(p0.X + 0.5); x <= (int)(p1.X + 0.5); x++)
+		for (int x = (int)(p0.X + 0.5); x <= (int)(p1.X + 0.5); ++x)
 		{
 			const int y = (int)(p0.Y + slope * (x-p0.X) + 0.5);
 
@@ -504,7 +504,7 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 		}
 		slope = run / rise;
 
-		for (int y = (int)(p0.Y+0.5); y <= (int)(p1.Y + 0.5); y++)
+		for (int y = (int)(p0.Y+0.5); y <= (int)(p1.Y + 0.5); ++y)
 		{
 			const int x = (int)(p0.X + slope * (y-p0.Y) + 0.5);
 
@@ -520,7 +520,7 @@ void Graphics::DrawLine( Vec<float> p0, Vec<float> p1, Color c)
 
 void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Color c)
 {
-	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	for (auto i = vert.begin(); i != std::prev(vert.end()); ++i)
 	{
 		DrawLine(*i, *std::next(i), c);
 	}
@@ -547,7 +547,7 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 	Vec<float> cur = front;
 
 	int colcount = 0;
-	for (auto i = vert.begin(); i != std::prev(vert.end()); i++)
+	for (auto i = vert.begin(); i != std::prev(vert.end()); ++i)
 	{
 		std::vector<Color> colArr;
 		colArr.emplace_back(Colors::White);
@@ -564,7 +564,7 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 		colArr.emplace_back(Colors::DarkGrey);
 
 		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
-		colcount++;
+		++colcount;
 
 		const Vec<float> next = xform( *std::next(i) );
 		DrawLine(cur, next, c);

@@ -13,7 +13,7 @@
 /***************************************************************************/
 
 #include "MainWindow.h"
-#include "Game.h"
+#include "../Game.h"
 #include "BreezeException.h"
 //#include "Tone.cpp"
 //#include <time.h>

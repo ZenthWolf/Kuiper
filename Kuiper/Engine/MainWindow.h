@@ -13,7 +13,7 @@
 /***************************************************************************/
 #pragma once
 #include "WinDefs.h"
-#include "Graphics.h"
+#include "../Graphics/Graphics.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "BreezeException.h"

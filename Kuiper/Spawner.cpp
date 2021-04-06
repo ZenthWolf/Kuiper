@@ -270,9 +270,9 @@ void Spawner::Update(const float dt, const Rect<float> cambox)
 
 void Spawner::CollCheck()
 {
-	for (int i = 0; i < int(belt.size()); i++)
+	for (int i = 0; i < int(belt.size()); ++i)
 	{
-		for (int j = i + 1; j < belt.size(); j++)
+		for (int j = i + 1; j < belt.size(); ++j)
 		{
 			float dist2 = (belt[i]->GetPos() - belt[j]->GetPos()).GetLengthSq();
 			float radi2 = belt[i]->GetRadius() + belt[j]->GetRadius();
@@ -307,7 +307,7 @@ void Spawner::CollideShip(Entity& ship)
 {
 	{
 		bool collision = false;
-		for (int i = 0; i < int(belt.size()); i++)
+		for (int i = 0; i < int(belt.size()); ++i)
 		{
 			float dist2 = (belt[i]->GetPos() - ship.GetPos()).GetLengthSq();
 			float radi2 = belt[i]->GetRadius() + ship.GetRadius();
@@ -402,7 +402,7 @@ void Spawner::GenerateAsteroid(const Rect<float> cambox)
 	int index = belt.size() - 1;
 
 	//ensure no collision
-	for (int i = 0; i < index; i++)
+	for (int i = 0; i < index; ++i)
 	{
 		float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
 		float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
@@ -423,7 +423,7 @@ int Spawner::FindSupport(const Vec<float>& d, const std::vector<Vec<float>>& mod
 {
 	int furthestIndex = 0;
 	float maxDist = model[0].Dot(d);
-	for (int i = 1; i < int(model.size()); i++)
+	for (int i = 1; i < int(model.size()); ++i)
 	{
 		float dist = model[i].Dot(d);
 		if (dist > maxDist)
@@ -506,11 +506,11 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		newvert->index = FindSupport(d, model);
 		newvert->point = model[newvert->index];
 
-		iter++;
+		++iter;
 
 		// Primary escape criterion: repeated support point
 		bool duplicate = false;
-		for (int i = 0; i < saveCount; i++)
+		for (int i = 0; i < saveCount; ++i)
 		{
 			if (newvert->index == save[i])
 			{
@@ -526,7 +526,7 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		}
 
 		// New vertex is ok- Solve functions always reduce the dimension of the simplex, so this is safe
-		simplex.count++;
+		++simplex.count;
 	}
 
 	// Prepare output.

@@ -13,9 +13,9 @@
 /***************************************************************************/
 
 #include "MainWindow.h"
-#include "Graphics.h"
+#include "../Graphics/Graphics.h"
 #include "BreezeException.h"
-#include "Game.h"
+#include "../Game.h"
 #include "Resource.h"
 #include <assert.h>
 
