@@ -21,6 +21,18 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	boundingrad = sqrtf(boundingrad);
 
 	modelprimitives = Shapes::ConvexSeparator(model);
+
+	for (auto m : modelprimitives)
+	{
+		for (auto v : m)
+		{
+			float vrad = v.GetLengthSq();
+			if (vrad > boundingrad)
+			{
+				boundingrad = vrad;
+			}
+		}
+	}
 }
 
 
@@ -139,7 +151,13 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
+std::vector<int> Entity::CollWith(const Entity& targ) const
+{
+	return std::vector<int>();
+}
 
+// Defunct version
+/*
 std::vector<int> Entity::CollWith(const Entity& targ) const
 {
 	std::vector<int> interiorVerts;
@@ -169,7 +187,7 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 
 	return std::move(interiorVerts);
 }
-
+*/
 
 
 void Entity::Recoil(const std::vector<int>& collider, Entity& targ)
@@ -404,3 +422,39 @@ void Entity::ResetHistory()
 	heading = History.heading = heading;
 	rot = History.rot = rot;
 }
+
+//Axis-aligned boxes
+Rect<float> Entity::GetBoundingBox(const std::vector<Vec<float>>& model) const
+{
+	float x0 = FLT_MAX; float x1 = -FLT_MAX;
+	float y0 = FLT_MAX; float y1 = -FLT_MAX;
+
+	for(auto v : model)
+	{
+		if (v.X < x0)
+		{
+			x0 = v.X;
+		}
+		else if (v.X > x1)
+		{
+			x1 = v.X;
+		}
+
+		if (v.Y < y0)
+		{
+			y0 = v.Y;
+		}
+		else if (v.Y > y1)
+		{
+			y1 = v.Y;
+		}
+	}
+
+	return Rect<float>(x0, x1, y0, y1);
+}
+
+Rect<float> Entity::GetBoundingBox() const
+{
+	return GetBoundingBox(model);
+}
+

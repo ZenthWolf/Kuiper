@@ -50,6 +50,9 @@ public:
 	std::list<Drawable> GetDrawList() const;
 	void SetColor(const Color cnew);
 
+	Rect<float> GetBoundingBox() const;
+	Rect<float> GetBoundingBox(const std::vector<Vec<float>>& model) const;
+
 	struct CollInfo
 	{
 		float impactDepth;
