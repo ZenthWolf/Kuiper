@@ -324,6 +324,33 @@ std::vector<Vec<float>> Entity::GetTransformedModel() const
 	return xmodel;
 }
 
+std::list<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
+{
+	std::list<std::vector<Vec<float>>> xprims;
+
+	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); it++)
+	{
+		std::vector<Vec<float>> xmodel = *it;
+
+		for (int i = 0; i < xmodel.size(); ++i)
+		{
+			Vec<float> v = xmodel[i];
+			float vxtemp = v.X; float vytemp = v.Y;
+			v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
+			v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
+			v.X *= scale;
+			v.Y *= scale;
+			v += pos;
+
+			xmodel[i] = v;
+		}
+
+		xprims.emplace_back(xmodel);
+	}
+
+	return xprims;
+}
+
 Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
 {
 	Vec<float> relpnt = pnt;

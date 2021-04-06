@@ -7,7 +7,7 @@
 /// A simplex vertex.
 struct SimplexVertex
 {
-	Vec<float> point;	  // ?
+	Vec<float> point;	  // Point in world space
 	float u;	          // unnormalized barycentric coordinate for closest point
 	int index;			  // point index
 };
@@ -42,7 +42,7 @@ public:
 	void CollideShip(Entity& ship);
 
 	Approach FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) const;
-
+	Approach FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>> modelList) const;
 private:
 	void CollCheck();
 	void GenerateAsteroid(const Rect<float> cambox);

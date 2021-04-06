@@ -65,6 +65,7 @@ public:
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;
 	std::vector<Vec<float>> GetTransformedModel() const;
+	std::list<std::vector<Vec<float>>> GetTransformedPrimitives() const;
 	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
 	
 	CollInfo CalculateImpact(const Vec<float> point, const Vec<float> Velocity) const;

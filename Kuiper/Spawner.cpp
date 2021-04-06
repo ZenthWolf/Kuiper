@@ -24,12 +24,12 @@ Vec<float> Simplex::GetSearchDirection(const Vec<float>& Q) const
 		if (sgn > 0.0f)
 		{
 			// Q is left of edge.
-			return Vec<float>{edge.Y, -edge.X};
+			return Vec<float>{-edge.Y, edge.X};
 		}
 		else
 		{
 			// Q is right of edge.
-			return Vec<float>{-edge.Y, edge.X};
+			return Vec<float>{edge.Y, -edge.X};
 		}
 	}
 
@@ -206,7 +206,7 @@ void Simplex::Solve3(const Vec<float>& Q)
 	}
 
 	// Region ABC
-	assert(uQBC > 0.0f && vAQC > 0.0f && wABQ > 0.0f);
+	assert(abs(area) > 0.0f && uQBC * area > 0.0f && vAQC * area > 0.0f && wABQ * area > 0.0f);
 	vertex0.u = uQBC;
 	vertex1.u = vAQC;
 	vertex2.u = wABQ;
@@ -536,5 +536,24 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 	result.distance = (result.point1 - result.point2).GetLength();
 	result.iterations = iter;
 
+	return result;
+}
+
+Approach Spawner::FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>> modelList) const
+{
+	Approach result = FindApproach(pnt, *modelList.begin());
+	for (auto it = ++modelList.begin(); it != modelList.end(); ++it)
+	{
+		Approach test = FindApproach(pnt, *it);
+
+		if (test.distance < result.distance)
+		{
+			result = test;
+			if (result.distance == 0.0f)
+			{
+				break;
+			}
+		}
+	}
 	return result;
 }

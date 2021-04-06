@@ -12,7 +12,7 @@
 /*** If you need help, go fuck yourself.                                 ***/
 /***************************************************************************/
 
-#include "MainWindow.h"
+#include "Engine/MainWindow.h"
 #include "Game.h"
 
 
@@ -252,8 +252,8 @@ void Game::ComposeFrame()
 
 		cam.Draw(Drawable(poly, Colors::Green));
 
-		cam.Draw(ship.GetDrawable());
-		//cam.Draw(ship.GetDrawList());
+		//cam.Draw(ship.GetDrawable());
+		cam.Draw(ship.GetDrawList());
 
 		for (auto& a : belt)
 		{
@@ -269,11 +269,11 @@ void Game::ComposeFrame()
 			cam.Draw(d);
 		}
 
-		Approach testApproach = spawner.FindApproach({300.0f, 100.0f}, ship.GetTransformedModel());
+		Approach testApproach = spawner.FindApproach({300.0f, 100.0f}, ship.GetTransformedPrimitives());
 		std::vector<Vec<float>> approachLine;
 		approachLine.emplace_back(testApproach.point1);
 		approachLine.emplace_back(testApproach.point2);
-		cam.Draw(Drawable(approachLine, Colors::Red));
+		cam.Draw(Drawable(approachLine, Colors::LightGrey));
 
 
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
