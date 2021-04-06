@@ -1,18 +1,42 @@
-2D Wireframe collider in this project is intended to  work with arbitrary, polygonal shapes.
+2D Wireframe collider in this project is intended to work with rigid, holeless polygonal shapes (concave and convex).
 
 ==========Current methodology==========
 
-Colliding entities check if they have any verticies inside the target.
+Collision is being reworked currently. This new implementation will use a Time of Impact (TOI) calculation to locate contact points via the Bilateral Advancement algorithm described by Erin Catto (2013 GDC).
 
-Primary collision vertex is identified as that which has the furthest distance to the outside
----Outside in this sense is necessarily along the negative velocity of said point. This is something like Separting Axis Theorem, but it is hoped this can handle concavity
+Current status:
 
-Impulse is calculated and applied at this vertex point, if and only if the vertex is actually moving into the surface was calculated to have passed through.
+Polygon Decomposition into convex primitive elements:
+	- Implemented a routine suggested by Emanuele Feronato (created initially for implementation with Box2D)
+	- Works in decomposing polygons with no 3 consecutive points collinear, no line overlaps, and no holes.
+	- This implementation does not necessarily triangularize the shape.
+	- New points may be added onto edges (possibly avoidable with another algorithm)
+	- There does seem to be some potential to creat interior polygons which have no truly exterior sides, but currently these would be kept.
+	- Inefficiency can be seen analyzing the Shapes::Star() polygon. The routine adds 5 points, creating a nearly interior pentagon. Creating the pentagon on the inside vertecies would reduce the number of points, and then could have different handling (probably can't really be discared for some edge cases)
+	- Implementation can be found: Shapes::ConvexSeparator(..) in Shapes.cpp
 
-Current performance shows abberant behavior, including very high impulses being registered (possibly as a result of multiple collisions)
+GJK Finding nearest point on a polygon to a source point:
+	- Implemented and working for convex and concave polygons
+	- Implementation can be found: Spawner::FindApproach(..) in Spawner.cpp
+	- Classes "Simplex" and "SimplexVertex", as well as the struct "Approach" (containing the result of this calculation) are defined along with Spawner (see also Spawner.h), but are not considered members of Spawner. Unsure if this is preferable.
 
-==========For future consideration==========
+GJK Finding nearest points for 2 polygons:
+	- In progress- will be retooling Simplex and SimplexVertex classes contained within Spawner.h
+	- New interpretation is that these will hold a simplex of points from the Minkowski Difference between the two polygons (and their approach to the origin).
 
-1) It seems like the right thing to do is decompose colliding polygons into convex only polygons.
+TOI Calculation:
+	- Not begun. Will first work with assumed convex polygons.
 
-2) Currently, polygon clipping is resolved after the timestep update, but it seems suggested to find collisions beforehand. Need to consider efficient method for projecting angular rotation at low cost.
+Broad phase detection:
+	- Will remain unchanged- all colliders store a bounding radius which is intended to be used (Axis-Aligned Bounding Boxes [AABB] are also available).
+	- This is done in Spawner::CollCheck(..) and Spawner::CollShip(..) in Spawner.cpp, prior to calling Entity::CollWith to verify the existence of a collision.
+
+Mid phase detection:
+	- Not fully implemented. Availability of AABBs extends to the convex primitive of polygons and is likely to be used in this step to identify candidate collisions of the convex primitive elements.
+	- Cursory implementation should be simple because of the above.
+	- There is an open question about potentially interior polygons (which ought not be checked against) and how to identify and ignore.
+
+Near phase detection
+	- Not begun. This will be concurrent with the implementation of TOI calculation.
+
+Impulse is calculated and applied at the identified contact points. The implementation from previous versions is likely to remain in place.
