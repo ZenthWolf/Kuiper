@@ -10,25 +10,25 @@ the Minkowski Difference generated polygon
 */
 
 //Search is relative, so normalizing not important
-Vec<float> Simplex::GetSearchDirection(const Vec<float>& Q) const
+Vec<float> Simplex::GetSearchDirection() const
 {
 	switch (count)
 	{
 	case 1:
-		return Q-vertex0.point;
+		return -vertex0.point;
 
 	case 2:
 	{
 		Vec<float> edge = vertex1.point - vertex0.point;
-		float sgn = edge.Cross(Q-vertex0.point);
+		float sgn = edge.Cross(-vertex0.point);
 		if (sgn > 0.0f)
 		{
-			// Q is left of edge.
+			// Origin is left of edge.
 			return Vec<float>{-edge.Y, edge.X};
 		}
 		else
 		{
-			// Q is right of edge.
+			// Origin is right of edge.
 			return Vec<float>{edge.Y, -edge.X};
 		}
 	}
@@ -39,45 +39,15 @@ Vec<float> Simplex::GetSearchDirection(const Vec<float>& Q) const
 	}
 }
 
-Vec<float> Simplex::GetClosestPoint() const
-{
-	//This version valid while not considering polygon-polygon approaches
-	float factor = 1.0f / divisor;
-
-	switch (count)
-	{
-	case 1:
-		return vertex0.point;
-
-	case 2:
-	{
-		float s = 1.0f / divisor;
-		return vertex0.point * (s * vertex0.u) +  vertex1.point * (s * vertex1.u);
-	}
-	break;
-
-	case 3:
-	{
-		float s = 1.0f / divisor;
-		return vertex0.point * (s * vertex0.u) + vertex1.point * (s * vertex1.u) + vertex2.point * (s * vertex2.u);
-	}
-	break;
-
-	default:
-		assert(false);
-		return Vec<float>();
-	}
-}
-
 //Find closest point on this 1-Plex to a pnt
-void Simplex::Solve2(const Vec<float>& Q)
+void Simplex::Solve2()
 {
 	Vec<float> A = vertex0.point;
 	Vec<float> B = vertex1.point;
 
 	//Sign flips to ensure positive results
-	float u = (Q - B).Dot(A - B);
-	float v = (Q - A).Dot(B - A);
+	float u = -B.Dot(A - B);
+	float v = -A.Dot(B - A);
 
 	// Region A
 	if (v <= 0.0f)
@@ -110,21 +80,21 @@ void Simplex::Solve2(const Vec<float>& Q)
 }
 
 //Find closest point on this 2-Plex to a pnt
-void Simplex::Solve3(const Vec<float>& Q)
+void Simplex::Solve3()
 {
 	Vec<float> A = vertex0.point;
 	Vec<float> B = vertex1.point;
 	Vec<float> C = vertex2.point;
 
 	// Unnormalized edge barycentric coordinate
-	float uAB = (Q - B).Dot(A - B);
-	float vAB = (Q - A).Dot(B - A);
+	float uAB = -B.Dot(A - B);
+	float vAB = -A.Dot(B - A);
 
-	float uBC = (Q - C).Dot(B - C);
-	float vBC = (Q - B).Dot(C - B);
+	float uBC = -C.Dot(B - C);
+	float vBC = -B.Dot(C - B);
 
-	float uCA = (Q - A).Dot(C - A);
-	float vCA = (Q - C).Dot(A - C);
+	float uCA = -A.Dot(C - A);
+	float vCA = -C.Dot(A - C);
 
 	//Check to for reduction to 0-Plex
 	// Region A
@@ -161,9 +131,9 @@ void Simplex::Solve3(const Vec<float>& Q)
 
 	// Unnormalized triangular barycentric coordinates
 	// With above, tests that pnt is exterior a particular side
-	float uQBC = (B - Q).Cross(C - Q);
-	float vAQC = (C - Q).Cross(A - Q);
-	float wABQ = (A - Q).Cross(B - Q);
+	float uQBC = B.Cross(C);
+	float vAQC = C.Cross(A);
+	float wABQ = A.Cross(B);
 
 	// Region AB
 	if (uAB > 0.0f && vAB > 0.0f && wABQ * area <= 0.0f)
@@ -213,6 +183,45 @@ void Simplex::Solve3(const Vec<float>& Q)
 	//Divisior non-zero, else previous region catches
 	divisor = area;
 	count = 3;
+}
+
+Approach Simplex::PrepareResult(int iter)
+{
+	float factor = 1.0f / divisor;
+	Approach result;
+
+	switch (count)
+	{
+	case 1:
+		result.point0 = vertex0.point0;
+		result.point1 = vertex0.point1;
+		break;
+
+	case 2:
+	{
+		float s = 1.0f / divisor;
+		result.point0 = vertex0.point0 * (s * vertex0.u) + vertex1.point0 * (s * vertex1.u);
+		result.point1 = vertex0.point1 * (s * vertex0.u) + vertex1.point1 * (s * vertex1.u);
+	}
+	break;
+
+	case 3:
+	{
+		float s = 1.0f / divisor;
+		result.point0 = vertex0.point0 * (s * vertex0.u) + vertex1.point0 * (s * vertex1.u) + vertex2.point0 * (s * vertex2.u);
+		result.point1 = result.point0;
+	}
+	break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	result.distance = (result.point1 - result.point0).GetLength();
+
+	result.iterations = iter;
+	return std::move(result);
 }
 
 /*Spawner Defs*/
@@ -436,14 +445,17 @@ int Spawner::FindSupport(const Vec<float>& d, const std::vector<Vec<float>>& mod
 	return furthestIndex;
 }
 
-Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) const
+Approach Spawner::FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const
 {
 	//model and point presumed given in world space
 
 	// Initial Simplex
 	Simplex simplex;
-	simplex.vertex0.index = 0;
-	simplex.vertex0.point = model[0];
+	simplex.vertex0.index0 = 0;
+	simplex.vertex0.index1 = 0;
+	simplex.vertex0.point0 = model0[0];
+	simplex.vertex0.point1 = model1[0];
+	simplex.vertex0.point = simplex.vertex0.point1 - simplex.vertex0.point0;
 	simplex.vertex0.u = 1.0f;
 	simplex.count = 1;
 
@@ -453,7 +465,7 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 
 	// Vertices of last simplex from previous iteration
 	// Finding a repeat is primary termination criterion.
-	int save[3];
+	int save0[3], save1[3];
 	int saveCount = 0;
 
 	// Loop evolving the simplex
@@ -465,7 +477,8 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		saveCount = simplex.count;
 		for (int i = 0; i < saveCount; ++i)
 		{
-			save[i] = vertices[i].index;
+			save0[i] = vertices[i].index0;
+			save1[i] = vertices[i].index1;
 		}
 
 		// Determine the closest point on the simplex and
@@ -476,11 +489,11 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 			break;
 
 		case 2:
-			simplex.Solve2(pnt);
+			simplex.Solve2();
 			break;
 
 		case 3:
-			simplex.Solve3(pnt);
+			simplex.Solve3();
 			break;
 		default:
 			assert(false);
@@ -493,7 +506,7 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		}
 
 		// Get search direction.
-		Vec<float> d = simplex.GetSearchDirection(pnt);
+		Vec<float> d = simplex.GetSearchDirection();
 
 		// Ensure the search direction non-zero.
 		if (d.GetLengthSq() == 0.0f)
@@ -503,8 +516,11 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 
 		// New Vertex to add to the Simplex
 		SimplexVertex* newvert = vertices + simplex.count;
-		newvert->index = FindSupport(d, model);
-		newvert->point = model[newvert->index];
+		newvert->index0 = FindSupport(-d, model0);
+		newvert->index1 = FindSupport(d, model1);
+		newvert->point0 = model0[newvert->index0];
+		newvert->point1 = model1[newvert->index1];
+		newvert->point = newvert->point1 - newvert->point0;
 
 		++iter;
 
@@ -512,7 +528,7 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		bool duplicate = false;
 		for (int i = 0; i < saveCount; ++i)
 		{
-			if (newvert->index == save[i])
+			if (newvert->index0 == save0[i] && newvert->index1 == save1[i])
 			{
 				duplicate = true;
 				break;
@@ -529,16 +545,9 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) co
 		++simplex.count;
 	}
 
-	// Prepare output.
-	Approach result;
-	result.point1 = pnt;
-	result.point2 = simplex.GetClosestPoint();
-	result.distance = (result.point1 - result.point2).GetLength();
-	result.iterations = iter;
-
-	return result;
+	return simplex.PrepareResult(iter);
 }
-
+/*
 Approach Spawner::FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>> modelList) const
 {
 	Approach result = FindApproach(pnt, *modelList.begin());
@@ -557,3 +566,4 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>
 	}
 	return result;
 }
+*/

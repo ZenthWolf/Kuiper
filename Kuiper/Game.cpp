@@ -269,11 +269,17 @@ void Game::ComposeFrame()
 			cam.Draw(d);
 		}
 
-		Approach testApproach = spawner.FindApproach({300.0f, 100.0f}, ship.GetTransformedPrimitives());
+		if (wnd.kbd.KeyIsPressed('P'))
+		{
+			int youViolatedTheLaw = 1;
+			bool STOP = youViolatedTheLaw;
+		}
+
+		Approach testApproach = spawner.FindApproach(ship.GetTransformedModel(), poly);
 		std::vector<Vec<float>> approachLine;
+		approachLine.emplace_back(testApproach.point0);
 		approachLine.emplace_back(testApproach.point1);
-		approachLine.emplace_back(testApproach.point2);
-		cam.Draw(Drawable(approachLine, Colors::LightGrey));
+		cam.Draw(Drawable(approachLine, Colors::DarkGrey));
 
 
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);

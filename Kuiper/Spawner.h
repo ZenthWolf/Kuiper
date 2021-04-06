@@ -7,30 +7,34 @@
 /// A simplex vertex.
 struct SimplexVertex
 {
-	Vec<float> point;	  // Point in world space
+	Vec<float> point0;	  // Point from polygon 0 in world space
+	Vec<float> point1;	  // Point from polygon 1 in world space
+	Vec<float> point;	  // Minkowski difference point
+
 	float u;	          // unnormalized barycentric coordinate for closest point
-	int index;			  // point index
+	int index0;			  // point index in polygon 0
+	int index1;			  // point index in polygon 1
+};
+
+struct Approach
+{
+	Vec<float> point0;		///< closest point on polygon 1
+	Vec<float> point1;		///< closest point on polygon 2
+	float distance;
+	int iterations;		///< number of GJK iterations used
 };
 
 /// Simplex used by the GJK algorithm.
 struct Simplex
 {
-	Vec<float> GetSearchDirection(const Vec<float>& Q) const;
-	Vec<float> GetClosestPoint() const;
-	void Solve2(const Vec<float>& Q);
-	void Solve3(const Vec<float>& Q);
+	Vec<float> GetSearchDirection() const;
+	void Solve2();
+	void Solve3();
+	Approach PrepareResult(int iter);
 
 	SimplexVertex vertex0, vertex1, vertex2;
 	float divisor; //Normalizes barycentric coords
 	int count;
-};
-
-struct Approach
-{
-	Vec<float> point1;		///< closest point on polygon 1
-	Vec<float> point2;		///< closest point on polygon 2
-	float distance;
-	int iterations;		///< number of GJK iterations used
 };
 
 class Spawner
@@ -41,8 +45,8 @@ public:
 	void Update(const float dt, const Rect<float> cambox);
 	void CollideShip(Entity& ship);
 
-	Approach FindApproach(Vec<float> pnt, std::vector<Vec<float>> model) const;
-	Approach FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>> modelList) const;
+	Approach FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const;
+
 private:
 	void CollCheck();
 	void GenerateAsteroid(const Rect<float> cambox);
