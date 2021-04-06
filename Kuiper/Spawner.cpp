@@ -547,13 +547,17 @@ Approach Spawner::FindApproach(const std::vector<Vec<float>>& model0, const std:
 
 	return simplex.PrepareResult(iter);
 }
-/*
-Approach Spawner::FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>> modelList) const
+
+Approach Spawner::FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, const std::list<std::vector<Vec<float>>>& modelList1) const
 {
-	Approach result = FindApproach(pnt, *modelList.begin());
-	for (auto it = ++modelList.begin(); it != modelList.end(); ++it)
+	//Brutal force method (no mid phase filtering)
+
+	//All cases for first element in model0
+	Approach result = FindApproach(*modelList0.begin(), *modelList1.begin());
+
+	for (auto it1 = ++modelList1.begin(); it1 != modelList1.end(); ++it1)
 	{
-		Approach test = FindApproach(pnt, *it);
+		Approach test = FindApproach(*modelList0.begin(), *it1);
 
 		if (test.distance < result.distance)
 		{
@@ -564,6 +568,26 @@ Approach Spawner::FindApproach(Vec<float> pnt, std::list<std::vector<Vec<float>>
 			}
 		}
 	}
+
+	//Remaining cases
+	if (result.distance != 0.0f)
+	{
+		for (auto it0 = ++modelList0.begin(); it0 != modelList0.end(); ++it0)
+		{
+			for (auto it1 = modelList1.begin(); it1 != modelList1.end(); ++it1)
+			{
+				Approach test = FindApproach(*it0, *it1);
+
+				if (test.distance < result.distance)
+				{
+					result = test;
+					if (result.distance == 0.0f)
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
 	return result;
 }
-*/

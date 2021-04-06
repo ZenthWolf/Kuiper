@@ -239,10 +239,11 @@ void Game::ComposeFrame()
 		std::vector<Vec<float>> poly;
 		poly.reserve(5);
 		poly.emplace_back(300.0f, 100.0f);
-		poly.emplace_back(200.0f, 500.0f);
-		poly.emplace_back(250.0f, 450.0f);
-		poly.emplace_back(350.0f, 450.0f);
 		poly.emplace_back(400.0f, 500.0f);
+		poly.emplace_back(350.0f, 450.0f);
+		poly.emplace_back(250.0f, 450.0f);
+		poly.emplace_back(200.0f, 500.0f);
+
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		for (auto& s : scene)
@@ -275,7 +276,9 @@ void Game::ComposeFrame()
 			bool STOP = youViolatedTheLaw;
 		}
 
-		Approach testApproach = spawner.FindApproach(ship.GetTransformedModel(), poly);
+		auto mothership = Shapes::ConvexSeparator(poly);
+
+		Approach testApproach = spawner.FindApproach(ship.GetTransformedPrimitives(), mothership);
 		std::vector<Vec<float>> approachLine;
 		approachLine.emplace_back(testApproach.point0);
 		approachLine.emplace_back(testApproach.point1);

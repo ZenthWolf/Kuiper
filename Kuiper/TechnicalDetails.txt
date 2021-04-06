@@ -21,8 +21,10 @@ GJK Finding nearest point on a polygon to a source point:
 	- Classes "Simplex" and "SimplexVertex", as well as the struct "Approach" (containing the result of this calculation) are defined along with Spawner (see also Spawner.h), but are not considered members of Spawner. Unsure if this is preferable.
 
 GJK Finding nearest points for 2 polygons:
-	- In progress- will be retooling Simplex and SimplexVertex classes contained within Spawner.h
-	- New interpretation is that these will hold a simplex of points from the Minkowski Difference between the two polygons (and their approach to the origin).
+	- Implemented, for Convex and Concave polygons
+	- Currently, checks against every pair of primitive convex elements
+	- There should be estimating methods which can cull the need to check each possible pair
+	- Can be seen in Spawner.cpp, as described above.
 
 TOI Calculation:
 	- Not begun. Will first work with assumed convex polygons.

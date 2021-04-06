@@ -46,6 +46,8 @@ public:
 	void CollideShip(Entity& ship);
 
 	Approach FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const;
+	Approach FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, 
+						  const std::list<std::vector<Vec<float>>>& modelList1) const;
 
 private:
 	void CollCheck();
