@@ -12,9 +12,9 @@
 /*** If you need help, go fuck yourself.                                 ***/
 /***************************************************************************/
 
-#include "MainWindow.h"
+#include "../Engine/MainWindow.h"
 #include "Graphics.h"
-#include "DXErr.h"
+#include "../Engine/DXErr.h"
 #include <assert.h>
 #include <string>
 #include <array>
@@ -22,8 +22,8 @@
 // Should be created during the build sequence before preprocessing
 namespace FramebufferShaders
 {
-#include "FramebufferPS.shh"
-#include "FramebufferVS.shh"
+#include "../FramebufferPS.shh"
+#include "../FramebufferVS.shh"
 }
 
 #pragma comment( lib,"d3d11.lib" )
@@ -546,23 +546,23 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 	const Vec<float> front = xform( vert.front() );
 	Vec<float> cur = front;
 
+	std::vector<Color> colArr;
+	colArr.emplace_back(Colors::White);
+	colArr.emplace_back(Colors::Red);
+	colArr.emplace_back(Colors::Yellow);
+	colArr.emplace_back(Colors::Green);
+	colArr.emplace_back(Colors::Cyan);
+	colArr.emplace_back(Colors::LightBlue);
+	colArr.emplace_back(Colors::Blue);
+	colArr.emplace_back(Colors::Magenta);
+	colArr.emplace_back(Colors::Purple);
+	colArr.emplace_back(Colors::LightGrey);
+	colArr.emplace_back(Colors::Grey);
+	colArr.emplace_back(Colors::DarkGrey);
+
 	int colcount = 0;
 	for (auto i = vert.begin(); i != std::prev(vert.end()); ++i)
 	{
-		std::vector<Color> colArr;
-		colArr.emplace_back(Colors::White);
-		colArr.emplace_back(Colors::Red);
-		colArr.emplace_back(Colors::Yellow);
-		colArr.emplace_back(Colors::Green);
-		colArr.emplace_back(Colors::Cyan);
-		colArr.emplace_back(Colors::LightBlue);
-		colArr.emplace_back(Colors::Blue);
-		colArr.emplace_back(Colors::Magenta);
-		colArr.emplace_back(Colors::Purple);
-		colArr.emplace_back(Colors::LightGrey);
-		colArr.emplace_back(Colors::Grey);
-		colArr.emplace_back(Colors::DarkGrey);
-
 		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
 		++colcount;
 
@@ -570,6 +570,7 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 		DrawLine(cur, next, c);
 		cur = next;
 	}
+	DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
 	DrawLine(cur, front, c);
 }
 

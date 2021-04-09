@@ -24,6 +24,19 @@ struct Approach
 	int iterations;		///< number of GJK iterations used
 };
 
+struct NearElements
+{
+	enum class Type{Vertex, Edge};
+	int v0;
+	Type type0;
+	int convex0;
+	int v1;
+	Type type1;
+	int convex1;
+
+	bool flip;
+};
+
 /// Simplex used by the GJK algorithm.
 struct Simplex
 {
@@ -45,9 +58,17 @@ public:
 	void Update(const float dt, const Rect<float> cambox);
 	void CollideShip(Entity& ship);
 
+	int FindIncidentEdge(const int edge, 
+		const std::vector<Vec<float>>& source, 
+		const std::vector<Vec<float>>& target) const;
+	float FindMaxSeparation(int& edge,
+		const std::vector<Vec<float>>& source,
+		const std::vector<Vec<float>>& target) const;
 	Approach FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const;
 	Approach FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, 
 						  const std::list<std::vector<Vec<float>>>& modelList1) const;
+	NearElements GetNearestElements(const std::list<std::vector<Vec<float>>>& modelList0,
+		const std::list<std::vector<Vec<float>>>& modelList1) const;
 
 private:
 	void CollCheck();

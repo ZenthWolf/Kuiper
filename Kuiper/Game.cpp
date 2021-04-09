@@ -270,12 +270,6 @@ void Game::ComposeFrame()
 			cam.Draw(d);
 		}
 
-		if (wnd.kbd.KeyIsPressed('P'))
-		{
-			int youViolatedTheLaw = 1;
-			bool STOP = youViolatedTheLaw;
-		}
-
 		auto mothership = Shapes::ConvexSeparator(poly);
 
 		Approach testApproach = spawner.FindApproach(ship.GetTransformedPrimitives(), mothership);
@@ -284,6 +278,51 @@ void Game::ComposeFrame()
 		approachLine.emplace_back(testApproach.point1);
 		cam.Draw(Drawable(approachLine, Colors::DarkGrey));
 
+		if (wnd.kbd.KeyIsPressed('P'))
+		{
+			auto shipPrim = ship.GetTransformedPrimitives();
+			NearElements testElements = spawner.GetNearestElements(shipPrim, mothership);
+			
+			std::vector<Vec<float>> edgeLine;
+			std::vector<Vec<float>> pntLine;
+
+			if (testElements.type0 == NearElements::Type::Edge)
+			{
+				auto shipPrimNear = shipPrim.begin();
+				std::advance(shipPrimNear, testElements.convex0);
+				int nPrimVert = (*shipPrimNear).size();
+
+				edgeLine.emplace_back( (*shipPrimNear)[testElements.v0] );
+				edgeLine.emplace_back( (*shipPrimNear)[(testElements.v0+1)%nPrimVert] );
+				cam.Draw(Drawable(edgeLine, Colors::Red));
+
+				shipPrimNear = mothership.begin();
+				std::advance(shipPrimNear, testElements.convex1);
+				nPrimVert = (*shipPrimNear).size();
+
+				pntLine.emplace_back((*shipPrimNear)[testElements.v1]);
+				pntLine.emplace_back((*shipPrimNear)[(testElements.v1 + 1) % nPrimVert]);
+				cam.Draw(Drawable(pntLine, Colors::LightBlue));
+			}
+			else if ((testElements.type0 == NearElements::Type::Vertex))
+			{
+				auto shipPrimNear = shipPrim.begin();
+				std::advance(shipPrimNear, testElements.convex0);
+				int nPrimVert = (*shipPrimNear).size();
+
+				pntLine.emplace_back((*shipPrimNear)[testElements.v0]);
+				pntLine.emplace_back((*shipPrimNear)[(testElements.v0 + 1) % nPrimVert]);
+				cam.Draw(Drawable(pntLine, Colors::LightBlue));
+
+				shipPrimNear = mothership.begin();
+				std::advance(shipPrimNear, testElements.convex1);
+				nPrimVert = (*shipPrimNear).size();
+
+				edgeLine.emplace_back((*shipPrimNear)[testElements.v1]);
+				edgeLine.emplace_back((*shipPrimNear)[(testElements.v1 + 1) % nPrimVert]);
+				cam.Draw(Drawable(edgeLine, Colors::Red));
+			}
+		}
 
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
 		if (collship)

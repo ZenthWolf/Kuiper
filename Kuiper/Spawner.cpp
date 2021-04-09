@@ -1,5 +1,7 @@
 #include<algorithm>
 #include<cassert>
+#include<iterator>
+
 #include "Spawner.h"
 
 /*Simplex Defs*/
@@ -589,5 +591,139 @@ Approach Spawner::FindApproach(const std::list<std::vector<Vec<float>>>& modelLi
 			}
 		}
 	}
+	return result;
+}
+
+float Spawner::FindMaxSeparation(int& edge, const std::vector<Vec<float>>& source, const std::vector<Vec<float>>& target) const
+{
+	int nSource = int(source.size());
+	int nTarget = int(target.size());
+
+	float maxSeparation = -FLT_MAX;
+
+	for (int i = 0; i < nSource; ++i)
+	{
+		int i1 = (i + 1) % nSource;
+		// source normal
+		Vec<float> n = { source[i1].Y - source[i].Y, -source[i1].X + source[i].X };
+
+		// Find deepest point for normal i.
+		float si = FLT_MAX;
+		for (int j = 0; j < nTarget; ++j)
+		{
+			float sij = n.Dot(target[j] - source[i]);
+			if (sij < si)
+			{
+				si = sij;
+			}
+		}
+
+		if (si > maxSeparation)
+		{
+			maxSeparation = si;
+			edge = i;
+		}
+	}
+
+	return maxSeparation;
+}
+
+int Spawner::FindIncidentEdge(const int edge, const std::vector<Vec<float>>& source, const std::vector<Vec<float>>& target) const
+{
+	int nverts = target.size();
+
+	// Get the normal of the reference edge in poly2's frame.
+	Vec<float> norm = {source[edge].Y, -source[edge].X};
+
+	// Find the incident edge on poly2.
+	int index = 0;
+	float minDot = FLT_MAX;
+	for (int i = 0; i < nverts; ++i)
+	{
+		int i1 = (i + 1) % nverts;
+		float dot = norm.Dot( { (target[i1].Y - target[i].Y), - (target[i1].X - target[i].X) });
+		if (dot < minDot)
+		{
+			minDot = dot;
+			index = i;
+		}
+	}
+
+	return index;
+}
+
+
+NearElements Spawner::GetNearestElements(const std::list<std::vector<Vec<float>>>& modelList0,
+								 const std::list<std::vector<Vec<float>>>& modelList1) const
+{
+	auto convex00 = modelList0.begin();
+	auto convex01 = modelList1.begin();
+	auto convex10 = modelList0.begin();
+	auto convex11 = modelList1.begin();
+	int edge0 = 0;
+	int edge1 = 0;
+	float separation0 = -FLT_MAX;
+	float separation1 = -FLT_MAX;
+
+	for (auto it0 = modelList0.begin(); it0 != modelList0.end(); ++it0)
+	{
+		for (auto it1 = modelList1.begin(); it1 != modelList1.end(); ++it1)
+		{
+			int new0;
+			int new1;
+			float s0 = FindMaxSeparation(new0, *it0, *it1);
+			float s1 = FindMaxSeparation(new1, *it1, *it0);
+			if (s0 > separation0)
+			{
+				edge0 = new0;
+				separation0 = s0;
+				auto convex00 = it0;
+				auto convex01 = it1;
+			}
+			if (s1 > separation1)
+			{
+				edge1 = new1;
+				separation1 = s1;
+				auto convex10 = it0;
+				auto convex11 = it1;
+			}
+		}
+	}
+
+	NearElements result;
+	auto convex0 = convex00;
+	auto convex1 = convex00;
+	if (separation1 > separation0)
+	{
+		result.v0 = edge1;
+		result.type0 = NearElements::Type::Edge;
+		result.flip = true;
+		result.convex0 = std::distance(modelList1.begin(), convex11);
+		result.convex1 = std::distance(modelList0.begin(), convex10);
+		convex0 = convex11;
+		convex1 = convex10;
+	}
+	else
+	{
+		result.v0 = edge0;
+		result.type0 = NearElements::Type::Edge;
+		result.flip = false;
+		result.convex0 = std::distance(modelList0.begin(), convex00);
+		result.convex1 = std::distance(modelList1.begin(), convex01);
+		convex0 = convex00;
+		convex1 = convex01;
+	}
+
+	result.v1 = FindIncidentEdge(result.v0, *convex0, *convex1);
+	result.type1 = NearElements::Type::Vertex;
+
+	if(result.flip)
+	{
+		std::swap(result.v0, result.v1);
+		std::swap(result.type0, result.type1);
+		std::swap(result.convex0, result.convex1);
+		result.flip = false;
+	}
+
 	return result;
 }
