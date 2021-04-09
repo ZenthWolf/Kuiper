@@ -29,10 +29,8 @@ struct NearElements
 	enum class Type{Vertex, Edge};
 	int v0;
 	Type type0;
-	int convex0;
 	int v1;
 	Type type1;
-	int convex1;
 
 	bool flip;
 };
@@ -67,8 +65,8 @@ public:
 	Approach FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const;
 	Approach FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, 
 						  const std::list<std::vector<Vec<float>>>& modelList1) const;
-	NearElements GetNearestElements(const std::list<std::vector<Vec<float>>>& modelList0,
-		const std::list<std::vector<Vec<float>>>& modelList1) const;
+	NearElements GetNearestElements(const std::vector<Vec<float>>& model0,
+		const std::vector<Vec<float>>& model1) const;
 
 private:
 	void CollCheck();
