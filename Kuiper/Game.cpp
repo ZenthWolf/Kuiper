@@ -241,8 +241,10 @@ void Game::ComposeFrame()
 		poly.reserve(5);
 		poly.emplace_back(300.0f, 100.0f);
 		poly.emplace_back(400.0f, 500.0f);
-		poly.emplace_back(350.0f, 550.0f);//poly.emplace_back(350.0f, 450.0f);
-		poly.emplace_back(250.0f, 550.0f);//poly.emplace_back(250.0f, 450.0f);
+		poly.emplace_back(350.0f, 550.0f);
+		//poly.emplace_back(350.0f, 450.0f);
+		poly.emplace_back(250.0f, 550.0f);
+		//poly.emplace_back(250.0f, 450.0f);
 		poly.emplace_back(200.0f, 500.0f);
 
 		cam.Draw(Drawable(poly, Colors::Green));
@@ -287,42 +289,45 @@ void Game::ComposeFrame()
 				bool STOP = youViolatedTheLaw;
 			}
 			auto shipPrim = ship.GetTransformedPrimitives();
-			NearElements testElements = spawner.GetNearestElements(ship.GetTransformedModel(), poly);
+			//NearElements testElements = spawner.GetNearestElements(ship.GetTransformedModel(), poly);
 			
 			std::vector<Vec<float>> edgeLine;
 			std::vector<Vec<float>> pntLine;
 
-			if (testElements.type0 == NearElements::Type::Edge)
-			{
-				auto shipVert = ship.GetTransformedModel();
-				int nVert = shipVert.size();
+			auto shipVert = ship.GetTransformedModel();
+			int nVert = shipVert.size();
 
-				edgeLine.emplace_back( shipVert[testElements.v0] );
-				edgeLine.emplace_back( shipVert[(testElements.v0+1)%nVert] );
+			if (testApproach.type0 == Approach::Type::Edge)
+			{
+				Vec<float> lineDir = shipVert[(testApproach.index0 + 1) % nVert] - shipVert[testApproach.index0];
+
+				edgeLine.emplace_back(shipVert[testApproach.index0] - lineDir*2);
+				edgeLine.emplace_back(shipVert[testApproach.index0] + lineDir*3);
+				//edgeLine.emplace_back( shipVert[testApproach.index0] );
+				//edgeLine.emplace_back( shipVert[(testApproach.index0+1)%nVert] );
 				cam.Draw(Drawable(edgeLine, Colors::White));
-
-				shipVert = poly;
-				nVert = shipVert.size();
-
-				pntLine.emplace_back(shipVert[testElements.v1]);
-				pntLine.emplace_back(shipVert[(testElements.v1 + 1) % nVert]);
-				cam.Draw(Drawable(pntLine, Colors::LightBlue));
 			}
-			else if ((testElements.type0 == NearElements::Type::Vertex))
+			else if ((testApproach.type0 == Approach::Type::Vertex))
 			{
-				auto shipVert = ship.GetTransformedModel();
-				int nVert = shipVert.size();
-
-				edgeLine.emplace_back(shipVert[testElements.v0]);
-				edgeLine.emplace_back(shipVert[(testElements.v0 + 1) % nVert]);
+				edgeLine.emplace_back(shipVert[testApproach.index0]);
+				edgeLine.emplace_back(shipVert[(testApproach.index0 + 1) % nVert]);
 				cam.Draw(Drawable(edgeLine, Colors::LightBlue));
+			}
 
-				shipVert = poly;
-				nVert = shipVert.size();
+			shipVert = poly;
+			nVert = shipVert.size();
 
-				pntLine.emplace_back(shipVert[testElements.v1]);
-				pntLine.emplace_back(shipVert[(testElements.v1 + 1) % nVert]);
+			if (testApproach.type1 == Approach::Type::Edge)
+			{
+				pntLine.emplace_back(shipVert[testApproach.index1]);
+				pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
 				cam.Draw(Drawable(pntLine, Colors::White));
+			}
+			else if ((testApproach.type1 == Approach::Type::Vertex))
+			{
+				pntLine.emplace_back(shipVert[testApproach.index1]);
+				pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
+				cam.Draw(Drawable(pntLine, Colors::LightBlue));
 			}
 		}
 

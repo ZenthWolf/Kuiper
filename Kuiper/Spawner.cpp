@@ -1,6 +1,7 @@
 #include<algorithm>
 #include<cassert>
 #include<iterator>
+#define NOMINMAX
 
 #include "Spawner.h"
 
@@ -187,29 +188,90 @@ void Simplex::Solve3()
 	count = 3;
 }
 
-Approach Simplex::PrepareResult(int iter)
+Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
 {
-	float factor = 1.0f / divisor;
+	float s = 1.0f / divisor;
 	Approach result;
+
+	result.convex0 = convex0;
+	result.convex1 = convex1;
 
 	switch (count)
 	{
 	case 1:
 		result.point0 = vertex0.point0;
+		result.index0 = vertex0.index0;
+		result.type0 = Approach::Type::Vertex;
+
 		result.point1 = vertex0.point1;
+		result.index1 = vertex0.index1;
+		result.type1 = Approach::Type::Vertex;
 		break;
 
 	case 2:
 	{
-		float s = 1.0f / divisor;
 		result.point0 = vertex0.point0 * (s * vertex0.u) + vertex1.point0 * (s * vertex1.u);
+
+		if (abs(result.point0.X - vertex0.point0.X) < 0.0001 && abs(result.point0.Y - vertex0.point0.Y) < 0.0001)
+		{
+			result.index0 = vertex0.index0;
+			result.type0 = Approach::Type::Vertex;
+		}
+		else if (abs(result.point0.X - vertex1.point0.X) < 0.0001 && abs(result.point0.Y - vertex1.point0.Y) < 0.0001)
+		{
+			result.index0 = vertex1.index0;
+			result.type0 = Approach::Type::Vertex;
+		}
+		else
+		{
+			if ( (vertex0.index0 < vertex1.index0) && (vertex0.index0 + 1 == vertex1.index0) )
+			{
+				result.index0 = vertex0.index0;
+			}
+			else if ((vertex1.index0 < vertex0.index0) && (vertex1.index0 + 1 == vertex0.index0))
+			{
+				result.index0 = vertex1.index0;
+			}
+			else
+			{
+				result.index0 = std::max(vertex0.index0, vertex1.index0);
+			}
+			result.type0 = Approach::Type::Edge;
+		}
+		
+
 		result.point1 = vertex0.point1 * (s * vertex0.u) + vertex1.point1 * (s * vertex1.u);
+		if (abs(result.point1.X - vertex0.point1.X) < 0.0001 && abs(result.point1.Y - vertex0.point1.Y) < 0.0001)
+		{
+			result.index1 = vertex0.index1;
+			result.type1 = Approach::Type::Vertex;
+		}
+		else if (abs(result.point1.X - vertex1.point1.X) < 0.0001 && abs(result.point1.Y - vertex1.point1.Y) < 0.0001)
+		{
+			result.index1 = vertex1.index1;
+			result.type1 = Approach::Type::Vertex;
+		}
+		else
+		{
+			if ((vertex0.index1 < vertex1.index1) && (vertex0.index1 + 1 == vertex1.index1))
+			{
+				result.index1 = vertex0.index1;
+			}
+			else if ((vertex1.index1 < vertex0.index1) && (vertex1.index1 + 1 == vertex0.index1))
+			{
+				result.index1 = vertex1.index1;
+			}
+			else
+			{
+				result.index1 = std::max(vertex0.index1, vertex1.index1);
+			}
+			result.type1 = Approach::Type::Edge;
+		}
 	}
 	break;
 
 	case 3:
 	{
-		float s = 1.0f / divisor;
 		result.point0 = vertex0.point0 * (s * vertex0.u) + vertex1.point0 * (s * vertex1.u) + vertex2.point0 * (s * vertex2.u);
 		result.point1 = result.point0;
 	}
@@ -547,7 +609,7 @@ Approach Spawner::FindApproach(const std::vector<Vec<float>>& model0, const std:
 		++simplex.count;
 	}
 
-	return simplex.PrepareResult(iter);
+	return simplex.PrepareResult(iter, 0, 0);
 }
 
 Approach Spawner::FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, const std::list<std::vector<Vec<float>>>& modelList1) const
@@ -563,6 +625,8 @@ Approach Spawner::FindApproach(const std::list<std::vector<Vec<float>>>& modelLi
 
 		if (test.distance < result.distance)
 		{
+			test.convex0 = 0;
+			test.convex1 = std::distance(modelList1.begin(), it1);
 			result = test;
 			if (result.distance == 0.0f)
 			{
@@ -582,6 +646,8 @@ Approach Spawner::FindApproach(const std::list<std::vector<Vec<float>>>& modelLi
 
 				if (test.distance < result.distance)
 				{
+					test.convex0 = std::distance(modelList0.begin(), it0);
+					test.convex1 = std::distance(modelList1.begin(), it1);
 					result = test;
 					if (result.distance == 0.0f)
 					{

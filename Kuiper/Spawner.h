@@ -18,15 +18,25 @@ struct SimplexVertex
 
 struct Approach
 {
-	Vec<float> point0;		///< closest point on polygon 1
-	Vec<float> point1;		///< closest point on polygon 2
+	enum class Type { Vertex, Edge };
+	Vec<float> point0;		// closest point on polygon 0
+	int convex0;            // convex primitive of point0
+	int index0;             // index of the element index0 represents
+	Type type0;             // the type of element index0 represents
+
+	Vec<float> point1;		// closest point on polygon 1
+	int convex1;            // convex primitive of point1
+	int index1;             // index of the element index1 represents
+	Type type1;             // the type of element index1 represents
+
 	float distance;
-	int iterations;		///< number of GJK iterations used
+	int iterations;		    // number of GJK iterations used
 };
 
 struct NearElements
 {
-	enum class Type{Vertex, Edge};
+	enum class Type { Vertex, Edge };
+
 	int v0;
 	Type type0;
 	int v1;
@@ -41,7 +51,7 @@ struct Simplex
 	Vec<float> GetSearchDirection() const;
 	void Solve2();
 	void Solve3();
-	Approach PrepareResult(int iter);
+	Approach PrepareResult(int iter, int convex0, int convex1);
 
 	SimplexVertex vertex0, vertex1, vertex2;
 	float divisor; //Normalizes barycentric coords
