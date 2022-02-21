@@ -22,6 +22,9 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 
 	modelprimitives = Shapes::ConvexSeparator(model);
 
+	int STOP = 1;
+	bool youViolateTheLaw = STOP;
+
 	for (auto m : modelprimitives)
 	{
 		for (auto v : m)

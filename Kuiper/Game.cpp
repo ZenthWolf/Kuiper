@@ -241,17 +241,21 @@ void Game::ComposeFrame()
 		poly.reserve(5);
 		poly.emplace_back(300.0f, 100.0f);
 		poly.emplace_back(400.0f, 500.0f);
-		poly.emplace_back(350.0f, 550.0f);
-		//poly.emplace_back(350.0f, 450.0f);
-		poly.emplace_back(250.0f, 550.0f);
-		//poly.emplace_back(250.0f, 450.0f);
+		
+		//poly.emplace_back(350.0f, 550.0f);
+		poly.emplace_back(350.0f, 450.0f);
+		
+		//poly.emplace_back(250.0f, 550.0f);
+		poly.emplace_back(250.0f, 450.0f);
+		
 		poly.emplace_back(200.0f, 500.0f);
 
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		for (auto& s : scene)
 		{
-			cam.Draw(s.GetDrawable());
+			//cam.Draw(s.GetDrawable());
+			cam.Draw(s.GetDrawList());
 		}
 
 		cam.Draw(Drawable(poly, Colors::Green));
@@ -295,22 +299,36 @@ void Game::ComposeFrame()
 			std::vector<Vec<float>> pntLine;
 
 			auto shipVert = ship.GetTransformedModel();
-			int nVert = shipVert.size();
+			int nVert;// = shipPrim.size();
+			auto prim = shipPrim.begin();
+			for (int i = 0; i < testApproach.convex0; ++i)
+			{
+				++prim;
+			}
+			nVert = (*prim).size();
+
 
 			if (testApproach.type0 == Approach::Type::Edge)
 			{
-				Vec<float> lineDir = shipVert[(testApproach.index0 + 1) % nVert] - shipVert[testApproach.index0];
+				//Vec<float> lineDir = shipVert[(testApproach.index0 + 1) % nVert] - shipVert[testApproach.index0];
+				Vec<float> lineDir = (*prim)[(testApproach.index0 + 1) % nVert] - (*prim)[testApproach.index0];
 
-				edgeLine.emplace_back(shipVert[testApproach.index0] - lineDir*2);
-				edgeLine.emplace_back(shipVert[testApproach.index0] + lineDir*3);
+				//edgeLine.emplace_back(shipVert[testApproach.index0] - lineDir*2);
+				//edgeLine.emplace_back(shipVert[testApproach.index0] + lineDir*3);
+				edgeLine.emplace_back((*prim)[testApproach.index0] - lineDir * 2);
+				edgeLine.emplace_back((*prim)[testApproach.index0] + lineDir * 3);
+				
 				//edgeLine.emplace_back( shipVert[testApproach.index0] );
 				//edgeLine.emplace_back( shipVert[(testApproach.index0+1)%nVert] );
 				cam.Draw(Drawable(edgeLine, Colors::White));
 			}
 			else if ((testApproach.type0 == Approach::Type::Vertex))
 			{
-				edgeLine.emplace_back(shipVert[testApproach.index0]);
-				edgeLine.emplace_back(shipVert[(testApproach.index0 + 1) % nVert]);
+				//edgeLine.emplace_back(shipVert[testApproach.index0]);
+				//edgeLine.emplace_back(shipVert[(testApproach.index0 + 1) % nVert]);
+				edgeLine.emplace_back((*prim)[testApproach.index0]);
+				edgeLine.emplace_back((*prim)[(testApproach.index0 + 1) % nVert]);
+				
 				cam.Draw(Drawable(edgeLine, Colors::LightBlue));
 			}
 
