@@ -1,15 +1,13 @@
 /***************************************************************************/
-/***               Temper Tech DirectX Framework V 1.0.0                 ***/
-/*** Game.cpp                                                            ***/
-/*** Copyright for all time (if your law disagrees, it can suck it)      ***/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
 /***                                                                     ***/
 /*** Part of the Temper DirectX Framework                                ***/
 /***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
-/*** unless you are a working member of Temper Tech                      ***/
-/***                                                                     ***/
-/*** If you need help, go fuck yourself.                                 ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
 
 #include "Engine/MainWindow.h"
@@ -67,9 +65,9 @@ void Game::UpdateModel(float dt)
 			auto e = wnd.kbd.ReadKey();
 			
 			bool isWorking;
-			std::list<std::vector<Vec<float>>> VexStar;
-			std::list<std::vector<Vec<float>>> VexRoid;
-			std::list<std::vector<Vec<float>>> VexShip;
+			std::vector<std::vector<Vec<float>>> VexStar;
+			std::vector<std::vector<Vec<float>>> VexRoid;
+			std::vector<std::vector<Vec<float>>> VexShip;
 
 			if (e.IsPress())
 			{
@@ -123,6 +121,7 @@ void Game::UpdateModel(float dt)
 			ship.AThrust(-dt);
 		}
 
+		ship.SetHistory();
 		ship.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
 
@@ -257,15 +256,41 @@ void Game::ComposeFrame()
 			//cam.Draw(s.GetDrawable());
 			cam.Draw(s.GetDrawList());
 		}
+		
+		//DEBUG BOUNDING CIRCS
+		float radius = ship.GetRadius();
+		radius *= cam.GetScale();
+		Vec<float> pos = { ship.GetPos().X, -ship.GetPos().Y };
+		pos -= {cam.GetPos().X, -cam.GetPos().Y};
+		pos *= cam.GetScale();
+		pos += {gfx.ScreenWidth / 2, gfx.ScreenHeight / 2};
+		gfx.DrawCirc(pos, radius, Colors::LightGrey);
+
+		for (auto& a : belt)
+		{
+			float radius = a->GetRadius();
+			radius *= cam.GetScale();
+			Vec<float> pos = { a->GetPos().X, -a->GetPos().Y };
+			pos -= {cam.GetPos().X, -cam.GetPos().Y};
+			pos *= cam.GetScale();
+			pos += {gfx.ScreenWidth / 2, gfx.ScreenHeight / 2};
+			gfx.DrawCirc(pos, radius, Colors::DarkGrey);
+		}
+		//DEBUG CIRCS OVER
+
+
+
+
+
 
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		//cam.Draw(ship.GetDrawable());
-		cam.Draw(ship.GetDrawList());
+		cam.Draw(ship.GetDrawable(true));
 
 		for (auto& a : belt)
 		{
-			cam.Draw(a->GetDrawable());
+			cam.Draw(a->GetDrawable(true));
 			//cam.Draw(a->GetDrawList());
 
 			std::vector<Vec<float>> test;
@@ -337,14 +362,18 @@ void Game::ComposeFrame()
 
 			if (testApproach.type1 == Approach::Type::Edge)
 			{
-				pntLine.emplace_back(shipVert[testApproach.index1]);
-				pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
+				//pntLine.emplace_back(shipVert[testApproach.index1]);
+				//pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
+				pntLine.emplace_back(mothership[testApproach.convex1][testApproach.index1]);
+				pntLine.emplace_back(mothership[testApproach.convex1][(testApproach.index1 + 1) % mothership[testApproach.convex1].size()]);
 				cam.Draw(Drawable(pntLine, Colors::White));
 			}
 			else if ((testApproach.type1 == Approach::Type::Vertex))
 			{
-				pntLine.emplace_back(shipVert[testApproach.index1]);
-				pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
+				//pntLine.emplace_back(shipVert[testApproach.index1]);
+				//pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
+				pntLine.emplace_back(mothership[testApproach.convex1][testApproach.index1]);
+				pntLine.emplace_back(mothership[testApproach.convex1][(testApproach.index1 + 1) % mothership[testApproach.convex1].size()]);
 				cam.Draw(Drawable(pntLine, Colors::LightBlue));
 			}
 		}

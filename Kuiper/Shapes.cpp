@@ -1,12 +1,23 @@
+/***************************************************************************/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
+/***                                                                     ***/
+/*** Part of the Temper DirectX Framework                                ***/
+/***                                                                     ***/
+/*** Proprietary Software, do not read.                                  ***/
+/*** You cannot use it, look at it, or have it on your computer,         ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
+/***************************************************************************/
 #include <algorithm>
 #include "Shapes.h"
 
 //Tolerance 
 #define EPS 0.1
 
-std::list<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float>>& model)
+std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float>>& model)
 {
-	std::list<std::vector<Vec<float>>> primitives;
+	std::vector<std::vector<Vec<float>>> primitives;
 
 	int nverts = model.size();
 	for (int i = 0; i < nverts; ++i)

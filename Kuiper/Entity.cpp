@@ -1,3 +1,14 @@
+/***************************************************************************/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
+/***                                                                     ***/
+/*** Part of the Temper DirectX Framework                                ***/
+/***                                                                     ***/
+/*** Proprietary Software, do not read.                                  ***/
+/*** You cannot use it, look at it, or have it on your computer,         ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
+/***************************************************************************/
 #define NOMINMAX // I just want std::min to work, Windows...
 
 #include<algorithm>
@@ -9,9 +20,15 @@
 Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, const Vec<float>& vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::White)
 	:model(std::move(modl)), pos(pos), vel(vel), rot(rot), c(c)
 {
+	Vec<float> CoM = model[0];
+	for (int i = 1; i < model.size(); ++i)
+	{
+		CoM += model[i];
+	}
+	CoM *= 1 / ((float)model.size());
 	for (auto v : model)
 	{
-		float vrad = v.GetLengthSq();
+		float vrad = (v-CoM).GetLengthSq();
 		if (vrad > boundingrad)
 		{
 			boundingrad = vrad;
@@ -25,6 +42,7 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	int STOP = 1;
 	bool youViolateTheLaw = STOP;
 
+	/*
 	for (auto m : modelprimitives)
 	{
 		for (auto v : m)
@@ -36,6 +54,8 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 			}
 		}
 	}
+	*/
+	SetHistory();
 }
 
 
@@ -109,9 +129,25 @@ void Entity::SetVel(const Vec<float> newvel)
 
 
 
-Drawable Entity::GetDrawable() const
+Drawable Entity::GetDrawable(bool debug) const
 {
 	Drawable d(model, c);
+	switch (depth)
+	{
+	case CollDepth::Collided:
+		d = Drawable(model, Colors::Red);
+		break;
+	case CollDepth::MidField:
+		d = Drawable(model, Colors::Yellow);
+		break;
+	case CollDepth::FarField:
+		d = Drawable(model, Colors::Green);
+		break;
+	default:
+		break;
+		
+	}
+	depth = CollDepth::Free;
 	d.Rot(heading);
 	d.Scale(scale);
 	d.Translate(pos);
@@ -154,6 +190,7 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
+//Consider a collision manager
 std::vector<int> Entity::CollWith(const Entity& targ) const
 {
 	return std::vector<int>();
@@ -324,12 +361,12 @@ std::vector<Vec<float>> Entity::GetTransformedModel() const
 		xmodel.emplace_back(GetTransformedVertex(i));
 	}
 
-	return xmodel;
+ 	return xmodel;
 }
 
-std::list<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
+std::vector<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
 {
-	std::list<std::vector<Vec<float>>> xprims;
+	std::vector<std::vector<Vec<float>>> xprims;
 
 	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); it++)
 	{
@@ -443,6 +480,12 @@ void Entity::SetHistory()
 	History.heading = heading;
 	History.rot = rot;
 	History.model = GetTransformedModel();
+	History.primitives = GetTransformedPrimitives();
+}
+
+LastColl Entity::ReadHistory()
+{
+	return History;
 }
 
 void Entity::ResetHistory()
@@ -456,8 +499,8 @@ void Entity::ResetHistory()
 //Axis-aligned boxes
 Rect<float> Entity::GetBoundingBox(const std::vector<Vec<float>>& model) const
 {
-	float x0 = FLT_MAX; float x1 = -FLT_MAX;
-	float y0 = FLT_MAX; float y1 = -FLT_MAX;
+	float x0 = model[0].X; float x1 = model[0].X;
+	float y0 = model[0].Y; float y1 = model[0].Y;
 
 	for(auto v : model)
 	{
@@ -480,11 +523,11 @@ Rect<float> Entity::GetBoundingBox(const std::vector<Vec<float>>& model) const
 		}
 	}
 
-	return Rect<float>(x0, x1, y0, y1);
+	return Rect<float>(x0, y0, x1, y1);
 }
 
 Rect<float> Entity::GetBoundingBox() const
 {
-	return GetBoundingBox(model);
+	return GetBoundingBox(GetTransformedModel());
 }
 

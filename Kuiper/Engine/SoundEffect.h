@@ -1,15 +1,13 @@
 /***************************************************************************/
-/***               Temper Tech Sound Pack V 1.0.0                        ***/
-/*** Graphics.cpp                                                        ***/
-/*** Copyright for all time (if your law disagrees, it can suck it)      ***/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
 /***                                                                     ***/
 /*** Part of the Temper DirectX Framework                                ***/
 /***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
-/*** unless you are a working member of Temper Tech                      ***/
-/***                                                                     ***/
-/*** If you need help, go fuck yourself.                                 ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
 
 #pragma once

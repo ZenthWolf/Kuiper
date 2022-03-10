@@ -1,3 +1,15 @@
+/***************************************************************************/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
+/***                                                                     ***/
+/*** Part of the Temper DirectX Framework                                ***/
+/***                                                                     ***/
+/*** Proprietary Software, do not read.                                  ***/
+/*** You cannot use it, look at it, or have it on your computer,         ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
+/***************************************************************************/
+
 #pragma once
 
 #include<memory>
@@ -58,6 +70,20 @@ struct Simplex
 	int count;
 };
 
+struct ActiveEdge
+{
+	Vec<float> n0;
+	Vec<float> n1;
+	float planeConst0;
+	float planeConst1;
+
+	Vec<float> p0;
+	Vec<float> p1;
+	int pInd;
+
+	float depth = -FLT_MAX;
+};
+
 class Spawner
 {
 public:
@@ -73,13 +99,24 @@ public:
 		const std::vector<Vec<float>>& source,
 		const std::vector<Vec<float>>& target) const;
 	Approach FindApproach(const std::vector<Vec<float>>& model0, const std::vector<Vec<float>>& model1) const;
-	Approach FindApproach(const std::list<std::vector<Vec<float>>>& modelList0, 
-						  const std::list<std::vector<Vec<float>>>& modelList1) const;
+	Approach FindApproach(const std::vector<std::vector<Vec<float>>>& modelList0,
+						  const std::vector<std::vector<Vec<float>>>& modelList1) const;
 	NearElements GetNearestElements(const std::vector<Vec<float>>& model0,
 		const std::vector<Vec<float>>& model1) const;
 
 private:
 	void CollCheck();
+	float CollCheck(Entity& A, Entity& B);
+	void ResolveNearField(std::vector<Vec<float>>& BodyA0, std::vector<Vec<float>>& BodyA1,
+						std::vector<Vec<float>>& BodyB0, std::vector<Vec<float>>& BodyB1,
+						float& t, Approach*& currentApproach);
+	ActiveEdge DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
+								Vec<float> edgeI1, Vec<float> edgeJ1,
+								std::vector<Vec<float>> pointCloud
+								);
+	float FindRoot(ActiveEdge curEdge, float T0, float T1);
+	std::vector<Vec<float>> BodyAtTime(std::vector<Vec<float>> Body0, std::vector<Vec<float>> Body1, float time);
+
 	void GenerateAsteroid(const Rect<float> cambox);
 
 	int FindSupport(const Vec<float>& d, const std::vector<Vec<float>>& model) const;

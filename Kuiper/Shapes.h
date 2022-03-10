@@ -1,3 +1,15 @@
+/***************************************************************************/
+/***               Temper Tech PROJECT KUIPER                            ***/
+/*** Copyright for all time                                              ***/
+/***                                                                     ***/
+/*** Part of the Temper DirectX Framework                                ***/
+/***                                                                     ***/
+/*** Proprietary Software, do not read.                                  ***/
+/*** You cannot use it, look at it, or have it on your computer,         ***/
+/*** unless you are a working member of Temper Tech.                     ***/
+/*** Temper Tech is definitely not a made up company.                    ***/
+/***************************************************************************/
+
 #pragma once
 
 #include<vector>
@@ -80,7 +92,7 @@ public:
 		return asteroid;
 	}
 
-	static std::list<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
+	static std::vector<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
 
 	static Vec<float> FindIntersection(const Vec<float>& p0, const Vec<float>& p1, const Vec<float>& r0, const Vec<float>& r1);
 	static bool IsOnSegment(const Vec<float>& p, const Vec<float>& l0, const Vec<float>& l1);
