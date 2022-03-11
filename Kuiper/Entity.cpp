@@ -15,6 +15,8 @@
 #include "Shapes.h"
 #include "Entity.h"
 
+#include "Spawner.h"
+
 #define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
 
 Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, const Vec<float>& vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::White)
@@ -38,9 +40,6 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	boundingrad = sqrtf(boundingrad);
 
 	modelprimitives = Shapes::ConvexSeparator(model);
-
-	int STOP = 1;
-	bool youViolateTheLaw = STOP;
 
 	/*
 	for (auto m : modelprimitives)
@@ -99,6 +98,10 @@ void Entity::SetHeading(const float th)
 	{
 		heading -= (2 * 3.1415926);
 	}
+	while (heading < (-2 * 3.1415926))
+	{
+		heading += (2 * 3.1415926);
+	}
 }
 
 void Entity::RotBy(const float th)
@@ -107,6 +110,10 @@ void Entity::RotBy(const float th)
 	while (heading > (2 * 3.1415926))
 	{
 		heading -= (2 * 3.1415926);
+	}
+	while (heading < (-2 * 3.1415926))
+	{
+		heading += (2 * 3.1415926);
 	}
 }
 
@@ -230,48 +237,29 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 */
 
 
-void Entity::Recoil(const std::vector<int>& collider, Entity& targ)
+void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ)
 {
-	float impactDepth = 2.0f * targ.boundingrad;
 	Vec<int> contactSide;
 	int contactPoint;
 
-	for (auto vertInd : collider)
-	{
-		Vec<float> vert = GetTransformedVertex(vertInd);
-		Vec<float> vertVel = vel + Vec<float>{-vert.Y, vert.X} *rot;
-		CollInfo collision = targ.CalculateImpact(vert, -vel);
 
-		if (impactDepth > collision.impactDepth)
-		{
-			impactDepth = collision.impactDepth;
-			contactSide = collision.impactSide;
-			contactPoint = vertInd;
-		}
-	}
-
-	Vec<float> t0 = targ.GetTransformedVertex(contactSide.X);
-	Vec<float> t1 = targ.GetTransformedVertex(contactSide.Y);
-	Vec<float> contact = GetTransformedVertex(contactPoint);
+	Vec<float> contact = contactEdge->p0;
 	Vec<float> sourceRad = contact - pos;
 	Vec<float> targetRad = contact - targ.pos;
-	Vec<float> edge = { t1 - t0 };
-	Vec<float> norm = Vec<float>{ -edge.Y, edge.X }.Norm();
+	Vec<float> norm = contactEdge->n0.Norm();
 	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
 	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
 	Vec<float> rvel = vContactTarget - vContactSource;
 
 	if(rvel.Dot(norm) < 0.0f)
 	{
-		TranslateBy(-norm * impactDepth / 2);
-		targ.TranslateBy(norm * impactDepth / 2);
-
 		float momInertiaFactor = Vec<float>{ sourceRad.Y, -sourceRad.X }.Dot(norm) / sourceRad.GetLengthSq()
 			+ Vec<float>{targetRad.Y, -targetRad.X }.Dot(norm) / targetRad.GetLengthSq();
 
 
 		float impulse = -2 * rvel.Dot(norm) / (1 + 1 + momInertiaFactor);
 
+/*
 		if ( (impulse > 700.0f) && ( (didColl == true) || (targ.didColl == true) ) )
 		{
 			bool desired = false;
@@ -294,7 +282,7 @@ void Entity::Recoil(const std::vector<int>& collider, Entity& targ)
 				}
 			}
 		}
-
+*/
 
 		vel -= norm * impulse;
 		targ.vel += norm * impulse;

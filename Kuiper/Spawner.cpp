@@ -363,7 +363,7 @@ void Spawner::CollCheck()
 			float dist2 = (belt[i]->GetPos() - belt[j]->GetPos()).GetLengthSq();
 			float radi2 = belt[i]->GetRadius() + belt[j]->GetRadius();
 			radi2 = radi2 * radi2;
-			if (radi2 > dist2)
+			if (radi2 > dist2 && false)
 			{
 				if (belt[i]->depth < Entity::CollDepth::FarField)
 				{
@@ -375,7 +375,8 @@ void Spawner::CollCheck()
 				}
 
 				//std::vector<int> collider = belt[i]->CollWith(*belt[j]);
-				float time = CollCheck(*belt[i], *belt[j]);
+				ActiveEdge* contact;
+				float time = CollCheck(*belt[i], *belt[j], contact);
 
 				if (time <= 1.0f)
 				{
@@ -434,7 +435,8 @@ void Spawner::CollideShip(Entity& ship)
 				}
 
 				//std::vector<int> collider = belt[i]->CollWith(ship);
-				float time = CollCheck(ship, *belt[i]);
+				ActiveEdge* contact;
+				float time = CollCheck(ship, *belt[i], contact);
 
 				if (time <= 1.0f)
 				{
@@ -447,11 +449,15 @@ void Spawner::CollideShip(Entity& ship)
 						belt[i]->depth = Entity::CollDepth::Collided;
 					}
 
-					//belt[i]->Recoil(collider, ship);aaa
+					belt[i]->Recoil(contact, ship);
+
+					/*
+					//belt[i]->Recoil(collider, ship);
 					belt[i]->SetVel(-belt[i]->GetVel());
 					belt[i]->rot = -belt[i]->rot;
 					ship.SetVel(-ship.GetVel());
 					ship.rot = -ship.rot;
+					*/
 					belt[i]->SetHistory();
 					ship.SetHistory();
 					collision = true;
@@ -478,11 +484,10 @@ void Spawner::CollideShip(Entity& ship)
 
 //More accurately, this should return collision info- (time and approach for simulating via Recoil or smth)
 //Currently, t0 info is missing, how the eff to get..?
-float Spawner::CollCheck(Entity& BodyA, Entity& BodyB)
+float Spawner::CollCheck(Entity& BodyA, Entity& BodyB, ActiveEdge*& contactEdge)
 {
 	//time parameter
 	float ToI = 2.f; //above 1.0f is "unitialized"
-	Approach* collisionApproach;
 
 	LastColl BodyA0Hist = BodyA.ReadHistory();
 	LastColl BodyB0Hist = BodyB.ReadHistory();
@@ -593,7 +598,7 @@ float Spawner::CollCheck(Entity& BodyA, Entity& BodyB)
 
 					ResolveNearField(BodyA0Prims[primI], BodyA1Prims[primI],
 									BodyB0Prims[primJ], BodyB1Prims[primJ],
-									ToI, collisionApproach);
+									ToI, contactEdge);
 				}
 			}
 		}
@@ -606,7 +611,7 @@ float Spawner::CollCheck(Entity& BodyA, Entity& BodyB)
 
 void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<Vec<float>>& InitBodyA1,
 	std::vector<Vec<float>>& InitBodyB0, std::vector<Vec<float>>& InitBodyB1,
-	float& t, Approach*& currentApproach)
+	float& t, ActiveEdge*& foundEdge)
 {
 	float T0 = 0.0f;
 	float T1 = 1.0f;
@@ -667,6 +672,49 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		return; //NO COLLISION (found in broad analysis)
 	}
 
+
+
+	Approach approach = FindApproach(BodyA0, BodyB0);
+	ActiveEdge currentEdge;
+
+	if (approach.type0 == Approach::Type::Edge)
+	{
+		currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
+			BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
+			BodyB1
+		);
+		currentEdge.p0 = BodyB0[currentEdge.pInd];
+
+	}
+	else if (approach.type1 == Approach::Type::Edge)
+	{
+		currentEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
+			BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
+			BodyA1
+		);
+		currentEdge.p0 = BodyA0[currentEdge.pInd];
+	}
+	else
+	{
+		//constant line of separation
+		currentEdge.n0 = approach.point1 - approach.point0;
+		currentEdge.n1 = currentEdge.n0;
+		currentEdge.planeConst0 = 0.0f;
+		currentEdge.planeConst1 = 0.0f;
+		//emulate p1-p0 as single point
+		int deepestA = FindSupport(currentEdge.n0, BodyA1);
+		int deepestB = FindSupport(-currentEdge.n0, BodyB1);
+		currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
+		currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
+		currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
+	}
+
+	//shouldn;t need this, but do...
+	if (currentEdge.depth1 > tolerance)
+	{
+		return;
+	}
+
 	int iteration = 0;
 	while (true)
 	{
@@ -674,34 +722,42 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		if (iteration > 200)
 		{
 			bool STOP = true;
+			break;
 		}
-		Approach approach = FindApproach(BodyA1, BodyB1);
-		if (abs(approach.distance) < tolerance)
+		
+		if (abs(currentEdge.n0.Dot(currentEdge.p0)) < tolerance)
 		{
-			//Collision Point Found at T1
-			if (T1 < t)
+			//Collision Point Found at T0
+			if (T0< t)
 			{
-				t = T1;
-				currentApproach = std::move(&approach);
+				t = T0;
+				foundEdge = std::move(&currentEdge);
 			}
 			return;
 		}
-		approach = FindApproach(BodyA0, BodyB0);
 
 		//init next iteration
 		T1 = 1.f;
 		BodyA1 = InitBodyA1;
 		BodyB1 = InitBodyB1;
 
-		ActiveEdge currentEdge;
 		int newiterations = 0;
-		while (currentEdge.depth < -tolerance)
+		while (currentEdge.depth1 < -tolerance)
 		{
 			++newiterations;
 			if (newiterations > 200)
 			{
 				bool YOUVIOLATEDTHELAW = true;
+				break;
 			}
+			if (currentEdge.depth1 > tolerance)
+			{
+				return; //NO COLLISION (found in near analysis)
+			}
+			T1 = FindRoot(currentEdge, T0, T1);
+			BodyA1 = BodyAtTime(InitBodyA0, InitBodyA1, T1);
+			BodyB1 = BodyAtTime(InitBodyB0, InitBodyB1, T1);
+
 			if (approach.type0 == Approach::Type::Edge)
 			{
 				currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
@@ -727,21 +783,52 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 				currentEdge.planeConst0 = 0.0f;
 				currentEdge.planeConst1 = 0.0f;
 				//emulate p1-p0 as single point
-				currentEdge.p0 = approach.point1 - approach.point0;
-				currentEdge.p1 = approach.point1 - approach.point0;
-				currentEdge.depth = currentEdge.n0.Dot(currentEdge.p1);
+				int deepestA = FindSupport(currentEdge.n0, BodyA1);
+				int deepestB = FindSupport(-currentEdge.n0, BodyB1);
+				currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
+				currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
+				currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
 			}
-			if (currentEdge.depth > tolerance)
-			{
-				return; //NO COLLISION (found in near analysis)
-			}
-			T1 = FindRoot(currentEdge, T0, T1);
-			BodyA1 = BodyAtTime(InitBodyA0, InitBodyA1, T1);
-			BodyB1 = BodyAtTime(InitBodyB0, InitBodyB1, T1);
+
 		}
 		T0 = T1;
 		BodyA0 = BodyAtTime(InitBodyA0, InitBodyA1, T0);
 		BodyB0 = BodyAtTime(InitBodyB0, InitBodyB1, T0);
+		
+		//Potentially new approach (should change if not within tolerance)
+		approach = FindApproach(BodyA0, BodyB0);
+
+		if (approach.type0 == Approach::Type::Edge)
+		{
+			currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
+				BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
+				BodyB1
+			);
+			currentEdge.p0 = BodyB0[currentEdge.pInd];
+
+		}
+		else if (approach.type1 == Approach::Type::Edge)
+		{
+			currentEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
+				BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
+				BodyA1
+			);
+			currentEdge.p0 = BodyA0[currentEdge.pInd];
+		}
+		else
+		{
+			//constant line of separation
+			currentEdge.n0 = approach.point1 - approach.point0;
+			currentEdge.n1 = currentEdge.n0;
+			currentEdge.planeConst0 = 0.0f;
+			currentEdge.planeConst1 = 0.0f;
+			//emulate p1-p0 as single point
+			int deepestA = FindSupport(currentEdge.n0, BodyA1);
+			int deepestB = FindSupport(-currentEdge.n0, BodyB1);
+			currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
+			currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
+			currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
+		}
 	}
 }
 
@@ -782,7 +869,8 @@ ActiveEdge Spawner::DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 	result.planeConst1 = planeConst1;
 	result.p1 = pointCloud[deepestIndex];
 	result.pInd = deepestIndex;
-	result.depth = deepestFound;
+	result.depth1 = deepestFound;
+
 	return result;
 }
 

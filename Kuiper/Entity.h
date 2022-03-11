@@ -20,6 +20,9 @@
 
 #include "Engine/BreezeException.h"
 
+//Forward Declarations
+struct ActiveEdge;
+
 struct LastColl
 {
 	Vec<float> pos;
@@ -75,7 +78,7 @@ public:
 	};
 
 	std::vector<int> CollWith(const Entity& targ) const;
-	void Recoil(const std::vector<int>& intersection, Entity& targ);
+	void Recoil(ActiveEdge*& contactEdge, Entity& targ);
 
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;

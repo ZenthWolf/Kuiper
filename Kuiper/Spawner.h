@@ -81,7 +81,8 @@ struct ActiveEdge
 	Vec<float> p1;
 	int pInd;
 
-	float depth = -FLT_MAX;
+	// caches deepest point value
+	float depth1 = -FLT_MAX;
 };
 
 class Spawner
@@ -106,10 +107,10 @@ public:
 
 private:
 	void CollCheck();
-	float CollCheck(Entity& A, Entity& B);
+	float CollCheck(Entity& A, Entity& B, ActiveEdge*& contactEdge);
 	void ResolveNearField(std::vector<Vec<float>>& BodyA0, std::vector<Vec<float>>& BodyA1,
 						std::vector<Vec<float>>& BodyB0, std::vector<Vec<float>>& BodyB1,
-						float& t, Approach*& currentApproach);
+						float& t, ActiveEdge*& foundEdge);
 	ActiveEdge DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 								Vec<float> edgeI1, Vec<float> edgeJ1,
 								std::vector<Vec<float>> pointCloud

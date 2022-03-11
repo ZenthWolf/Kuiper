@@ -254,9 +254,10 @@ void Game::ComposeFrame()
 		for (auto& s : scene)
 		{
 			//cam.Draw(s.GetDrawable());
-			cam.Draw(s.GetDrawList());
+			cam.Draw(s.GetDrawable());
 		}
 		
+		/*
 		//DEBUG BOUNDING CIRCS
 		float radius = ship.GetRadius();
 		radius *= cam.GetScale();
@@ -277,7 +278,7 @@ void Game::ComposeFrame()
 			gfx.DrawCirc(pos, radius, Colors::DarkGrey);
 		}
 		//DEBUG CIRCS OVER
-
+		*/
 
 
 
