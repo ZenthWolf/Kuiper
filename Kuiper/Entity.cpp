@@ -239,8 +239,6 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 
 void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 {
-
-	
 	auto ast = GetTransformedModel();
 	auto ship = targ.GetTransformedModel();
 
@@ -297,66 +295,83 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 	}
 	
 
-	if(rvel.Dot(norm) < 0.0f)
+	if (rvel.Dot(norm) > 0.0f)
 	{
-		if (targ.didColl)
-		{
-			bool STOP = true;
-		}
-
-		auto astAft = GetTransformedModel();
-		auto shipAft = targ.GetTransformedModel();
-
-		float sourceCross = sourceRad.Cross(norm);
-		float targCross = targetRad.Cross(norm);
-
-		float momInertiaFactor = 
-			(Vec<float>{ sourceCross*sourceRad.Y, -sourceCross*sourceRad.X }*(1/sourceI)
-			+ Vec<float>{ targCross*targetRad.Y, -targCross*targetRad.X }*(1/targI)).Dot(norm);
-
-		//collision response
-		float impulse = -(1.f+1.f)* rvel.Dot(norm) / ((1.f/sourceMass) + (1.f/targMass) + momInertiaFactor);
-/*
-		if ( (impulse > 700.0f) && ( (didColl == true) || (targ.didColl == true) ) )
-		{
-			bool desired = false;
-
-			if (desired)
-			{
-				targ.ResetHistory();
-				ResetHistory();
-
-				std::vector<int> collider = CollWith(targ);
-
-				if (collider.size() != 0)
-				{
-					Recoil(collider, targ);
-				}
-				else
-				{
-					collider = targ.CollWith(*this);
-					targ.Recoil(collider, *this);
-				}
-			}
-		}
-*/
-		if ((targ.vel + norm * impulse / targMass).GetLength() > 1000)
-		{
-			bool stop = true;
-		}
-		vel -= norm * impulse/sourceMass;
-		targ.vel += norm * impulse/targMass;
-		rot -= impulse * sourceRad.Cross(norm) / sourceI;
-		targ.rot += impulse * targetRad.Cross(norm) / targI;
-
+		//Never should have come here!
 		TranslateBy(vel * rewindTime);
 		RotBy(rot * rewindTime);
 		targ.TranslateBy(targ.GetVel() * rewindTime);
 		targ.RotBy(targ.rot * rewindTime);
 
-		auto astFix = GetTransformedModel();
-		auto shipFix = targ.GetTransformedModel();
+		return;
 	}
+	if (targ.didColl)
+	{
+		bool STOP = true;
+	}
+
+	auto astAft = GetTransformedModel();
+	auto shipAft = targ.GetTransformedModel();
+
+	float sourceCross = sourceRad.Cross(norm);
+	float targCross = targetRad.Cross(norm);
+
+	float momInertiaFactor = 
+		(Vec<float>{ sourceCross*sourceRad.Y, -sourceCross*sourceRad.X }*(1/sourceI)
+		+ Vec<float>{ targCross*targetRad.Y, -targCross*targetRad.X }*(1/targI)).Dot(norm);
+
+	//collision response
+	float impulse = -(1.f+1.f)* rvel.Dot(norm) / ((1.f/sourceMass) + (1.f/targMass) + momInertiaFactor);
+/*
+	if ( (impulse > 700.0f) && ( (didColl == true) || (targ.didColl == true) ) )
+	{
+		bool desired = false;
+
+		if (desired)
+		{
+			targ.ResetHistory();
+			ResetHistory();
+
+			std::vector<int> collider = CollWith(targ);
+
+			if (collider.size() != 0)
+			{
+				Recoil(collider, targ);
+			}
+			else
+			{
+				collider = targ.CollWith(*this);
+				targ.Recoil(collider, *this);
+			}
+		}
+	}
+*/
+	if ((targ.vel + norm * impulse / targMass).GetLength() > 1000)
+	{
+		bool stop = true;
+	}
+	if (contactEdge->edgeIsA)
+	{
+		vel += norm * impulse / sourceMass;
+		targ.vel -= norm * impulse / targMass;
+		rot += impulse * sourceRad.Cross(norm) / sourceI;
+		targ.rot -= impulse * targetRad.Cross(norm) / targI;
+	}
+	else
+	{
+		vel -= norm * impulse / sourceMass;
+		targ.vel += norm * impulse / targMass;
+		rot -= impulse * sourceRad.Cross(norm) / sourceI;
+		targ.rot += impulse * targetRad.Cross(norm) / targI;
+	}
+
+	TranslateBy(vel * rewindTime);
+	RotBy(rot * rewindTime);
+	targ.TranslateBy(targ.GetVel() * rewindTime);
+	targ.RotBy(targ.rot * rewindTime);
+
+	auto astFix = GetTransformedModel();
+	auto shipFix = targ.GetTransformedModel();
 }
 
 

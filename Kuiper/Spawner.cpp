@@ -457,7 +457,7 @@ void Spawner::CollideShip(Entity& ship, float dt)
 					float rewindTime = dt * (1 - time);
 
 					belt[i]->Recoil(contact, ship, rewindTime);
-
+					//ship.Recoil(contact, *belt[i], rewindTime);
 					/*
 					//belt[i]->Recoil(collider, ship);
 					belt[i]->SetVel(-belt[i]->GetVel());
@@ -721,7 +721,8 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 	}
 
 	//shouldn't need this, but do...
-	if (currentEdge.depth1 > tolerance || approach.index0 < 0)
+	//if (currentEdge.depth1 > tolerance || approach.index0 < 0)
+	if (currentEdge.depth1 > tolerance)
 	{
 		return;
 	}
