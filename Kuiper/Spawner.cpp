@@ -223,12 +223,12 @@ Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
 	{
 		result.point0 = vertex0.point0 * (s * vertex0.u) + vertex1.point0 * (s * vertex1.u);
 
-		if (abs(result.point0.X - vertex0.point0.X) < 0.0001 && abs(result.point0.Y - vertex0.point0.Y) < 0.0001)
+		if (abs(result.point0.X - vertex0.point0.X) < 0.001 && abs(result.point0.Y - vertex0.point0.Y) < 0.001)
 		{
 			result.index0 = vertex0.index0;
 			result.type0 = Approach::Type::Vertex;
 		}
-		else if (abs(result.point0.X - vertex1.point0.X) < 0.0001 && abs(result.point0.Y - vertex1.point0.Y) < 0.0001)
+		else if (abs(result.point0.X - vertex1.point0.X) < 0.001 && abs(result.point0.Y - vertex1.point0.Y) < 0.001)
 		{
 			result.index0 = vertex1.index0;
 			result.type0 = Approach::Type::Vertex;
@@ -252,12 +252,12 @@ Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
 		
 
 		result.point1 = vertex0.point1 * (s * vertex0.u) + vertex1.point1 * (s * vertex1.u);
-		if (abs(result.point1.X - vertex0.point1.X) < 0.0001 && abs(result.point1.Y - vertex0.point1.Y) < 0.0001)
+		if (abs(result.point1.X - vertex0.point1.X) < 0.001 && abs(result.point1.Y - vertex0.point1.Y) < 0.001)
 		{
 			result.index1 = vertex0.index1;
 			result.type1 = Approach::Type::Vertex;
 		}
-		else if (abs(result.point1.X - vertex1.point1.X) < 0.0001 && abs(result.point1.Y - vertex1.point1.Y) < 0.0001)
+		else if (abs(result.point1.X - vertex1.point1.X) < 0.001 && abs(result.point1.Y - vertex1.point1.Y) < 0.001)
 		{
 			result.index1 = vertex1.index1;
 			result.type1 = Approach::Type::Vertex;
@@ -329,7 +329,7 @@ void Spawner::Update(const float dt, const Rect<float> cambox)
 		removecheck), belt.end());
 	
 	//Check Collisions
-	CollCheck();
+	CollCheck(dt);
 	
 	//Generate new asteroid, if appropriate
 	GenTime -= dt;
@@ -354,7 +354,7 @@ void Spawner::Update(const float dt, const Rect<float> cambox)
 	}
 }
 
-void Spawner::CollCheck()
+void Spawner::CollCheck(float dt)
 {
 	for (int i = 0; i < int(belt.size()); ++i)
 	{
@@ -389,11 +389,16 @@ void Spawner::CollCheck()
 						belt[j]->depth = Entity::CollDepth::Collided;
 					}
 
+					float rewindTime = dt * (1 - time);
+
+					belt[i]->Recoil(contact, *belt[j], rewindTime);
+					/*
 					//belt[i]->Recoil(collider, *belt[j]);
 					belt[i]->SetVel(-belt[i]->GetVel());
 					belt[i]->rot = -belt[i]->rot;
 					belt[j]->SetVel(-belt[j]->GetVel());
 					belt[j]->rot = -belt[j]->rot;
+					*/
 					belt[i]->SetHistory();
 					belt[j]->SetHistory();
 				}
@@ -414,7 +419,7 @@ void Spawner::CollCheck()
 	}
 }
 
-void Spawner::CollideShip(Entity& ship)
+void Spawner::CollideShip(Entity& ship, float dt)
 {
 	{
 		bool collision = false;
@@ -449,8 +454,10 @@ void Spawner::CollideShip(Entity& ship)
 						belt[i]->depth = Entity::CollDepth::Collided;
 					}
 
-					belt[i]->Recoil(contact, ship);
+					float rewindTime = dt * (1 - time);
 
+					belt[i]->Recoil(contact, ship, rewindTime);
+					//ship.Recoil(contact, *belt[i], rewindTime);
 					/*
 					//belt[i]->Recoil(collider, ship);
 					belt[i]->SetVel(-belt[i]->GetVel());
@@ -684,6 +691,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 			BodyB1
 		);
 		currentEdge.p0 = BodyB0[currentEdge.pInd];
+		currentEdge.edgeIsA = true;
 
 	}
 	else if (approach.type1 == Approach::Type::Edge)
@@ -693,6 +701,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 			BodyA1
 		);
 		currentEdge.p0 = BodyA0[currentEdge.pInd];
+		currentEdge.edgeIsA = false;
 	}
 	else
 	{
@@ -706,12 +715,24 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		int deepestB = FindSupport(-currentEdge.n0, BodyB1);
 		currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
 		currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
-		currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
+		currentEdge.depth1 = currentEdge.n1.Dot(currentEdge.p1) - currentEdge.planeConst1;
+		
+		currentEdge.edgeIsA = false; // THIS COLLISION TYPE SHOULD NEVER BE THE END STATE. OH GOD, HOW DO I VERIFY THAT?
 	}
 
-	//shouldn;t need this, but do...
+	//shouldn't need this, but do...
+	//if (currentEdge.depth1 > tolerance || approach.index0 < 0)
 	if (currentEdge.depth1 > tolerance)
 	{
+		return;
+	}
+	if (currentEdge.depth1 < 0 && (currentEdge.n0.Dot(currentEdge.p0) - currentEdge.planeConst0 < -tolerance))
+	{
+		if (1 < t)
+		{
+			t = 1;
+			foundEdge = std::move(&currentEdge);
+		}
 		return;
 	}
 
@@ -721,11 +742,11 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		++iteration;
 		if (iteration > 200)
 		{
-			bool STOP = true;
-			break;
+			bool STOP = false;
+			bool YouViolatedTheLaw = true;
 		}
 		
-		if (abs(currentEdge.n0.Dot(currentEdge.p0)) < tolerance)
+		if (abs(currentEdge.n0.Dot(currentEdge.p0) - currentEdge.planeConst0) < tolerance || approach.index0 <= 0)
 		{
 			//Collision Point Found at T0
 			if (T0< t)
@@ -742,7 +763,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		BodyB1 = InitBodyB1;
 
 		int newiterations = 0;
-		while (currentEdge.depth1 < -tolerance)
+		while (currentEdge.depth1 < -tolerance && T0 != 1.0f && approach.index0 >= 0)
 		{
 			++newiterations;
 			if (newiterations > 200)
@@ -754,7 +775,12 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 			{
 				return; //NO COLLISION (found in near analysis)
 			}
-			T1 = FindRoot(currentEdge, T0, T1);
+			float hold = FindRoot(currentEdge, T0, T1);
+			if (isinf(hold))
+			{
+				bool Error = true;
+			}
+			T1 = hold;
 			BodyA1 = BodyAtTime(InitBodyA0, InitBodyA1, T1);
 			BodyB1 = BodyAtTime(InitBodyB0, InitBodyB1, T1);
 
@@ -765,6 +791,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 					BodyB1
 				);
 				currentEdge.p0 = BodyB0[currentEdge.pInd];
+				currentEdge.edgeIsA = true;
 
 			}
 			else if (approach.type1 == Approach::Type::Edge)
@@ -774,6 +801,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 					BodyA1
 				);
 				currentEdge.p0 = BodyA0[currentEdge.pInd];
+				currentEdge.edgeIsA = false;
 			}
 			else
 			{
@@ -787,7 +815,9 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 				int deepestB = FindSupport(-currentEdge.n0, BodyB1);
 				currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
 				currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
-				currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
+				currentEdge.depth1 = currentEdge.n1.Dot(currentEdge.p1);
+
+				currentEdge.edgeIsA = false;
 			}
 
 		}
@@ -805,6 +835,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 				BodyB1
 			);
 			currentEdge.p0 = BodyB0[currentEdge.pInd];
+			currentEdge.edgeIsA = true;
 
 		}
 		else if (approach.type1 == Approach::Type::Edge)
@@ -814,6 +845,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 				BodyA1
 			);
 			currentEdge.p0 = BodyA0[currentEdge.pInd];
+			currentEdge.edgeIsA = false;
 		}
 		else
 		{
@@ -828,6 +860,13 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 			currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
 			currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
 			currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
+
+			currentEdge.edgeIsA = false;
+		}
+
+		if (currentEdge.depth1 > tolerance)
+		{
+			return; //NO COLLISION (found in near analysis)
 		}
 	}
 }
@@ -854,7 +893,7 @@ ActiveEdge Spawner::DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 	int deepestIndex = -1;
 	for (int i = 0; i < pointCloud.size(); ++i)
 	{
-		float depth = norm1.Dot(pointCloud[0]) - planeConst1;
+		float depth = norm1.Dot(pointCloud[i]) - planeConst1;
 		if (depth < deepestFound)
 		{
 			deepestFound = depth;
@@ -874,12 +913,16 @@ ActiveEdge Spawner::DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 	return result;
 }
 
-float Spawner::FindRoot(ActiveEdge curEdge, float T0, float T1)
+float Spawner::FindRoot(ActiveEdge curEdge, float T0init, float T1init)
 {
+	float T0 = 0.0f;
+	float T1 = 1.0f;
+	float TDiff = T1init - T0init;
+	//T1 may not initially be one, messing with interpolation
 	float impactTime = T0;
 	Vec<float> norm0 = curEdge.n0, norm1 = curEdge.n1;
 	Vec<float> point0 = curEdge.p0, point1 = curEdge.p1;
-	float planeConst0 = curEdge.planeConst0, planceConst1 = curEdge.planeConst1;
+	float planeConst0 = curEdge.planeConst0, planeConst1 = curEdge.planeConst1;
 
 	float tolerance = 0.01; //IDK at all what this ought be...
 	int max_iter = 200;
@@ -890,10 +933,10 @@ float Spawner::FindRoot(ActiveEdge curEdge, float T0, float T1)
 		if (i % 2)
 		{
 			//false position root find iteration
-			float separation0 = (norm0 + (norm1 - norm0) * T0).Dot(point0 + (point1 - point0) * T0) - planeConst0 + (planeConst0 - planeConst0) * T0;
-			float separation1 = (norm0 + (norm1 - norm0) * T1).Dot(point0 + (point1 - point0) * T1) - planeConst0 + (planeConst0 - planeConst0) * T1;
+			float separation0 = (norm0 + (norm1 - norm0) * T0).Dot(point0 + (point1 - point0) * T0) - planeConst0 - (planeConst1 - planeConst0) * T0;
+			float separation1 = (norm0 + (norm1 - norm0) * T1).Dot(point0 + (point1 - point0) * T1) - planeConst0 - (planeConst1 - planeConst0) * T1;
 
-			impactTime = separation0 * (T1 - T0) / (separation1 - separation0);
+			impactTime = separation0 * (T1 - T0) / (separation0 - separation1) + T0;
 		}
 		else
 		{
@@ -901,11 +944,16 @@ float Spawner::FindRoot(ActiveEdge curEdge, float T0, float T1)
 			impactTime = (T0 + T1) * 0.5f;
 		}
 
-		lastRoot = (norm0 + (norm1 - norm0) * impactTime).Dot(point0 + (point1 - point0) * impactTime) - planeConst0 + (planeConst0 - planeConst0) * impactTime;
+		if (impactTime < 0)
+		{
+			return 0.0f + T0init;
+		}
+
+		lastRoot = (norm0 + (norm1 - norm0) * impactTime).Dot(point0 + (point1 - point0) * impactTime) - planeConst0 - (planeConst1 - planeConst0) * impactTime;
 
 		if (std::abs(lastRoot) < tolerance)
 		{
-			return impactTime;
+			return impactTime*(TDiff) + T0init;
 		}
 
 		if (lastRoot > 0)
@@ -918,7 +966,7 @@ float Spawner::FindRoot(ActiveEdge curEdge, float T0, float T1)
 		}
 	}
 
-	return impactTime; //Best Guess? Throw Error?
+	return impactTime*TDiff + T0init; //Best Guess? Throw Error?
 }
 
 std::vector<Vec<float>> Spawner::BodyAtTime(std::vector<Vec<float>> Body0, std::vector<Vec<float>> Body1, float time)
@@ -935,7 +983,7 @@ std::vector<Vec<float>> Spawner::BodyAtTime(std::vector<Vec<float>> Body0, std::
 
 	for (int i = 0; i < Body0.size(); ++i)
 	{
-		Body0[i] = Body0[i] + (Body1[i] - Body0[1]) * time;
+		Body0[i] = Body0[i] + (Body1[i] - Body0[i]) * time;
 	}
 
 	return Body0;
