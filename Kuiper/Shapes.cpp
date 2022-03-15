@@ -160,6 +160,21 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 	return primitives;
 }
 
+void Shapes::Center(std::vector<Vec<float>>& shape)
+{
+	Vec<float> sourceCoM = { 0.0f, 0.0f };
+	for each (auto v in shape)
+	{
+		sourceCoM += v;
+	}
+	sourceCoM *= (1 / ((float)shape.size()));
+
+	for each (auto v in shape)
+	{
+		v-= sourceCoM;
+	}
+}
+
 Vec<float> Shapes::FindIntersection(const Vec<float>& p0, const Vec<float>& p1, const Vec<float>& r0, const Vec<float>& r1)
 {
 	Vec<float> lineP = p1 - p0;

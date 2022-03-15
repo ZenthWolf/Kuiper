@@ -80,6 +80,7 @@ struct ActiveEdge
 	Vec<float> p0;
 	Vec<float> p1;
 	int pInd;
+	bool edgeIsA;
 
 	// caches deepest point value
 	float depth1 = -FLT_MAX;
@@ -91,7 +92,7 @@ public:
 	Spawner(std::vector<std::unique_ptr<Asteroid>>& belt);
 
 	void Update(const float dt, const Rect<float> cambox);
-	void CollideShip(Entity& ship);
+	void CollideShip(Entity& ship, float dt);
 
 	int FindIncidentEdge(const int edge, 
 		const std::vector<Vec<float>>& source, 
@@ -106,7 +107,7 @@ public:
 		const std::vector<Vec<float>>& model1) const;
 
 private:
-	void CollCheck();
+	void CollCheck(float dt);
 	float CollCheck(Entity& A, Entity& B, ActiveEdge*& contactEdge);
 	void ResolveNearField(std::vector<Vec<float>>& BodyA0, std::vector<Vec<float>>& BodyA1,
 						std::vector<Vec<float>>& BodyB0, std::vector<Vec<float>>& BodyB1,

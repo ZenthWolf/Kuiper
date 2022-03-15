@@ -36,6 +36,8 @@ public:
 		
 		ship.emplace_back(-20.0f, -10.0f);
 
+		Center(ship);
+
 		return ship;
 	}
 
@@ -71,6 +73,7 @@ public:
 				20.0f / (float(i % 2 + 1)) * sin(float(i+5) * dtheta ) );
 		}
 
+		Center(star);
 		return star;
 	}
 
@@ -89,10 +92,13 @@ public:
 		asteroid.emplace_back(-7.27272727f, 11.72727272f);
 		asteroid.emplace_back(-12.27272727f, 0.27272727f);
 		asteroid.emplace_back(-14.27272727f, -5.27272727f);
+
+		Center(asteroid);
 		return asteroid;
 	}
 
 	static std::vector<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
+	static void Center(std::vector<Vec<float>>& shape);
 
 	static Vec<float> FindIntersection(const Vec<float>& p0, const Vec<float>& p1, const Vec<float>& r0, const Vec<float>& r1);
 	static bool IsOnSegment(const Vec<float>& p, const Vec<float>& l0, const Vec<float>& l1);

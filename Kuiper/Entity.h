@@ -78,7 +78,7 @@ public:
 	};
 
 	std::vector<int> CollWith(const Entity& targ) const;
-	void Recoil(ActiveEdge*& contactEdge, Entity& targ);
+	void Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime);
 
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;
