@@ -237,13 +237,22 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 */
 
 
-void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
+void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime)
 {
 	auto ast = GetTransformedModel();
 	auto ship = targ.GetTransformedModel();
-
-	Vec<int> contactSide;
-	int contactPoint;
+	ActiveEdge etTuBrute = *contactEdge;
+	LastColl ShipStart = targ.ReadHistory();
+	if (contactEdge->n0 == Vec<float>{0.0f, 0.0f})
+	{
+		bool brokeColl = true;
+		if (false)
+		{
+			ResetHistory();
+			targ.ResetHistory();
+			return;
+		}
+	}
 	
 	TranslateBy(-vel * rewindTime);
 	RotBy(-rot * rewindTime);
@@ -267,8 +276,6 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 	targetCoM *= (1 / ((float)targ.model.size()));
 	*/
 
-	Vec<float> sourceCoM = pos;
-	Vec<float> targetCoM = targ.pos;
 	//mass prop to volume
 	float sourceMass = powf(boundingrad, 3.0f);
 	float targMass = powf(targ.boundingrad, 3.0f);
@@ -278,8 +285,8 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 
 
 	Vec<float> contact = contactEdge->p0;
-	Vec<float> sourceRad = contact - sourceCoM;
-	Vec<float> targetRad = contact - targetCoM;
+	Vec<float> sourceRad = contact - pos;
+	Vec<float> targetRad = contact - targ.pos;
 	Vec<float> norm = contactEdge->n0.Norm();
 	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
 	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
@@ -317,8 +324,8 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 	float targCross = targetRad.Cross(norm);
 
 	float momInertiaFactor = 
-		(Vec<float>{ sourceCross*sourceRad.Y, -sourceCross*sourceRad.X }*(1/sourceI)
-		+ Vec<float>{ targCross*targetRad.Y, -targCross*targetRad.X }*(1/targI)).Dot(norm);
+		(Vec<float>{ -sourceCross*sourceRad.Y, sourceCross*sourceRad.X }*(1/sourceI)
+		+ Vec<float>{ -targCross*targetRad.Y, targCross*targetRad.X }*(1/targI)).Dot(norm);
 
 	//collision response
 	float impulse = -(1.f+1.f)* rvel.Dot(norm) / ((1.f/sourceMass) + (1.f/targMass) + momInertiaFactor);
@@ -346,10 +353,6 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 		}
 	}
 */
-	if ((targ.vel + norm * impulse / targMass).GetLength() > 1000)
-	{
-		bool stop = true;
-	}
 	if (contactEdge->edgeIsA)
 	{
 		vel += norm * impulse / sourceMass;
@@ -364,6 +367,28 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 		rot -= impulse * sourceRad.Cross(norm) / sourceI;
 		targ.rot += impulse * targetRad.Cross(norm) / targI;
 	}
+	
+	//Verification
+	sourceRad = contact - pos;
+	targetRad = contact - targ.pos;
+	vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
+	vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
+	Vec<float> rvel2;
+	if (contactEdge->edgeIsA)
+	{
+		rvel2 = -vContactTarget + vContactSource;
+	}
+	else
+	{
+		rvel2 = vContactTarget - vContactSource;
+	}
+
+	float radv1 = rvel.Dot(norm);
+	float radv2 = rvel2.Dot(norm);
+	if (rvel2.Dot(norm) < 0.0f)
+	{
+		bool stillBroke = true;
+	}
 
 	TranslateBy(vel * rewindTime);
 	RotBy(rot * rewindTime);
@@ -372,6 +397,7 @@ void Entity::Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime)
 
 	auto astFix = GetTransformedModel();
 	auto shipFix = targ.GetTransformedModel();
+
 }
 
 
@@ -554,17 +580,27 @@ void Entity::SetHistory()
 	History.primitives = GetTransformedPrimitives();
 }
 
-LastColl Entity::ReadHistory()
+LastColl Entity::ReadHistory() const
 {
 	return History;
 }
 
 void Entity::ResetHistory()
 {
-	pos = History.pos = pos;
-	vel = History.vel = vel;
-	heading = History.heading = heading;
-	rot = History.rot = rot;
+	pos = History.pos;
+	vel = History.vel;
+	heading = History.heading;
+	rot = History.rot;
+}
+
+void Entity::ForgeHistory(const LastColl& forgery)
+{
+	History.pos = forgery.pos;
+	History.vel = forgery.vel;
+	History.heading = forgery.heading;
+	History.rot = forgery.rot;
+	History.model = forgery.model;
+	History.primitives = forgery.primitives;
 }
 
 //Axis-aligned boxes

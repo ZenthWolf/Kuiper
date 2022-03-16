@@ -526,6 +526,20 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Color c)
 	DrawLine(vert.back(), vert.front(), c);
 }
 
+const static std::vector<Color> colArr = {
+Colors::White,
+Colors::Red,
+Colors::Yellow,
+Colors::Green,
+Colors::Cyan,
+Colors::LightBlue,
+Colors::Blue,
+Colors::Magenta,
+Colors::Purple,
+Colors::LightGrey,
+Colors::Grey,
+Colors::DarkGrey };
+
 void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c)
 {
 
@@ -543,20 +557,6 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 
 	const Vec<float> front = xform( vert.front() );
 	Vec<float> cur = front;
-
-	std::vector<Color> colArr;
-	colArr.emplace_back(Colors::White);
-	colArr.emplace_back(Colors::Red);
-	colArr.emplace_back(Colors::Yellow);
-	colArr.emplace_back(Colors::Green);
-	colArr.emplace_back(Colors::Cyan);
-	colArr.emplace_back(Colors::LightBlue);
-	colArr.emplace_back(Colors::Blue);
-	colArr.emplace_back(Colors::Magenta);
-	colArr.emplace_back(Colors::Purple);
-	colArr.emplace_back(Colors::LightGrey);
-	colArr.emplace_back(Colors::Grey);
-	colArr.emplace_back(Colors::DarkGrey);
 
 	int colcount = 0;
 	for (auto i = vert.begin(); i != std::prev(vert.end()); ++i)
