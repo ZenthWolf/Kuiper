@@ -15,6 +15,8 @@ Controls:
 W - Thruster
 A/D - Rotational thrusters
 Q/E - Volume Down/Up
+S - Zeroes ship velocity (For Debug)
+
 
 Mouse Wheel Up/Down - Camera Zoom (currently unbounded, utilize with care)
 
@@ -27,13 +29,21 @@ Arrow Keys - camera panning (Screen pans at edge)
 
 Major Branches:
 
-master - The last version of "RealisticColl". Controls as above, see entry about the "RealisticColl" branch
+master - The last version of "SpeculativeColl". Controls as above, see entry about the "SpeculativeColl" branch
 
-SimpleColl - A simple collision protocol. Detects line crosses and implements a toy model response. Linear momentum transfers like direct billiard ball collisions, and angular momentum is treated incredibly simply, but unphysically. Angular momentum transfer tends to build over time, but overall the effect does not exibit terrible behavior. This branch does not allow for collisions with the ship, nor does it have background music.
+SimpleColl - A simple collision protocol. Detects line crosses and implements a toy model response. Linear momentum transfers like direct billiard ball collisions,
+and angular momentum is treated incredibly simply, but unphysically. Angular momentum transfer tends to build over time, but overall the effect does not exibit
+terrible behavior. This branch does not allow for collisions with the ship, nor does it have background music.
 
-RealisticColl - A naive attempt at a corrective response based on detecting vertices inside collision targets. This produces a point to implement a realistic impulse model for linear and angular momentum. Problems with the corrective model result in multiple collisions and is unlikely to be revisited, as the collision criterion (vertex required to be interior to the collision target) proved inadequate. Collisions are resolved more realistically, but the multiple collision create arbitarily large impulses in common edge cases.
+RealisticColl - A naive attempt at a corrective response based on detecting vertices inside collision targets. This produces a point to implement a realistic
+impulse model for linear and angular momentum. Problems with the corrective model result in multiple collisions and is unlikely to be revisited, as the collision
+criterion (vertex required to be interior to the collision target) proved inadequate. Collisions are resolved more realistically, but the multiple collision create
+arbitarily large impulses in common edge cases.
 
-SpeculativeColl - In construction, likely to overwrite the "RealisticColl" branch. This branch decomposes collision models into convex primitive elements in order to implement well trusted algorithms (SAT) that otherwise could not be utilized generally. This method will require a speculative update step in order to find contact points. Collision algorithms are not working in the current state, but currently demonstrates a calculation of the closest points of two, potentially concave, polygons.
+SpeculativeColl - Nearly complete. This branch decomposes collision models into convex primitive elements in order to implement well trusted algorithms (SAT) that
+otherwise could not be utilized generally. This method requires a speculative update step in order to find contact point of any collision. Collision algorithms are
+currently working in debug mode, but work needed to make release mode work smoothly. In the event this method fails, code falls back into a discrete collision
+solver.
 
 Future work:
 
