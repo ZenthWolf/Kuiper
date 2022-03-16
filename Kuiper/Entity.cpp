@@ -203,42 +203,12 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 	return std::vector<int>();
 }
 
-// Defunct version
-/*
-std::vector<int> Entity::CollWith(const Entity& targ) const
-{
-	std::vector<int> interiorVerts;
-
-	std::vector<Vec<float>>& source = GetTransformedModel();
-
-	float txMin = targ.pos.X - targ.boundingrad;
-	float txMax = targ.pos.X + targ.boundingrad;
-	float tyMin = targ.pos.Y - targ.boundingrad;
-	float tyMax = targ.pos.Y + targ.boundingrad;
-
-	for (int i = 0; i < int(source.size()); ++i)
-	{
-		Vec<float> s0 = source[i];
-		
-		if ( s0.X > txMin && s0.X < txMax)
-		{
-			if (s0.Y > tyMin && s0.Y < tyMax)
-			{
-				if (targ.CollPoint(s0))
-				{
-					interiorVerts.emplace_back(i);
-				}
-			}
-		}
-	}
-
-	return std::move(interiorVerts);
-}
-*/
-
-
 void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime)
 {
+	if (contactEdge->discreteCollision)
+	{
+		bool stop = true;
+	}
 	auto ast = GetTransformedModel();
 	auto ship = targ.GetTransformedModel();
 	ActiveEdge etTuBrute = *contactEdge;
@@ -283,11 +253,27 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 	float sourceI = 0.4f * powf(boundingrad, 5.0f);
 	float targI = 0.4f * powf(targ.boundingrad, 5.0f);
 
+	Vec<float> norm = contactEdge->n0.Norm();
+
+	if (contactEdge->discreteCollision)
+	{
+		if (contactEdge->edgeIsA)
+		{
+			TranslateBy(norm * contactEdge->depth1 * 0.5f);
+			targ.TranslateBy(-norm * contactEdge->depth1 * 0.5f);
+		}
+		else
+		{
+			TranslateBy(-norm * contactEdge->depth1 * 0.5f);
+			targ.TranslateBy(norm * contactEdge->depth1 * 0.5f);
+		}
+		
+	}
 
 	Vec<float> contact = contactEdge->p0;
 	Vec<float> sourceRad = contact - pos;
 	Vec<float> targetRad = contact - targ.pos;
-	Vec<float> norm = contactEdge->n0.Norm();
+	
 	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
 	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
 

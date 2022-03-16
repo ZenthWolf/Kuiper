@@ -81,6 +81,7 @@ struct ActiveEdge
 	Vec<float> p1;
 	int pInd;
 	bool edgeIsA;
+	bool discreteCollision = false;
 
 	// caches deepest point value
 	float depth1 = -FLT_MAX;
@@ -112,6 +113,8 @@ private:
 	void ResolveNearField(std::vector<Vec<float>>& BodyA0, std::vector<Vec<float>>& BodyA1,
 						std::vector<Vec<float>>& BodyB0, std::vector<Vec<float>>& BodyB1,
 						float& t, std::unique_ptr<ActiveEdge>& foundEdge);
+	void ResolveDiscreteCollision(std::vector<Vec<float>>& InitBodyA0, std::vector<Vec<float>>& InitBodyB0,
+								float& t, std::unique_ptr<ActiveEdge>& foundEdge);
 	ActiveEdge DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 								Vec<float> edgeI1, Vec<float> edgeJ1,
 								std::vector<Vec<float>> pointCloud
