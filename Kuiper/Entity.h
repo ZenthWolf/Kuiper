@@ -17,6 +17,7 @@
 #include "Engine/Vec.h"
 #include "Graphics/Colors.h"
 #include "Graphics/Drawable.h"
+#include<memory>
 
 #include "Engine/BreezeException.h"
 
@@ -78,7 +79,7 @@ public:
 	};
 
 	std::vector<int> CollWith(const Entity& targ) const;
-	void Recoil(ActiveEdge*& contactEdge, Entity& targ, float rewindTime);
+	void Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime);
 
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;
@@ -89,8 +90,9 @@ public:
 	CollInfo CalculateImpact(const Vec<float> point, const Vec<float> Velocity) const;
 
 	void SetHistory();
-	LastColl ReadHistory();
+	LastColl ReadHistory() const;
 	void ResetHistory();
+	void Entity::ForgeHistory(const LastColl& forgery);
 
 	bool didColl = false;
 public:

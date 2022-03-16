@@ -335,7 +335,7 @@ void Spawner::Update(const float dt, const Rect<float> cambox)
 	GenTime -= dt;
 	if (GenTime <= 0.0f)
 	{
-		if (int(belt.size()) < 7)
+		if (int(belt.size()) < 16)
 		{
 			if (forcedAst != 0)
 			{
@@ -363,7 +363,7 @@ void Spawner::CollCheck(float dt)
 			float dist2 = (belt[i]->GetPos() - belt[j]->GetPos()).GetLengthSq();
 			float radi2 = belt[i]->GetRadius() + belt[j]->GetRadius();
 			radi2 = radi2 * radi2;
-			if (radi2 > dist2 && false)
+			if (radi2 > dist2)
 			{
 				if (belt[i]->depth < Entity::CollDepth::FarField)
 				{
@@ -374,8 +374,7 @@ void Spawner::CollCheck(float dt)
 					belt[j]->depth = Entity::CollDepth::FarField;
 				}
 
-				//std::vector<int> collider = belt[i]->CollWith(*belt[j]);
-				ActiveEdge* contact;
+				auto contact = std::make_unique<ActiveEdge>();
 				float time = CollCheck(*belt[i], *belt[j], contact);
 
 				if (time <= 1.0f)
@@ -392,28 +391,9 @@ void Spawner::CollCheck(float dt)
 					float rewindTime = dt * (1 - time);
 
 					belt[i]->Recoil(contact, *belt[j], rewindTime);
-					/*
-					//belt[i]->Recoil(collider, *belt[j]);
-					belt[i]->SetVel(-belt[i]->GetVel());
-					belt[i]->rot = -belt[i]->rot;
-					belt[j]->SetVel(-belt[j]->GetVel());
-					belt[j]->rot = -belt[j]->rot;
-					*/
 					belt[i]->SetHistory();
 					belt[j]->SetHistory();
 				}
-/*
-				else
-				{
-					std::vector<int> collider = belt[j]->CollWith(*belt[i]);
-					if (collider.size() != 0)
-					{
-						belt[j]->Recoil(collider, *belt[i]);
-						belt[i]->SetHistory();
-						belt[j]->SetHistory();
-					}
-				}
-				*/
 			}
 		}
 	}
@@ -439,12 +419,19 @@ void Spawner::CollideShip(Entity& ship, float dt)
 					belt[i]->depth = Entity::CollDepth::FarField;
 				}
 
-				//std::vector<int> collider = belt[i]->CollWith(ship);
-				ActiveEdge* contact;
-				float time = CollCheck(ship, *belt[i], contact);
+				auto contact = std::make_unique<ActiveEdge>();
+				//timeParam = 0 indicates last time step; = 1 indicates this time step. Most values expected between
+				//timeParam = 2 indicates collision avoided in nearer analysis
+				float timeParam = CollCheck(ship, *belt[i], contact);
 
-				if (time <= 1.0f)
+				if (timeParam <= 1.0f)
 				{
+					auto ast = belt[i]->GetTransformedPrimitives();
+					auto shipShape = ship.GetTransformedPrimitives();
+					Approach debugTest = FindApproach(ast, shipShape);
+					if (debugTest.index0 < 0)
+						bool ProveAlgorithmHalts = true;
+
 					if (ship.depth < Entity::CollDepth::Collided)
 					{
 						ship.depth = Entity::CollDepth::Collided;
@@ -454,34 +441,29 @@ void Spawner::CollideShip(Entity& ship, float dt)
 						belt[i]->depth = Entity::CollDepth::Collided;
 					}
 
-					float rewindTime = dt * (1 - time);
+					float rewindTime = dt * (1 - timeParam);
+					
+					LastColl shipPremonition = ship.ReadHistory();
+					LastColl astPremonition = belt[i]->ReadHistory();
 
 					belt[i]->Recoil(contact, ship, rewindTime);
-					//ship.Recoil(contact, *belt[i], rewindTime);
-					/*
-					//belt[i]->Recoil(collider, ship);
-					belt[i]->SetVel(-belt[i]->GetVel());
-					belt[i]->rot = -belt[i]->rot;
-					ship.SetVel(-ship.GetVel());
-					ship.rot = -ship.rot;
-					*/
+					
+					ast = belt[i]->GetTransformedPrimitives();
+					shipShape = ship.GetTransformedPrimitives();
+					Approach debugTest2 = FindApproach(ast, shipShape);
+					if (false && debugTest2.index0 < 0)
+					{
+						bool ProveAlgorithmHalts = true;
+						ship.ResetHistory();
+						belt[i]->ResetHistory();
+						ship.ForgeHistory(shipPremonition);
+						belt[i]->ForgeHistory(astPremonition);
+					}
+						
 					belt[i]->SetHistory();
 					ship.SetHistory();
 					collision = true;
 				}
-				/*
-				else
-				{
-					std::vector<int> collider = ship.CollWith(*belt[i]);
-					if (collider.size() != 0)
-					{
-						ship.Recoil(collider, *belt[i]);
-						belt[i]->SetHistory();
-						ship.SetHistory();
-						collision = true;
-					}
-				}
-				*/
 			}
 		}
 
@@ -491,7 +473,7 @@ void Spawner::CollideShip(Entity& ship, float dt)
 
 //More accurately, this should return collision info- (time and approach for simulating via Recoil or smth)
 //Currently, t0 info is missing, how the eff to get..?
-float Spawner::CollCheck(Entity& BodyA, Entity& BodyB, ActiveEdge*& contactEdge)
+float Spawner::CollCheck(Entity& BodyA, Entity& BodyB, std::unique_ptr<ActiveEdge>& contactEdge)
 {
 	//time parameter
 	float ToI = 2.f; //above 1.0f is "unitialized"
@@ -618,7 +600,7 @@ float Spawner::CollCheck(Entity& BodyA, Entity& BodyB, ActiveEdge*& contactEdge)
 
 void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<Vec<float>>& InitBodyA1,
 	std::vector<Vec<float>>& InitBodyB0, std::vector<Vec<float>>& InitBodyB1,
-	float& t, ActiveEdge*& foundEdge)
+	float& t, std::unique_ptr<ActiveEdge>& foundEdge)
 {
 	float T0 = 0.0f;
 	float T1 = 1.0f;
@@ -682,6 +664,9 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 
 
 	Approach approach = FindApproach(BodyA0, BodyB0);
+	if (approach.index0 < 0)
+		bool crievritiem = true;
+		//return;
 	ActiveEdge currentEdge;
 
 	if (approach.type0 == Approach::Type::Edge)
@@ -722,6 +707,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 
 	//shouldn't need this, but do...
 	//if (currentEdge.depth1 > tolerance || approach.index0 < 0)
+	
 	if (currentEdge.depth1 > tolerance)
 	{
 		return;
@@ -731,7 +717,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 		if (1 < t)
 		{
 			t = 1;
-			foundEdge = std::move(&currentEdge);
+			*foundEdge = std::move(currentEdge);
 		}
 		return;
 	}
@@ -752,7 +738,7 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 			if (T0< t)
 			{
 				t = T0;
-				foundEdge = std::move(&currentEdge);
+				*foundEdge = std::move(currentEdge);
 			}
 			return;
 		}
@@ -1054,7 +1040,7 @@ void Spawner::GenerateAsteroid(const Rect<float> cambox)
 		float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
 		float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
 		radi2 = radi2 * radi2;
-		if (radi2 > dist2)
+		if (radi2 < dist2)
 		{
 			std::vector<int> collider = belt[i]->CollWith(*belt[index]);
 			if (collider.size() != 0)

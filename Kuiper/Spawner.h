@@ -108,10 +108,10 @@ public:
 
 private:
 	void CollCheck(float dt);
-	float CollCheck(Entity& A, Entity& B, ActiveEdge*& contactEdge);
+	float CollCheck(Entity& A, Entity& B, std::unique_ptr<ActiveEdge>& contactEdge);
 	void ResolveNearField(std::vector<Vec<float>>& BodyA0, std::vector<Vec<float>>& BodyA1,
 						std::vector<Vec<float>>& BodyB0, std::vector<Vec<float>>& BodyB1,
-						float& t, ActiveEdge*& foundEdge);
+						float& t, std::unique_ptr<ActiveEdge>& foundEdge);
 	ActiveEdge DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 								Vec<float> edgeI1, Vec<float> edgeJ1,
 								std::vector<Vec<float>> pointCloud

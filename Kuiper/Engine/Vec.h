@@ -52,6 +52,11 @@ public:
 		return *this;
 	}
 
+	bool operator==(const Vec& rhs)
+	{
+		return X==rhs.X && Y==rhs.Y;
+	}
+
 	Vec operator-(const Vec& rhs) const
 	{
 		return Vec(X - rhs.X, Y - rhs.Y);
