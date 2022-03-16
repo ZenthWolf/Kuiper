@@ -24,21 +24,21 @@ struct SimplexVertex
 	Vec<float> point;	  // Minkowski difference point
 
 	float u;	          // unnormalized barycentric coordinate for closest point
-	int index0;			  // point index in polygon 0
-	int index1;			  // point index in polygon 1
+	int index0 = -1;			  // point index in polygon 0
+	int index1 = -1;			  // point index in polygon 1
 };
 
 struct Approach
 {
 	enum class Type { Vertex, Edge };
 	Vec<float> point0;		// closest point on polygon 0
-	int convex0;            // convex primitive of point0
-	int index0;             // index of the element index0 represents
+	int convex0 = -1;            // convex primitive of point0
+	int index0 = -1;             // index of the element index0 represents
 	Type type0;             // the type of element index0 represents
 
 	Vec<float> point1;		// closest point on polygon 1
-	int convex1;            // convex primitive of point1
-	int index1;             // index of the element index1 represents
+	int convex1 = -1;            // convex primitive of point1
+	int index1 = -1;             // index of the element index1 represents
 	Type type1;             // the type of element index1 represents
 
 	float distance;

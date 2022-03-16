@@ -1139,7 +1139,7 @@ Approach Spawner::FindApproach(const std::vector<Vec<float>>& model0, const std:
 
 	// Vertices of last simplex from previous iteration
 	// Finding a repeat is primary termination criterion.
-	int save0[3], save1[3];
+	int save0[3] = { -1,-1,-1 }, save1[3] = {-1,-1,-1};
 	int saveCount = 0;
 
 	// Loop evolving the simplex
