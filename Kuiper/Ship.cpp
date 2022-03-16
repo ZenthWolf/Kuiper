@@ -56,7 +56,7 @@ void Ship::Update(const float dt)
 {
 	TranslateBy(vel * dt);
 	RotBy(rot * dt);
-	DriftDecay(dt);
+	
 }
 
 void Ship::DriftDecay(const float dt)

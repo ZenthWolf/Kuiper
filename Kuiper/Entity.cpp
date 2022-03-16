@@ -205,46 +205,10 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 
 void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime)
 {
-	if (contactEdge->discreteCollision)
-	{
-		bool stop = true;
-	}
-	auto ast = GetTransformedModel();
-	auto ship = targ.GetTransformedModel();
-	ActiveEdge etTuBrute = *contactEdge;
-	LastColl ShipStart = targ.ReadHistory();
-	if (contactEdge->n0 == Vec<float>{0.0f, 0.0f})
-	{
-		bool brokeColl = true;
-		if (false)
-		{
-			ResetHistory();
-			targ.ResetHistory();
-			return;
-		}
-	}
-	
 	TranslateBy(-vel * rewindTime);
 	RotBy(-rot * rewindTime);
 	targ.TranslateBy(-targ.GetVel() * rewindTime);
 	targ.RotBy(-targ.rot * rewindTime);
-
-	/*
-	//Temporary Physical Parameter estimation (everything is spherical cows)
-	//should be cached later and updated seemlessly for performance
-	Vec<float> sourceCoM = {0.0f, 0.0f};
-	for each (auto v in GetTransformedModel())
-	{
-		sourceCoM += v;
-	}
-	sourceCoM *= (1 / ((float)model.size()));
-	Vec<float> targetCoM = { 0.0f, 0.0f };
-	for each (auto v in targ.GetTransformedModel())
-	{
-		targetCoM += v;
-	}
-	targetCoM *= (1 / ((float)targ.model.size()));
-	*/
 
 	//mass prop to volume
 	float sourceMass = powf(boundingrad, 3.0f);

@@ -166,6 +166,7 @@ void Game::UpdateModel(float dt)
 			spawner.CollideShip(ship, dt);
 		}
 
+		ship.DriftDecay(dt);
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
