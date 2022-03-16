@@ -375,6 +375,8 @@ void Spawner::CollCheck(float dt)
 				}
 
 				auto contact = std::make_unique<ActiveEdge>();
+				//timeParam = 0 indicates last time step; = 1 indicates this time step. Most values expected between
+				//timeParam = 2 indicates collision avoided in nearer analysis
 				float time = CollCheck(*belt[i], *belt[j], contact);
 
 				if (time <= 1.0f)
@@ -390,7 +392,7 @@ void Spawner::CollCheck(float dt)
 
 					float rewindTime = dt * (1 - time);
 
-					belt[i]->Recoil(contact, *belt[j], rewindTime);
+					belt[j]->Recoil(contact, *belt[i], rewindTime);
 					belt[i]->SetHistory();
 					belt[j]->SetHistory();
 				}
@@ -442,24 +444,9 @@ void Spawner::CollideShip(Entity& ship, float dt)
 					}
 
 					float rewindTime = dt * (1 - timeParam);
-					
-					LastColl shipPremonition = ship.ReadHistory();
-					LastColl astPremonition = belt[i]->ReadHistory();
+
 
 					belt[i]->Recoil(contact, ship, rewindTime);
-					
-					ast = belt[i]->GetTransformedPrimitives();
-					shipShape = ship.GetTransformedPrimitives();
-					Approach debugTest2 = FindApproach(ast, shipShape);
-					if (false && debugTest2.index0 < 0)
-					{
-						bool ProveAlgorithmHalts = true;
-						ship.ResetHistory();
-						belt[i]->ResetHistory();
-						ship.ForgeHistory(shipPremonition);
-						belt[i]->ForgeHistory(astPremonition);
-					}
-						
 					belt[i]->SetHistory();
 					ship.SetHistory();
 					collision = true;
@@ -665,8 +652,8 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 
 	Approach approach = FindApproach(BodyA0, BodyB0);
 	if (approach.index0 < 0)
-		bool crievritiem = true;
-		//return;
+		return ResolveDiscreteCollision(InitBodyA0, InitBodyB0, t, foundEdge);
+
 	ActiveEdge currentEdge;
 
 	if (approach.type0 == Approach::Type::Edge)
@@ -857,6 +844,63 @@ void Spawner::ResolveNearField(std::vector<Vec<float>>& InitBodyA0, std::vector<
 	}
 }
 
+void Spawner::ResolveDiscreteCollision(std::vector<Vec<float>>& BodyA, std::vector<Vec<float>>& BodyB,
+							float& t, std::unique_ptr<ActiveEdge>& foundEdge)
+{
+	float shallowestMove = FLT_MAX;
+
+	ActiveEdge currentEdge = DeepestVsEdgeSolver(BodyA[0], BodyA[1], BodyA[0], BodyA[1], BodyB);
+
+	if (signbit(currentEdge.depth1))
+	{
+		float normalization = currentEdge.n0.GetLengthSq();
+		float depth = currentEdge.depth1 * currentEdge.depth1 / normalization;
+	}
+	
+
+	for(int edge = 1; edge<BodyA.size(); ++edge)
+	{
+		currentEdge = DeepestVsEdgeSolver(BodyA[edge], BodyA[(edge + 1) % BodyA.size()], BodyA[edge], BodyA[(edge + 1) % BodyA.size()], BodyB);
+		
+		if (signbit(currentEdge.depth1))
+		{
+			float normalization = currentEdge.n0.GetLengthSq();
+			float depth = currentEdge.depth1 * currentEdge.depth1 / normalization;
+			if (depth < shallowestMove)
+			{
+				shallowestMove = depth;
+
+				*foundEdge = std::move(currentEdge);
+			}
+		}
+	}
+
+	bool edgeIsA = true;
+
+	for (int edge = 1; edge < BodyB.size(); ++edge)
+	{
+		currentEdge = DeepestVsEdgeSolver(BodyB[edge], BodyB[(edge + 1) % BodyB.size()], BodyB[edge], BodyB[(edge + 1) % BodyB.size()], BodyA);
+		
+		if (signbit(currentEdge.depth1))
+		{
+			float normalization = currentEdge.n0.GetLengthSq();
+			float depth = currentEdge.depth1 * currentEdge.depth1 / normalization;
+			if (depth < shallowestMove)
+			{
+				edgeIsA = false;
+				shallowestMove = depth;
+				*foundEdge = std::move(currentEdge);
+			}
+		}
+	}
+
+	foundEdge->p0 = foundEdge->p1;
+	foundEdge->edgeIsA = edgeIsA;
+	foundEdge->discreteCollision = true;
+	foundEdge->depth1 = sqrt(shallowestMove);
+	t = 0.0f;
+}
+
 ActiveEdge Spawner::DeepestVsEdgeSolver(Vec<float> edgeI0, Vec<float> edgeJ0,
 					Vec<float> edgeI1, Vec<float> edgeJ1,
 					std::vector<Vec<float>> pointCloud
@@ -987,68 +1031,74 @@ void Spawner::GenerateAsteroid(const Rect<float> cambox)
 	std::uniform_real_distribution<float> omgDist(-omgRange, omgRange);
 
 	int spawnside = side(rng);
-
-	if (spawnside == 0) //TOP
+	const int maxIters = 10;
+	int iters = 0;
+	while (iters < maxIters)
 	{
-		float scale = sDist(rng);
-		Vec<float> pos = { xDist(rng), bounds.Y1 };
-		Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-		vel.Y = -abs(vel.Y);
-		float rot = omgDist(rng) / scale;
-		belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-		belt[belt.size() - 1]->SetScale(scale);
-	}
+		++iters;
 
-	if (spawnside == 1) //BOTTOM
-	{
-		float scale = sDist(rng);
-		Vec<float> pos = { xDist(rng), bounds.Y0 };
-		Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-		vel.Y = abs(vel.Y);
-		float rot = omgDist(rng) / scale;
-		belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-		belt[belt.size() - 1]->SetScale(scale);
-	}
-
-	if (spawnside == 2) //LEFT
-	{
-		float scale = sDist(rng);
-		Vec<float> pos = { bounds.X0, yDist(rng) };
-		Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-		vel.X = abs(vel.X);
-		float rot = omgDist(rng) / scale;
-		belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-		belt[belt.size() - 1]->SetScale(scale);
-	}
-
-	if (spawnside == 3) //RIGHT
-	{
-		float scale = sDist(rng);
-		Vec<float> pos = { bounds.X1, yDist(rng) };
-		Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
-		vel.X = -abs(vel.X);
-		float rot = omgDist(rng) / scale;
-		belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
-		belt[belt.size() - 1]->SetScale(scale);
-	}
-
-	int index = belt.size() - 1;
-
-	//ensure no collision
-	for (int i = 0; i < index; ++i)
-	{
-		float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
-		float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
-		radi2 = radi2 * radi2;
-		if (radi2 < dist2)
+		if (spawnside == 0) //TOP
 		{
-			std::vector<int> collider = belt[i]->CollWith(*belt[index]);
-			if (collider.size() != 0)
+			float scale = sDist(rng);
+			Vec<float> pos = { xDist(rng), bounds.Y1 };
+			Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+			vel.Y = -abs(vel.Y);
+			float rot = omgDist(rng) / scale;
+			belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+			belt[belt.size() - 1]->SetScale(scale);
+		}
+
+		if (spawnside == 1) //BOTTOM
+		{
+			float scale = sDist(rng);
+			Vec<float> pos = { xDist(rng), bounds.Y0 };
+			Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+			vel.Y = abs(vel.Y);
+			float rot = omgDist(rng) / scale;
+			belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+			belt[belt.size() - 1]->SetScale(scale);
+		}
+
+		if (spawnside == 2) //LEFT
+		{
+			float scale = sDist(rng);
+			Vec<float> pos = { bounds.X0, yDist(rng) };
+			Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+			vel.X = abs(vel.X);
+			float rot = omgDist(rng) / scale;
+			belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+			belt[belt.size() - 1]->SetScale(scale);
+		}
+
+		if (spawnside == 3) //RIGHT
+		{
+			float scale = sDist(rng);
+			Vec<float> pos = { bounds.X1, yDist(rng) };
+			Vec<float> vel = { vDist(rng) / scale, vDist(rng) / scale };
+			vel.X = -abs(vel.X);
+			float rot = omgDist(rng) / scale;
+			belt.push_back(std::make_unique<Asteroid>(pos, vel, rot));
+			belt[belt.size() - 1]->SetScale(scale);
+		}
+
+		int index = belt.size() - 1;
+
+		//ensure no collision
+		bool accepted = true;
+		for (int i = 0; i < index; ++i)
+		{
+			float dist2 = (belt[i]->GetPos() - belt[index]->GetPos()).GetLengthSq();
+			float radi2 = belt[i]->GetRadius() + belt[index]->GetRadius();
+			radi2 = radi2 * radi2;
+			if (radi2 > dist2)
 			{
+				accepted = false;
 				belt.pop_back();
 				break;
 			}
 		}
+		if (accepted)
+			break;
 	}
 }
 
