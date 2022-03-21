@@ -16,8 +16,9 @@
 
 Game::Game(MainWindow& AFakeName)
 	:
-	wnd(AFakeName),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
+	wnd(AFakeName), gfx(wnd), rng(std::random_device()()),
+	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound),
+	alienObj(5.0f)
 {
 	SoundSystem::SetMasterVolume(vol);
 
@@ -128,6 +129,7 @@ void Game::UpdateModel(float dt)
 
 		ship.SetHistory();
 		ship.Update(dt);
+		alienObj.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
 
 		if (!wnd.kbd.KeyIsEmpty())
@@ -263,6 +265,8 @@ void Game::ComposeFrame()
 			cam.Draw(s.GetDrawable());
 		}
 		
+		alienObj.Draw(gfx, cam.GetScreenBox());
+
 		/*
 		//DEBUG BOUNDING CIRCS
 		float radius = ship.GetRadius();

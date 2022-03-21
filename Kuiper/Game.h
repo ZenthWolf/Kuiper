@@ -26,6 +26,7 @@
 #include "Spawner.h"
 #include "Statics.h"
 #include "Ship.h"
+#include "Tetra.h"
 
 
 class Game
@@ -65,6 +66,7 @@ private:
 
 	Ship ship;
 	std::vector<Star> scene;
+	Tetrahedron alienObj;
 	std::vector<std::unique_ptr<Asteroid>> belt;
 	Spawner spawner;
 

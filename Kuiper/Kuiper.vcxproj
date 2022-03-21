@@ -159,6 +159,7 @@
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Spawner.h" />
     <ClInclude Include="Statics.h" />
+    <ClInclude Include="Tetra.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\COMInitializer.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Spawner.cpp" />
+    <ClCompile Include="Tetra.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
