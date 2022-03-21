@@ -42,13 +42,13 @@ void Ship::Thrust(const float dt)
 
 void Ship::AThrust(const float dt)
 {
-	if (abs(rot) < rotmax)
+	if (abs(angvel) < angvelMax)
 	{
-		rot += athrust * dt;
+		angvel += athrust * dt;
 	}
-	else if (signbit(rot) != signbit(dt))
+	else if (signbit(angvel) != signbit(dt))
 	{
-		rot += athrust * dt;
+		angvel += athrust * dt;
 	}
 }
 
@@ -56,7 +56,7 @@ void Ship::Update(const float dt)
 {
 	alertStaleModel();
 	TranslateBy(vel * dt);
-	RotBy(rot * dt);
+	RotBy(angvel * dt);
 	
 }
 
@@ -75,16 +75,16 @@ void Ship::DriftDecay(const float dt)
 	}
 
 	float dth = rotdecay * dt;
-	if (abs(rot) < dth)
+	if (abs(angvel) < dth)
 	{
-		rot = 0.0f;
+		angvel = 0.0f;
 	}
-	else if (signbit(rot))
+	else if (signbit(angvel))
 	{
-		rot += dth;
+		angvel += dth;
 	}
 	else
 	{
-		rot -= dth;
+		angvel -= dth;
 	}
 }

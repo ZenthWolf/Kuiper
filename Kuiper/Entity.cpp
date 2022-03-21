@@ -19,8 +19,9 @@
 
 #define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
 
-Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, const Vec<float>& vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::White)
-	:model(std::move(modl)), pos(pos), vel(vel), rot(rot), c(c)
+Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, 
+			const Vec<float>& vel = { 0.0f, 0.0f }, float angvel = 0.0f, Color c = Colors::White)
+	:model(std::move(modl)), pos(pos), vel(vel), angvel(angvel), c(c)
 {
 	Vec<float> CoM = model[0];
 	for (int i = 1; i < model.size(); ++i)
@@ -45,9 +46,6 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	cachedPrimitives = modelprimitives;
 	SetHistory();
 }
-
-
-
 
 const Vec<float>& Entity::GetPos() const
 {
@@ -83,26 +81,26 @@ float Entity::GetRadius() const
 void Entity::SetHeading(const float th)
 {
 	heading = th;
-	while (heading > (2 * 3.1415926))
+	while (heading > (6.283185))
 	{
-		heading -= (2 * 3.1415926);
+		heading -= (6.283185);
 	}
-	while (heading < (-2 * 3.1415926))
+	while (heading < (-6.283185))
 	{
-		heading += (2 * 3.1415926);
+		heading += (6.283185);
 	}
 }
 
 void Entity::RotBy(const float th)
 {
 	heading += th;
-	while (heading > (2 * 3.1415926))
+	while (heading > (6.283185))
 	{
-		heading -= (2 * 3.1415926);
+		heading -= (6.283185);
 	}
-	while (heading < (-2 * 3.1415926))
+	while (heading < (-6.283185))
 	{
-		heading += (2 * 3.1415926);
+		heading += (6.283185);
 	}
 }
 
@@ -110,8 +108,6 @@ Vec<float> Entity::GetHeading() const
 {
 	return { cos(heading), sin(heading) };
 }
-
-
 
 Vec<float> Entity::GetVel() const
 {
@@ -123,7 +119,10 @@ void Entity::SetVel(const Vec<float> newvel)
 	vel = newvel;
 }
 
-
+void Entity::SetAngVel(const float newvel)
+{
+	angvel = newvel;
+}
 
 Drawable Entity::GetDrawable(bool debug) const
 {
@@ -186,21 +185,15 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
-//Consider a collision manager
-std::vector<int> Entity::CollWith(const Entity& targ) const
-{
-	return std::vector<int>();
-}
-
-void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime)
+void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, const float rewindTime)
 {
 	alertStaleModel();
 	targ.alertStaleModel();
 
 	TranslateBy(-vel * rewindTime);
-	RotBy(-rot * rewindTime);
+	RotBy(-angvel * rewindTime);
 	targ.TranslateBy(-targ.GetVel() * rewindTime);
-	targ.RotBy(-targ.rot * rewindTime);
+	targ.RotBy(-targ.angvel * rewindTime);
 
 	//mass prop to volume
 	float sourceMass = powf(boundingrad, 3.0f);
@@ -223,15 +216,14 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 			TranslateBy(-norm * contactEdge->depth1 * 0.5f);
 			targ.TranslateBy(norm * contactEdge->depth1 * 0.5f);
 		}
-		
 	}
 
 	Vec<float> contact = contactEdge->p0;
 	Vec<float> sourceRad = contact - pos;
 	Vec<float> targetRad = contact - targ.pos;
 	
-	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
-	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
+	Vec<float> vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*angvel;
+	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*angvel;
 
 	Vec<float> rvel;
 	if (contactEdge->edgeIsA)
@@ -242,15 +234,14 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 	{
 		rvel = vContactTarget - vContactSource;
 	}
-	
 
 	if (rvel.Dot(norm) > 0.0f)
 	{
 		//Never should have come here!
 		TranslateBy(vel * rewindTime);
-		RotBy(rot * rewindTime);
+		RotBy(angvel * rewindTime);
 		targ.TranslateBy(targ.GetVel() * rewindTime);
-		targ.RotBy(targ.rot * rewindTime);
+		targ.RotBy(targ.angvel * rewindTime);
 
 		return;
 	}
@@ -269,22 +260,22 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 	{
 		vel += norm * impulse / sourceMass;
 		targ.vel -= norm * impulse / targMass;
-		rot += impulse * sourceRad.Cross(norm) / sourceI;
-		targ.rot -= impulse * targetRad.Cross(norm) / targI;
+		angvel += impulse * sourceRad.Cross(norm) / sourceI;
+		targ.angvel -= impulse * targetRad.Cross(norm) / targI;
 	}
 	else
 	{
 		vel -= norm * impulse / sourceMass;
 		targ.vel += norm * impulse / targMass;
-		rot -= impulse * sourceRad.Cross(norm) / sourceI;
-		targ.rot += impulse * targetRad.Cross(norm) / targI;
+		angvel -= impulse * sourceRad.Cross(norm) / sourceI;
+		targ.angvel += impulse * targetRad.Cross(norm) / targI;
 	}
 	
 	//Verification
 	sourceRad = contact - pos;
 	targetRad = contact - targ.pos;
-	vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*rot;
-	vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*rot;
+	vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*angvel;
+	vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*angvel;
 	Vec<float> rvel2;
 	if (contactEdge->edgeIsA)
 	{
@@ -303,13 +294,17 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 	}
 
 	TranslateBy(vel * rewindTime);
-	RotBy(rot * rewindTime);
+	RotBy(angvel * rewindTime);
 	targ.TranslateBy(targ.GetVel() * rewindTime);
-	targ.RotBy(targ.rot * rewindTime);
+	targ.RotBy(targ.angvel * rewindTime);
 }
 
-
-
+/// <summary>
+/// Determines if a point is interior to the model of the Entity
+/// Draws a ray to the exterior, and counts number of collisions to do so.
+/// </summary>
+/// <param name="targ">Point to be queried</param>
+/// <returns>true for targ interior to entity model</returns>
 bool Entity::CollPoint(const Vec<float> targ) const
 {
 	std::vector<Vec<float>> sourceTrans = GetTransformedModel();
@@ -336,6 +331,11 @@ bool Entity::CollPoint(const Vec<float> targ) const
 	return (bool(CollCount % 2));
 }
 
+/// <summary>
+/// Returns cross product of triangle bound by points given.
+/// Usage for determining relative orientation of points.
+/// </summary>
+/// <returns>positive if A-B-C is a counterclockwise orientation</returns>
 float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C) const
 {
 	Vec<float> side0 = { B.X - A.X, B.Y - A.Y };
@@ -407,83 +407,12 @@ Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
 	return relpnt;
 }
 
-
-
-Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float> velocity) const
-{
-	std::vector<Vec<float>> source = GetTransformedModel();
-	Vec<float> rvel = velocity - vel;
-	float scaleTime;
-
-	if (abs(rvel.X) > abs(rvel.Y))
-	{
-		scaleTime = 2 * boundingrad / abs(rvel.X);
-	}
-	else if(abs(rvel.Y) > abs(rvel.X))
-	{
-		scaleTime = 2 * boundingrad / abs(rvel.Y);
-	}
-
-	Vec<float> refpoint = point + rvel * scaleTime;
-
-	float impactDepth = 2.0 * boundingrad;
-	Vec<int> impactSide;
-
-	for (int s0i = 0; s0i<int(source.size()); ++s0i)
-	{
-		int s1i = (s0i + 1) % int(model.size());
-		Vec<float> s0 = source[s0i];
-		Vec<float> s1 = source[s1i];
-
-		if ((ClusterArea(point, refpoint, s0) > 0.0f && ClusterArea(point, refpoint, s1) < 0.0f) ||
-			(ClusterArea(point, refpoint, s0) < 0.0f && ClusterArea(point, refpoint, s1) > 0.0f))
-		{
-			if ((ClusterArea(s0, s1, point) > 0.0f && ClusterArea(s0, s1, refpoint) < 0.0f) ||
-				(ClusterArea(s0, s1, point) < 0.0f && ClusterArea(s0, s1, refpoint) > 0.0f))
-			{
-				Vec<float> edge = { s1 - s0 };
-				float sideLength = edge.GetLength();
-				Vec<float> norm = Vec<float>{ edge.Y, -edge.X }/sideLength;
-
-
-				float depthFromSide = abs((s0 - point).Cross(s1 - point)) / sideLength;
-				float impactVel = rvel.Dot(norm);
-
-				if (depthFromSide < impactDepth)
-				{
-					impactDepth = depthFromSide;
-					impactSide = { s0i, s1i };
-				}
-			}
-		}
-	}
-
-	return std::move(CollInfo{ impactDepth, impactSide });
-}
-
-
-void Entity::SetModel(std::vector<Vec<float>> modelnew)
-{
-	alertStaleModel();
-	model = std::move(modelnew);
-}
-
-
-std::wstring Entity::ColliderException::GetFullMessage() const
-{
-	return GetNote();
-}
-std::wstring Entity::ColliderException::GetExceptionType() const
-{
-	return L"Breeze Physics Exception";
-}
-
 void Entity::SetHistory()
 {
 	History.pos = pos;
 	History.vel = vel;
 	History.heading = heading;
-	History.rot = rot;
+	History.angvel = angvel;
 	History.model = GetTransformedModel();
 	History.primitives = GetTransformedPrimitives();
 }
@@ -498,7 +427,7 @@ void Entity::ResetHistory()
 	pos = History.pos;
 	vel = History.vel;
 	heading = History.heading;
-	rot = History.rot;
+	angvel = History.angvel;
 }
 
 void Entity::alertStaleModel() const
@@ -541,4 +470,3 @@ Rect<float> Entity::GetBoundingBox() const
 {
 	return GetBoundingBox(GetTransformedModel());
 }
-

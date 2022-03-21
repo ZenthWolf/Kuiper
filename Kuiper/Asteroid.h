@@ -27,6 +27,6 @@ public:
 	{
 		alertStaleModel();
 		TranslateBy(vel * dt);
-		RotBy(rot * dt);
+		RotBy(angvel * dt);
 	}
 };

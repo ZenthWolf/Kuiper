@@ -123,7 +123,7 @@ void Game::UpdateModel(float dt)
 		if (wnd.kbd.KeyIsPressed('S'))
 		{
 			ship.SetVel({ 0.0f,0.0f });
-			ship.rot = 0.0f;
+			ship.SetAngVel(0.0f);
 		}
 
 		ship.SetHistory();
