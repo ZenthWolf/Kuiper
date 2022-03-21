@@ -127,6 +127,32 @@ void Game::UpdateModel(float dt)
 			ship.rot = 0.0f;
 		}
 
+		if (wnd.kbd.KeyIsPressed('U'))
+		{
+			alienObj.AdjustScreenDist(-dt * 10.);
+		}
+		if (wnd.kbd.KeyIsPressed('I'))
+		{
+			alienObj.AdjustScreenDist(dt * 10.);
+		}
+		if (wnd.kbd.KeyIsPressed('J'))
+		{
+			alienObj.AdjustAdditionalOffset(-dt * 10.);
+		}
+		if (wnd.kbd.KeyIsPressed('K'))
+		{
+			alienObj.AdjustAdditionalOffset(dt * 10.);
+		}
+		if (wnd.kbd.KeyIsPressed('N'))
+		{
+			alienObj.forcedDist -= dt*10.;
+		}
+		if (wnd.kbd.KeyIsPressed('M'))
+		{
+			alienObj.forcedDist += dt * 10.;
+		}
+
+
 		ship.SetHistory();
 		ship.Update(dt);
 		alienObj.Update(dt);
@@ -389,12 +415,15 @@ void Game::ComposeFrame()
 			}
 		}
 
-		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
+		font.DrawText(std::to_string(belt.size()), {100,155}, Colors::White, gfx);
 		if (collship)
 		{
 			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
 		}
 		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
+		font.DrawText("ScreenDist: " + std::to_string(alienObj.screenDist), { 50,60 }, Colors::White, gfx);
+		font.DrawText("Offset: " + std::to_string(alienObj.additionalOffset), { 50,90 }, Colors::White, gfx);
+		font.DrawText("Distance: " + std::to_string(alienObj.forcedDist), { 50,120 }, Colors::White, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;

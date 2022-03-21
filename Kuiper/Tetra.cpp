@@ -26,15 +26,16 @@ void Tetrahedron::Update(float dt)
 
 void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 {
+	pos.Z = forcedDist;
 	TransformModel();
-	
-	const float screenDist = 320.f;
 
 	for (int i = 0; i < 4; ++i)
 	{
-		float invDepth = 1./(vert[i].Z + 5.0f);
+		float invDepth = 1./(vert[i].Z + additionalOffset);
 		point[i] = Vec<float>(vert[i].X * screenDist * invDepth + (float)(cambox.width()) / 2, vert[i].Y * screenDist * invDepth + (float)(cambox.height()) / 2);
 	}
+	//                           01,    02,   03,   12,   13,  23
+	float edgebrightness[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -47,34 +48,95 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 			{
 			case 0:
 			{
+				Color c = { 255,0,0 };
+				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
 				DrawTriFromLowest(point[0], point[1], point[2], shade, gfx);
-				gfx.DrawLine(point[0], point[1], line);
-				gfx.DrawLine(point[0], point[2], line);
-				gfx.DrawLine(point[1], point[2], line);
+
+				if (edgebrightness[0] < brightness)
+				{
+					edgebrightness[0] = brightness;
+					gfx.DrawLine(point[0], point[1], line);
+				}
+				if (edgebrightness[1] < brightness)
+				{
+					edgebrightness[1] = brightness;
+					gfx.DrawLine(point[0], point[2], line);
+				}
+				if (edgebrightness[3] < brightness)
+				{
+					edgebrightness[3] = brightness;
+					gfx.DrawLine(point[1], point[2], line);
+				}
+				
 				break;
 			}
 			case 1:
 			{
+				Color c = { 0,255,0 };
+				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
 				DrawTriFromLowest(point[0], point[1], point[3], shade, gfx);
-				gfx.DrawLine(point[0], point[3], line);
-				gfx.DrawLine(point[0], point[1], line);
-				gfx.DrawLine(point[3], point[1], line);
+
+				if (edgebrightness[2] < brightness)
+				{
+					edgebrightness[2] = brightness;
+					gfx.DrawLine(point[0], point[3], line);
+				}
+				if (edgebrightness[0] < brightness)
+				{
+					edgebrightness[0] = brightness;
+					gfx.DrawLine(point[0], point[1], line);
+				}
+				if (edgebrightness[4] < brightness)
+				{
+					edgebrightness[4] = brightness;
+					gfx.DrawLine(point[3], point[1], line);
+				}
+				
 				break;
 			}
 			case 2:
 			{
+				Color c = { 0,0,255 };
+				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
 				DrawTriFromLowest(point[0], point[3], point[2], shade, gfx);
-				gfx.DrawLine(point[0], point[2], line);
-				gfx.DrawLine(point[0], point[3], line);
-				gfx.DrawLine(point[2], point[3], line);
+
+				if (edgebrightness[1] < brightness)
+				{
+					edgebrightness[1] = brightness;
+					gfx.DrawLine(point[0], point[2], line);
+				}
+				if (edgebrightness[2] < brightness)
+				{
+					edgebrightness[2] = brightness;
+					gfx.DrawLine(point[0], point[3], line);
+				}
+				if (edgebrightness[5] < brightness)
+				{
+					edgebrightness[5] = brightness;
+					gfx.DrawLine(point[2], point[3], line);
+				}
+				
 				break;
 			}
 			case 3:
 			{
 				DrawTriFromLowest(point[1], point[2], point[3], shade, gfx);
-				gfx.DrawLine(point[3], point[1], line);
-				gfx.DrawLine(point[3], point[2], line);
-				gfx.DrawLine(point[1], point[2], line);
+				
+				if (edgebrightness[4] < brightness)
+				{
+					edgebrightness[4] = brightness;
+					gfx.DrawLine(point[3], point[1], line);
+				}
+				if (edgebrightness[5] < brightness)
+				{
+					edgebrightness[5] = brightness;
+					gfx.DrawLine(point[2], point[3], line);
+				}
+				if (edgebrightness[3] < brightness)
+				{
+					edgebrightness[3] = brightness;
+					gfx.DrawLine(point[1], point[2], line);
+				}
 				break;
 			}
 			default:
@@ -110,6 +172,16 @@ void  Tetrahedron::DrawTriFromLowest(Vec<float>& v0, Vec<float>& v1, Vec<float>&
 	}
 	DrawTri(v2, v1, v0, c, gfx);
 	return;
+}
+
+void Tetrahedron::AdjustScreenDist(float dr)
+{
+	screenDist += dr;
+}
+
+void Tetrahedron::AdjustAdditionalOffset(float dr)
+{
+	additionalOffset += dr;
 }
 
 void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, Graphics & gfx)

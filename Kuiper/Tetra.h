@@ -189,6 +189,10 @@ public:
 class Tetrahedron
 {
 public:
+	float screenDist = 320.f;
+	float additionalOffset = 5.0f;
+	float forcedDist = 20.0f;
+
 	Tetrahedron(const float size)
 	{
 		pos = { 0.0f, 0.0f, 50.0f };
@@ -225,6 +229,8 @@ public:
 
 	void Update(float dt);
 	void Draw(Graphics& gfx, Rect<float> cambox);
+	void AdjustScreenDist(float dr);
+	void AdjustAdditionalOffset(float dr);
 
 private:
 	void TransformModel();
