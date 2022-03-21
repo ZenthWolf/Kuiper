@@ -92,7 +92,7 @@ public:
 	void SetHistory();
 	LastColl ReadHistory() const;
 	void ResetHistory();
-	void Entity::ForgeHistory(const LastColl& forgery);
+	void alertStaleModel() const;
 
 	bool didColl = false;
 public:
@@ -113,6 +113,10 @@ protected:
 
 	std::vector<Vec<float>> model;
 	std::vector<std::vector<Vec<float>>> modelprimitives;
+	mutable std::vector<Vec<float>> cachedModel;
+	mutable bool staleModel = true;
+	mutable std::vector<std::vector<Vec<float>>> cachedPrimitives;
+	mutable bool stalePrimitives = true;
 
 	Color c;
 

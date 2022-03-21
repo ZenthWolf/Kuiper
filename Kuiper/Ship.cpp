@@ -54,6 +54,7 @@ void Ship::AThrust(const float dt)
 
 void Ship::Update(const float dt)
 {
+	alertStaleModel();
 	TranslateBy(vel * dt);
 	RotBy(rot * dt);
 	
@@ -61,6 +62,7 @@ void Ship::Update(const float dt)
 
 void Ship::DriftDecay(const float dt)
 {
+	alertStaleModel();
 	Vec<float> nvel = vel - vel.Norm() * vdecay * dt;
 
 	if (nvel.Dot(vel) <= 0.0f)

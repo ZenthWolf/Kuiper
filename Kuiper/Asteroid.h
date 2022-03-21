@@ -25,6 +25,7 @@ public:
 
 	void Update(const float dt)
 	{
+		alertStaleModel();
 		TranslateBy(vel * dt);
 		RotBy(rot * dt);
 	}

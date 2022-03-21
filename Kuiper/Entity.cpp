@@ -41,19 +41,8 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 
 	modelprimitives = Shapes::ConvexSeparator(model);
 
-	/*
-	for (auto m : modelprimitives)
-	{
-		for (auto v : m)
-		{
-			float vrad = v.GetLengthSq();
-			if (vrad > boundingrad)
-			{
-				boundingrad = vrad;
-			}
-		}
-	}
-	*/
+	cachedModel = model;
+	cachedPrimitives = modelprimitives;
 	SetHistory();
 }
 
@@ -205,6 +194,9 @@ std::vector<int> Entity::CollWith(const Entity& targ) const
 
 void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, float rewindTime)
 {
+	alertStaleModel();
+	targ.alertStaleModel();
+
 	TranslateBy(-vel * rewindTime);
 	RotBy(-rot * rewindTime);
 	targ.TranslateBy(-targ.GetVel() * rewindTime);
@@ -262,13 +254,6 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 
 		return;
 	}
-	if (targ.didColl)
-	{
-		bool STOP = true;
-	}
-
-	auto astAft = GetTransformedModel();
-	auto shipAft = targ.GetTransformedModel();
 
 	float sourceCross = sourceRad.Cross(norm);
 	float targCross = targetRad.Cross(norm);
@@ -279,30 +264,7 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 
 	//collision response
 	float impulse = -(1.f+1.f)* rvel.Dot(norm) / ((1.f/sourceMass) + (1.f/targMass) + momInertiaFactor);
-/*
-	if ( (impulse > 700.0f) && ( (didColl == true) || (targ.didColl == true) ) )
-	{
-		bool desired = false;
 
-		if (desired)
-		{
-			targ.ResetHistory();
-			ResetHistory();
-
-			std::vector<int> collider = CollWith(targ);
-
-			if (collider.size() != 0)
-			{
-				Recoil(collider, targ);
-			}
-			else
-			{
-				collider = targ.CollWith(*this);
-				targ.Recoil(collider, *this);
-			}
-		}
-	}
-*/
 	if (contactEdge->edgeIsA)
 	{
 		vel += norm * impulse / sourceMass;
@@ -344,10 +306,6 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, floa
 	RotBy(rot * rewindTime);
 	targ.TranslateBy(targ.GetVel() * rewindTime);
 	targ.RotBy(targ.rot * rewindTime);
-
-	auto astFix = GetTransformedModel();
-	auto shipFix = targ.GetTransformedModel();
-
 }
 
 
@@ -401,41 +359,40 @@ Vec<float> Entity::GetTransformedVertex(int vert) const
 
 std::vector<Vec<float>> Entity::GetTransformedModel() const
 {
-	std::vector<Vec<float>> xmodel;
-
-	for (int i = 0; i < model.size(); ++i)
+	if (staleModel)
 	{
-		xmodel.emplace_back(GetTransformedVertex(i));
+		for (int i = 0; i < cachedModel.size(); ++i)
+		{
+			cachedModel[i] = GetTransformedVertex(i);
+		}
+		staleModel = false;
 	}
-
- 	return xmodel;
+ 	return cachedModel;
 }
 
 std::vector<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
 {
-	std::vector<std::vector<Vec<float>>> xprims;
-
-	for (auto it = modelprimitives.begin(); it != modelprimitives.end(); it++)
+ 	if (stalePrimitives)
 	{
-		std::vector<Vec<float>> xmodel = *it;
-
-		for (int i = 0; i < xmodel.size(); ++i)
+		for (int i = 0; i < cachedPrimitives.size(); ++i)
 		{
-			Vec<float> v = xmodel[i];
-			float vxtemp = v.X; float vytemp = v.Y;
-			v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
-			v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
-			v.X *= scale;
-			v.Y *= scale;
-			v += pos;
+			for (int j = 0; j < cachedPrimitives[i].size(); ++j)
+			{
+				Vec<float> v = modelprimitives[i][j];
+				float vxtemp = v.X; float vytemp = v.Y;
+				v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
+				v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
+				v.X *= scale;
+				v.Y *= scale;
+				v += pos;
 
-			xmodel[i] = v;
+				cachedPrimitives[i][j] = v;
+			}
 		}
-
-		xprims.emplace_back(xmodel);
+		stalePrimitives = false;
 	}
 
-	return xprims;
+	return cachedPrimitives;
 }
 
 Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
@@ -507,6 +464,7 @@ Entity::CollInfo Entity::CalculateImpact(const Vec<float> point, const Vec<float
 
 void Entity::SetModel(std::vector<Vec<float>> modelnew)
 {
+	alertStaleModel();
 	model = std::move(modelnew);
 }
 
@@ -543,14 +501,10 @@ void Entity::ResetHistory()
 	rot = History.rot;
 }
 
-void Entity::ForgeHistory(const LastColl& forgery)
+void Entity::alertStaleModel() const
 {
-	History.pos = forgery.pos;
-	History.vel = forgery.vel;
-	History.heading = forgery.heading;
-	History.rot = forgery.rot;
-	History.model = forgery.model;
-	History.primitives = forgery.primitives;
+	staleModel = true;
+	stalePrimitives = true;
 }
 
 //Axis-aligned boxes
