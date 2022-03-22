@@ -151,11 +151,27 @@ void Game::UpdateModel(float dt)
 		{
 			alienObj.forcedDist += dt * 10.;
 		}
+		if (wnd.kbd.KeyIsPressed('R'))
+		{
+			alienObj.RotX(-dt * 1.0f);
+		}
+		if (wnd.kbd.KeyIsPressed('T'))
+		{
+			alienObj.RotX(dt * 1.0f);
+		}
+		if (wnd.kbd.KeyIsPressed('F'))
+		{
+			alienObj.RotZ(-dt * 1.0f);
+		}
+		if (wnd.kbd.KeyIsPressed('G'))
+		{
+			alienObj.RotZ(dt * 1.0f);
+		}
 
 
 		ship.SetHistory();
 		ship.Update(dt);
-		alienObj.Update(dt);
+		//alienObj.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
 
 		if (!wnd.kbd.KeyIsEmpty())
@@ -415,7 +431,7 @@ void Game::ComposeFrame()
 			}
 		}
 
-		font.DrawText(std::to_string(belt.size()), {100,155}, Colors::White, gfx);
+		font.DrawText(std::to_string(belt.size()), {100,150}, Colors::White, gfx);
 		if (collship)
 		{
 			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
@@ -424,6 +440,18 @@ void Game::ComposeFrame()
 		font.DrawText("ScreenDist: " + std::to_string(alienObj.screenDist), { 50,60 }, Colors::White, gfx);
 		font.DrawText("Offset: " + std::to_string(alienObj.additionalOffset), { 50,90 }, Colors::White, gfx);
 		font.DrawText("Distance: " + std::to_string(alienObj.forcedDist), { 50,120 }, Colors::White, gfx);
+		Vec3<float> n = alienObj.GetNorm(0);
+		font.DrawText("RedN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
+			{ 50, 180 + 300 }, Colors::Red, gfx);
+		n = alienObj.GetNorm(1);
+		font.DrawText("GreenN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
+			{ 50, 210 + 300 }, Colors::Green, gfx);
+		n = alienObj.GetNorm(2);
+		font.DrawText("BlueN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
+			{ 50, 240 + 300 }, Colors::Blue, gfx);
+		n = alienObj.GetNorm(3);
+		font.DrawText("PurpN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
+			{ 50, 270 + 300 }, Colors::Purple, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;

@@ -229,8 +229,11 @@ public:
 
 	void Update(float dt);
 	void Draw(Graphics& gfx, Rect<float> cambox);
-	void AdjustScreenDist(float dr);
-	void AdjustAdditionalOffset(float dr);
+	void AdjustScreenDist(const float dr);
+	void AdjustAdditionalOffset(const float dr);
+	void RotX(const float dth);
+	void RotZ(const float dth);
+	Vec3<float> GetNorm(const int i);
 
 private:
 	void TransformModel();

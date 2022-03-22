@@ -125,6 +125,7 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 				else k--;
 			}
 
+			//with thought, this could be avoided
 			std::reverse(precursor0.begin(), precursor0.end());
 
 			h = -1;
@@ -167,7 +168,7 @@ void Shapes::Center(std::vector<Vec<float>>& shape)
 	{
 		sourceCoM += v;
 	}
-	sourceCoM *= (1 / ((float)shape.size()));
+	sourceCoM *= (1.0f / ((float)shape.size()));
 
 	for each (auto v in shape)
 	{
@@ -213,6 +214,3 @@ bool Shapes::IsSamePoint(const Vec<float>& p, const Vec<float>& r)
 	float dy = abs(p.Y - r.Y);
 	return (dx < EPS && dy < EPS);
 }
-
-	
-

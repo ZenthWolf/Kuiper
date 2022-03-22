@@ -174,14 +174,39 @@ void  Tetrahedron::DrawTriFromLowest(Vec<float>& v0, Vec<float>& v1, Vec<float>&
 	return;
 }
 
-void Tetrahedron::AdjustScreenDist(float dr)
+void Tetrahedron::AdjustScreenDist(const float dr)
 {
 	screenDist += dr;
 }
 
-void Tetrahedron::AdjustAdditionalOffset(float dr)
+void Tetrahedron::AdjustAdditionalOffset(const float dr)
 {
 	additionalOffset += dr;
+}
+
+void Tetrahedron::RotX(const float dth)
+{
+	rotX += dth;
+
+	if (rotX > 6.2831853)
+		rotX -= 6.2831853;
+	else if (rotX < -6.2831853)
+		rotX += 6.2831853;
+}
+
+void Tetrahedron::RotZ(const float dth)
+{
+	rotZ += dth;
+
+	if (rotZ > 6.2831853)
+		rotZ -= 6.2831853;
+	else if (rotZ < -6.2831853)
+		rotZ += 6.2831853;
+}
+
+Vec3<float> Tetrahedron::GetNorm(const int i)
+{
+	return norm[i];
 }
 
 void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, Graphics & gfx)
