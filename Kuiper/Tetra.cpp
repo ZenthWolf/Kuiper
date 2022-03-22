@@ -221,90 +221,70 @@ Vec3<float> Tetrahedron::GetNorm(const int i)
 
 void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, Graphics & gfx)
 {
+	//Different approach for CCW and CW orientations.
 	if ((v1 - v0).Cross(v2 - v0) > 0)
 	{
-		for (int j = (int)v0.Y; j < (int)v1.Y; j++)
-		{
-			if (j >= 0 && j < int(Graphics::ScreenHeight))
-			{
-				int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-				int max = (int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y));
+		int miny = v0.Y > 0 ? v0.Y : 0;
+		int maxy = (int)v1.Y < Graphics::ScreenHeight ? (int)v1.Y : Graphics::ScreenHeight;
 
-				for (int i = min; i < max; ++i)
-				{
-					if (i >= 0 && i < int(Graphics::ScreenWidth))
-						gfx.PutPixel(i, j, c);
-				}
-			}
+		for (int j = miny; j < maxy; j++)
+		{
+			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
+
+			for (int i = minx; i < maxx; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 
 		int j = v1.Y;
 		if (j >= 0 && j < int(Graphics::ScreenHeight))
 		{
-			int min = (int)v0.X + (v2.X - v0.X) * (v1.Y - v0.Y) / (v2.Y - v0.Y);
-			int max = (int)v1.X;
-			for (int i = min; i < max; ++i)
-			{
-				if (i >= 0 && i < int(Graphics::ScreenWidth))
-					gfx.PutPixel(i, j, c);
-			}
+			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * (v1.Y - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)v1.X);
+			for (int i = minx; i < maxx; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 
-		for (int j = (int)v1.Y + 1; j < (int)v2.Y; j++)
+		miny = v1.Y+1 > 0 ? v1.Y+1 : 0;
+		maxy = (int)v2.Y < Graphics::ScreenHeight ? (int)v2.Y : Graphics::ScreenHeight;
+		for (int j = miny; j < maxy; j++)
 		{
-			if (j >= 0 && j < int(Graphics::ScreenHeight))
-			{
-				int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-				int max = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
+			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)(v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
 
-				for (int i = min; i < max; ++i)
-				{
-					if (i >= 0 && i < int(Graphics::ScreenWidth))
-						gfx.PutPixel(i, j, c);
-				}
-			}
+			for (int i = minx; i < maxx; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 	}
 	else
 	{
-		for (int j = (int)v0.Y; j < (int)v1.Y; j++)
+		int miny = v0.Y > 0 ? v0.Y : 0;
+		int maxy = (int)v1.Y < Graphics::ScreenHeight ? (int)v1.Y : Graphics::ScreenHeight;
+		for (int j = miny; j < maxy; j++)
 		{
-			if (j >= 0 && j < int(Graphics::ScreenHeight))
-			{
-				int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-				int min = (int)v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y);
-				for (int i = min; i < max; ++i)
-				{
-					if (i >= 0 && i < int(Graphics::ScreenWidth))
-						gfx.PutPixel(i, j, c);
-				}
-			}
+			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int minx = std::max(0,(int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
+			for (int i = minx; i < maxx; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 
 		int j = v1.Y;
 		if (j >= 0 && j < int(Graphics::ScreenHeight))
 		{
-			int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-			int min = (int)v1.X;
-			for (int i = min; i < max; ++i)
-			{
-				if (i >= 0 && i < int(Graphics::ScreenWidth))
-					gfx.PutPixel(i, j, c);
-			}
+			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int minx = std::max(0, (int)v1.X);
+			for (int i = minx; i < maxx; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 
-		for (int j = (int)v1.Y+1; j < (int)v2.Y; j++)
+		miny = (int)v1.Y+1  > 0 ? (int)v1.Y + 1 : 0;
+		maxy = v2.Y < Graphics::ScreenHeight ? (int)v2.Y : Graphics::ScreenHeight;
+		for (int j = miny; j < maxy; j++)
 		{
-			if (j >= 0 && j < int(Graphics::ScreenHeight))
-			{
-				int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-				int min = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
-				for (int i = min; i < max; ++i)
-				{
-					if (i >= 0 && i < int(Graphics::ScreenWidth))
-						gfx.PutPixel(i, j, c);
-				}
-			}
+			int max = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int min = std::max(0, (int)(v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
+			for (int i = min; i < max; ++i)
+				gfx.PutPixel(i, j, c);
 		}
 	}
 }
