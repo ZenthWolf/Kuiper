@@ -229,8 +229,8 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 
 		for (int j = miny; j < maxy; j++)
 		{
-			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
+			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)(v0.X + 1 + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
 
 			for (int i = minx; i < maxx; ++i)
 				gfx.PutPixel(i, j, c);
@@ -239,18 +239,18 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 		int j = v1.Y;
 		if (j >= 0 && j < int(Graphics::ScreenHeight))
 		{
-			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * (v1.Y - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)v1.X);
+			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * (v1.Y - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)v1.X + 1);
 			for (int i = minx; i < maxx; ++i)
 				gfx.PutPixel(i, j, c);
 		}
 
-		miny = v1.Y+1 > 0 ? v1.Y+1 : 0;
+		miny = v1.Y > 0 ? v1.Y : 0;
 		maxy = (int)v2.Y < Graphics::ScreenHeight ? (int)v2.Y : Graphics::ScreenHeight;
 		for (int j = miny; j < maxy; j++)
 		{
-			int minx = std::max(0,(int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)(v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
+			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth,(int)(v1.X + 1 + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
 
 			for (int i = minx; i < maxx; ++i)
 				gfx.PutPixel(i, j, c);
@@ -262,8 +262,8 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 		int maxy = (int)v1.Y < Graphics::ScreenHeight ? (int)v1.Y : Graphics::ScreenHeight;
 		for (int j = miny; j < maxy; j++)
 		{
-			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
-			int minx = std::max(0,(int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
+			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int minx = std::max(0,(int)(v0.X + 1 + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y)));
 			for (int i = minx; i < maxx; ++i)
 				gfx.PutPixel(i, j, c);
 		}
@@ -271,18 +271,18 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 		int j = v1.Y;
 		if (j >= 0 && j < int(Graphics::ScreenHeight))
 		{
-			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
-			int minx = std::max(0, (int)v1.X);
+			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int minx = std::max(0, (int)v1.X + 1);
 			for (int i = minx; i < maxx; ++i)
 				gfx.PutPixel(i, j, c);
 		}
 
-		miny = (int)v1.Y+1  > 0 ? (int)v1.Y + 1 : 0;
+		miny = (int)v1.Y  > 0 ? (int)v1.Y : 0;
 		maxy = v2.Y < Graphics::ScreenHeight ? (int)v2.Y : Graphics::ScreenHeight;
 		for (int j = miny; j < maxy; j++)
 		{
-			int max = std::min(Graphics::ScreenWidth, (int)(v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
-			int min = std::max(0, (int)(v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
+			int max = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y)));
+			int min = std::max(0, (int)(v1.X + 1 + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y)));
 			for (int i = min; i < max; ++i)
 				gfx.PutPixel(i, j, c);
 		}
