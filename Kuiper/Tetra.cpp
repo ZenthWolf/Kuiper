@@ -1,4 +1,5 @@
 #define NOMINMAX // Needed to make min work
+#include <algorithm>
 #include "Tetra.h"
 #include "Engine/Vec.h"
 
@@ -36,6 +37,13 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 	}
 	//                           01,    02,   03,   12,   13,  23
 	float edgebrightness[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	
+	//This is dumb as rocks for a real implementation
+	float* zBuff = new float[gfx.ScreenHeight * gfx.ScreenWidth];
+	for (int i = 0; i < gfx.ScreenHeight * gfx.ScreenWidth; ++i)
+	{
+		zBuff[i] = 0;
+	}
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -67,7 +75,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 					edgebrightness[3] = brightness;
 					gfx.DrawLine(point[1], point[2], line);
 				}
-				
+
 				break;
 			}
 			case 1:
@@ -91,7 +99,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 					edgebrightness[4] = brightness;
 					gfx.DrawLine(point[3], point[1], line);
 				}
-				
+
 				break;
 			}
 			case 2:
@@ -115,7 +123,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 					edgebrightness[5] = brightness;
 					gfx.DrawLine(point[2], point[3], line);
 				}
-				
+
 				break;
 			}
 			case 3:
@@ -137,6 +145,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 					edgebrightness[3] = brightness;
 					gfx.DrawLine(point[1], point[2], line);
 				}
+
 				break;
 			}
 			default:
@@ -145,6 +154,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 			
 		}
 	}
+	delete[] zBuff;
 }
 
 void  Tetrahedron::DrawTriFromLowest(Vec<float>& v0, Vec<float>& v1, Vec<float>& v2, Color c, Graphics& gfx)
@@ -215,23 +225,43 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 	{
 		for (int j = (int)v0.Y; j < (int)v1.Y; j++)
 		{
-			int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-			int max = (int)v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y);
+			if (j >= 0 && j < int(Graphics::ScreenHeight))
+			{
+				int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
+				int max = (int)(v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y));
+
+				for (int i = min; i < max; ++i)
+				{
+					if (i >= 0 && i < int(Graphics::ScreenWidth))
+						gfx.PutPixel(i, j, c);
+				}
+			}
+		}
+
+		int j = v1.Y;
+		if (j >= 0 && j < int(Graphics::ScreenHeight))
+		{
+			int min = (int)v0.X + (v2.X - v0.X) * (v1.Y - v0.Y) / (v2.Y - v0.Y);
+			int max = (int)v1.X;
 			for (int i = min; i < max; ++i)
 			{
-				if(i >= 0 && i < int(Graphics::ScreenWidth) && j >= 0 && j < int(Graphics::ScreenHeight))
+				if (i >= 0 && i < int(Graphics::ScreenWidth))
 					gfx.PutPixel(i, j, c);
 			}
-				
 		}
-		for (int j = (int)v1.Y; j < (int)v2.Y; j++)
+
+		for (int j = (int)v1.Y + 1; j < (int)v2.Y; j++)
 		{
-			int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-			int max = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
-			for (int i = min; i < max; ++i)
+			if (j >= 0 && j < int(Graphics::ScreenHeight))
 			{
-				if (i >= 0 && i < int(Graphics::ScreenWidth) && j >= 0 && j < int(Graphics::ScreenHeight))
-					gfx.PutPixel(i, j, c);
+				int min = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
+				int max = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
+
+				for (int i = min; i < max; ++i)
+				{
+					if (i >= 0 && i < int(Graphics::ScreenWidth))
+						gfx.PutPixel(i, j, c);
+				}
 			}
 		}
 	}
@@ -239,22 +269,41 @@ void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, 
 	{
 		for (int j = (int)v0.Y; j < (int)v1.Y; j++)
 		{
+			if (j >= 0 && j < int(Graphics::ScreenHeight))
+			{
+				int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
+				int min = (int)v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y);
+				for (int i = min; i < max; ++i)
+				{
+					if (i >= 0 && i < int(Graphics::ScreenWidth))
+						gfx.PutPixel(i, j, c);
+				}
+			}
+		}
+
+		int j = v1.Y;
+		if (j >= 0 && j < int(Graphics::ScreenHeight))
+		{
 			int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-			int min = (int)v0.X + (v1.X - v0.X) * ((float)j - v0.Y) / (v1.Y - v0.Y);
+			int min = (int)v1.X;
 			for (int i = min; i < max; ++i)
 			{
-				if (i >= 0 && i < int(Graphics::ScreenWidth) && j >= 0 && j < int(Graphics::ScreenHeight))
+				if (i >= 0 && i < int(Graphics::ScreenWidth))
 					gfx.PutPixel(i, j, c);
 			}
 		}
-		for (int j = (int)v1.Y; j < (int)v2.Y; j++)
+
+		for (int j = (int)v1.Y+1; j < (int)v2.Y; j++)
 		{
-			int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
-			int min = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
-			for (int i = min; i < max; ++i)
+			if (j >= 0 && j < int(Graphics::ScreenHeight))
 			{
-				if (i >= 0 && i < int(Graphics::ScreenWidth) && j >= 0 && j < int(Graphics::ScreenHeight))
-					gfx.PutPixel(i, j, c);
+				int max = (int)v0.X + (v2.X - v0.X) * ((float)j - v0.Y) / (v2.Y - v0.Y);
+				int min = (int)v1.X + (v2.X - v1.X) * ((float)j - v1.Y) / (v2.Y - v1.Y);
+				for (int i = min; i < max; ++i)
+				{
+					if (i >= 0 && i < int(Graphics::ScreenWidth))
+						gfx.PutPixel(i, j, c);
+				}
 			}
 		}
 	}
