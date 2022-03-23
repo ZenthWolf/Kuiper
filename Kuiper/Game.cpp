@@ -434,24 +434,13 @@ void Game::ComposeFrame()
 		font.DrawText(std::to_string(belt.size()), {100,150}, Colors::White, gfx);
 		if (collship)
 		{
-			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
+			font.DrawText("Colliding", { 50,150 }, Colors::White, gfx);
 		}
 		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
 		font.DrawText("ScreenDist: " + std::to_string(alienObj.screenDist), { 50,60 }, Colors::White, gfx);
 		font.DrawText("Offset: " + std::to_string(alienObj.additionalOffset), { 50,90 }, Colors::White, gfx);
 		font.DrawText("Distance: " + std::to_string(alienObj.forcedDist), { 50,120 }, Colors::White, gfx);
-		Vec3<float> n = alienObj.GetNorm(0);
-		font.DrawText("RedN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
-			{ 50, 180 + 300 }, Colors::Red, gfx);
-		n = alienObj.GetNorm(1);
-		font.DrawText("GreenN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
-			{ 50, 210 + 300 }, Colors::Green, gfx);
-		n = alienObj.GetNorm(2);
-		font.DrawText("BlueN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
-			{ 50, 240 + 300 }, Colors::Blue, gfx);
-		n = alienObj.GetNorm(3);
-		font.DrawText("PurpN: " + std::to_string(n.X) + ", " + std::to_string(n.Y) + ", " + std::to_string(n.Z),
-			{ 50, 270 + 300 }, Colors::Purple, gfx);
+		
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;

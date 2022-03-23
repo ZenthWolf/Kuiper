@@ -33,7 +33,7 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 	for (int i = 0; i < 4; ++i)
 	{
 		float invDepth = 1./(vert[i].Z + additionalOffset);
-		point[i] = Vec<float>(vert[i].X * screenDist * invDepth + (float)(cambox.width()) / 2, vert[i].Y * screenDist * invDepth + (float)(cambox.height()) / 2);
+		point[i] = Vec3<float>(vert[i].X * screenDist * invDepth + (float)(cambox.width()) / 2, vert[i].Y * screenDist * invDepth + (float)(cambox.height()) / 2, invDepth);
 	}
 	//                           01,    02,   03,   12,   13,  23
 	float edgebrightness[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -52,100 +52,115 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 			float brightness = std::max(norm[i].Dot(Vec3<float>(1, -1, -2).Norm()), 0.15f);
 			Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
 			Color line = Color(255 * brightness, 255 * brightness, 255 * brightness);
+			auto CheckEdge = [&](Vec3<float> v)
+			{
+				if ((int)v.Y > 0 && (int)v.Y < Graphics::ScreenHeight && (int)v.X > 0 && (int)v.X < Graphics::ScreenWidth)
+					return (v.Z + 0.01f) > zBuff[(int)v.Y * Graphics::ScreenWidth + (int)v.X];
+				else
+					return true; // sure, w/e, I don't care. Look at me commenting how little I care about this lazy handling
+			};
 			switch (i)
 			{
 			case 0:
 			{
 				Color c = { 255,0,0 };
 				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
-				DrawTriFromLowest(point[0], point[1], point[2], shade, gfx);
+				DrawTriFromLowest(point[0], point[1], point[2], 0, zBuff, shade, gfx);
 
-				if (edgebrightness[0] < brightness)
+				if (CheckEdge(point[0]) && CheckEdge(point[1]) && CheckEdge(point[2]))
 				{
-					edgebrightness[0] = brightness;
-					gfx.DrawLine(point[0], point[1], line);
+					if (edgebrightness[0] < brightness)
+					{
+						edgebrightness[0] = brightness;
+						gfx.DrawLine(point[0].Project(), point[1].Project(), line);
+					}
+					if (edgebrightness[1] < brightness)
+					{
+						edgebrightness[1] = brightness;
+						gfx.DrawLine(point[0].Project(), point[2].Project(), line);
+					}
+					if (edgebrightness[3] < brightness)
+					{
+						edgebrightness[3] = brightness;
+						gfx.DrawLine(point[1].Project(), point[2].Project(), line);
+					}
 				}
-				if (edgebrightness[1] < brightness)
-				{
-					edgebrightness[1] = brightness;
-					gfx.DrawLine(point[0], point[2], line);
-				}
-				if (edgebrightness[3] < brightness)
-				{
-					edgebrightness[3] = brightness;
-					gfx.DrawLine(point[1], point[2], line);
-				}
-
 				break;
 			}
 			case 1:
 			{
 				Color c = { 0,255,0 };
 				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
-				DrawTriFromLowest(point[0], point[1], point[3], shade, gfx);
+				DrawTriFromLowest(point[0], point[1], point[3], 1, zBuff, shade, gfx);
 
-				if (edgebrightness[2] < brightness)
+				if (CheckEdge(point[0]) && CheckEdge(point[1]) && CheckEdge(point[3]))
 				{
-					edgebrightness[2] = brightness;
-					gfx.DrawLine(point[0], point[3], line);
+					if (edgebrightness[2] < brightness)
+					{
+						edgebrightness[2] = brightness;
+						gfx.DrawLine(point[0].Project(), point[3].Project(), line);
+					}
+					if (edgebrightness[0] < brightness)
+					{
+						edgebrightness[0] = brightness;
+						gfx.DrawLine(point[0].Project(), point[1].Project(), line);
+					}
+					if (edgebrightness[4] < brightness)
+					{
+						edgebrightness[4] = brightness;
+						gfx.DrawLine(point[3].Project(), point[1].Project(), line);
+					}
 				}
-				if (edgebrightness[0] < brightness)
-				{
-					edgebrightness[0] = brightness;
-					gfx.DrawLine(point[0], point[1], line);
-				}
-				if (edgebrightness[4] < brightness)
-				{
-					edgebrightness[4] = brightness;
-					gfx.DrawLine(point[3], point[1], line);
-				}
-
 				break;
 			}
 			case 2:
 			{
 				Color c = { 0,0,255 };
 				Color shade = Color(c.GetR() * brightness, c.GetG() * brightness, c.GetB() * brightness);
-				DrawTriFromLowest(point[0], point[3], point[2], shade, gfx);
+				DrawTriFromLowest(point[0], point[3], point[2], 2, zBuff, shade, gfx);
 
-				if (edgebrightness[1] < brightness)
+				if (CheckEdge(point[0]) && CheckEdge(point[3]) && CheckEdge(point[2]))
 				{
-					edgebrightness[1] = brightness;
-					gfx.DrawLine(point[0], point[2], line);
+					if (edgebrightness[1] < brightness)
+					{
+						edgebrightness[1] = brightness;
+						gfx.DrawLine(point[0].Project(), point[2].Project(), line);
+					}
+					if (edgebrightness[2] < brightness)
+					{
+						edgebrightness[2] = brightness;
+						gfx.DrawLine(point[0].Project(), point[3].Project(), line);
+					}
+					if (edgebrightness[5] < brightness)
+					{
+						edgebrightness[5] = brightness;
+						gfx.DrawLine(point[2].Project(), point[3].Project(), line);
+					}
 				}
-				if (edgebrightness[2] < brightness)
-				{
-					edgebrightness[2] = brightness;
-					gfx.DrawLine(point[0], point[3], line);
-				}
-				if (edgebrightness[5] < brightness)
-				{
-					edgebrightness[5] = brightness;
-					gfx.DrawLine(point[2], point[3], line);
-				}
-
 				break;
 			}
 			case 3:
 			{
-				DrawTriFromLowest(point[1], point[2], point[3], shade, gfx);
+				DrawTriFromLowest(point[1], point[2], point[3], 3, zBuff, shade, gfx);
 				
-				if (edgebrightness[4] < brightness)
+				if (CheckEdge(point[3]) && CheckEdge(point[1]) && CheckEdge(point[2]))
 				{
-					edgebrightness[4] = brightness;
-					gfx.DrawLine(point[3], point[1], line);
+					if (edgebrightness[4] < brightness)
+					{
+						edgebrightness[4] = brightness;
+						gfx.DrawLine(point[3].Project(), point[1].Project(), line);
+					}
+					if (edgebrightness[5] < brightness)
+					{
+						edgebrightness[5] = brightness;
+						gfx.DrawLine(point[2].Project(), point[3].Project(), line);
+					}
+					if (edgebrightness[3] < brightness)
+					{
+						edgebrightness[3] = brightness;
+						gfx.DrawLine(point[1].Project(), point[2].Project(), line);
+					}
 				}
-				if (edgebrightness[5] < brightness)
-				{
-					edgebrightness[5] = brightness;
-					gfx.DrawLine(point[2], point[3], line);
-				}
-				if (edgebrightness[3] < brightness)
-				{
-					edgebrightness[3] = brightness;
-					gfx.DrawLine(point[1], point[2], line);
-				}
-
 				break;
 			}
 			default:
@@ -157,30 +172,30 @@ void Tetrahedron::Draw(Graphics& gfx, Rect<float> cambox)
 	delete[] zBuff;
 }
 
-void  Tetrahedron::DrawTriFromLowest(Vec<float>& v0, Vec<float>& v1, Vec<float>& v2, Color c, Graphics& gfx)
+void  Tetrahedron::DrawTriFromLowest(Vec3<float>& v0, Vec3<float>& v1, Vec3<float>& v2, int n, float*& zbuff, Color c, Graphics& gfx)
 {
 	if (v0.Y < v1.Y)
 	{
 		if (v0.Y < v2.Y)
 		{
 			if(v1.Y < v2.Y)
-				DrawTri(v0, v1, v2, c, gfx);
+				DrawTri(v0, v1, v2, n, zbuff, c, gfx);
 			else
-				DrawTri(v0, v2, v1, c, gfx);
+				DrawTri(v0, v2, v1, n, zbuff, c, gfx);
 			return;
 		}
-		DrawTri(v2, v0, v1, c, gfx);
+		DrawTri(v2, v0, v1, n, zbuff, c, gfx);
 		return;
 	}
 	else if (v1.Y < v2.Y)
 	{
 		if(v0.Y < v2.Y)
-			DrawTri(v1, v0, v2, c, gfx);
+			DrawTri(v1, v0, v2, n, zbuff, c, gfx);
 		else
-			DrawTri(v1, v2, v0, c, gfx);
+			DrawTri(v1, v2, v0, n, zbuff, c, gfx);
 		return;
 	}
-	DrawTri(v2, v1, v0, c, gfx);
+	DrawTri(v2, v1, v0, n, zbuff, c, gfx);
 	return;
 }
 
@@ -219,72 +234,116 @@ Vec3<float> Tetrahedron::GetNorm(const int i)
 	return norm[i];
 }
 
-void Tetrahedron::DrawTri(Vec<float>&v0, Vec<float>&v1, Vec<float>&v2, Color c, Graphics & gfx)
+void Tetrahedron::DrawTri(Vec3<float>&v0, Vec3<float>&v1, Vec3<float>&v2, int n, float*& zBuff, Color c, Graphics & gfx)
 {
 	//Different approach for CCW and CW orientations.
-	if ((v1 - v0).Cross(v2 - v0) > 0)
+	float Area = 1.0f/(v1 - v0).Cross(v2 - v0).Z;
+	if (Area > 0)
 	{
-		float miny = v0.Y > 0 ? v0.Y : 0;
+		float miny = v0.Y + 1 > 0 ? v0.Y + 1 : 0;
 		float maxy = v1.Y < Graphics::ScreenHeight ? v1.Y : Graphics::ScreenHeight;
 
-		for (float jf = miny; jf < maxy; jf+=1.0f)
+		for (float j = miny; j < maxy; j+=1.0f)
 		{
-			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)(v0.X + 1 + (v1.X - v0.X) * (jf - v0.Y) / (v1.Y - v0.Y)));
+			float minx = std::max(0.0f,(v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float maxx = std::min((float)Graphics::ScreenWidth, (v0.X + 1 + (v1.X - v0.X) * (j - v0.Y) / (v1.Y - v0.Y)));
 
-			for (int i = minx; i < maxx; ++i)
-				gfx.PutPixel(i, (int)jf, c);
+			for (float i = minx; i < maxx; i+=1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+ 				
+				
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
 		}
 
-		float jf = v1.Y;
-		if (jf >= 0 && jf < float(Graphics::ScreenHeight))
-		{
-			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)v1.X + 1);
-			for (int i = minx; i < maxx; ++i)
-				gfx.PutPixel(i, (int)jf, c);
-		}
-
-		miny = v1.Y > 0 ? v1.Y : 0;
+		miny = v1.Y + 1 > 0 ? v1.Y + 1 : 0;
 		maxy = v2.Y < (float)Graphics::ScreenHeight ? v2.Y : (float)Graphics::ScreenHeight;
-		for (float jf = miny; jf < maxy; jf+=1.0f)
+		for (float j = miny; j < maxy; j+=1.0f)
 		{
-			int minx = std::max(0,(int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int maxx = std::min(Graphics::ScreenWidth,(int)(v1.X + 1 + (v2.X - v1.X) * (jf - v1.Y) / (v2.Y - v1.Y)));
+			float minx = std::max(0.0f, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float maxx = std::min((float)Graphics::ScreenWidth, (v1.X + 1 + (v2.X - v1.X) * (j - v1.Y) / (v2.Y - v1.Y)));
 
-			for (int i = minx; i < maxx; ++i)
-				gfx.PutPixel(i, (int)jf, c);
+			for (float i = minx; i < maxx; i += 1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
 		}
 	}
 	else
 	{
-		float miny = v0.Y > 0 ? v0.Y : 0;
+		Area *= -1;
+		float miny = v0.Y + 1 > 0 ? v0.Y + 1 : 0;
 		float maxy = v1.Y < (float)Graphics::ScreenHeight ? v1.Y : (float)Graphics::ScreenHeight;
-		for (float jf = miny; jf < maxy; jf+=1.0f)
+		for (float j = miny; j < maxy; j+=1.0f)
 		{
-			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int minx = std::max(0,(int)(v0.X + 1 + (v1.X - v0.X) * (jf - v0.Y) / (v1.Y - v0.Y)));
-			for (int i = minx; i < maxx; ++i)
-				gfx.PutPixel(i, (int)jf, c);
+			float maxx = std::min((float)Graphics::ScreenWidth, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float minx = std::max(0.0f, (v0.X + 1 + (v1.X - v0.X) * (j - v0.Y) / (v1.Y - v0.Y)));
+			
+			for (float i = minx; i < maxx; i += 1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
 		}
 
-		float jf = v1.Y;
-		if (jf >= 0 && jf < float(Graphics::ScreenHeight))
-		{
-			int maxx = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int minx = std::max(0, (int)v1.X + 1);
-			for (int i = minx; i < maxx; ++i)
-				gfx.PutPixel(i, (int)jf, c);
-		}
-
-		miny = v1.Y  > 0 ? v1.Y : 0;
+		miny = v1.Y + 1 > 0 ? v1.Y + 1 : 0;
 		maxy = v2.Y < (float)Graphics::ScreenHeight ? v2.Y : (float)Graphics::ScreenHeight;
-		for (float jf = miny; jf < maxy; jf+=1.0f)
+		for (float j = miny; j < maxy; j+=1.0f)
 		{
-			int max = std::min(Graphics::ScreenWidth, (int)(v0.X + 1 + (v2.X - v0.X) * (jf - v0.Y) / (v2.Y - v0.Y)));
-			int min = std::max(0, (int)(v1.X + 1 + (v2.X - v1.X) * (jf - v1.Y) / (v2.Y - v1.Y)));
-			for (int i = min; i < max; ++i)
-				gfx.PutPixel(i, (int)jf, c);
+			float maxx = std::min((float)Graphics::ScreenWidth, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float minx = std::max(0.0f, (v1.X + 1 + (v2.X - v1.X) * (j - v1.Y) / (v2.Y - v1.Y)));
+			
+			for (float i = minx; i < maxx; i += 1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
 		}
 	}
 }

@@ -172,6 +172,11 @@ public:
 			X * M.m02 + Y * M.m12 + Z * M.m22);
 	}
 
+	Vec<T> Project()
+	{
+		return Vec<T>(X, Y);
+	}
+
 	template<typename U>
 	explicit Vec3(const Vec3<U> src)
 	{
@@ -237,15 +242,15 @@ public:
 
 private:
 	void TransformModel();
-	void DrawTriFromLowest(Vec<float>& v0, Vec<float>& v1, Vec<float>& v2, Color c, Graphics& gfx);
-	void DrawTri(Vec<float>& v0, Vec<float>& v1, Vec<float>& v2, Color c, Graphics& gfx);
+	void DrawTriFromLowest(Vec3<float>& v0, Vec3<float>& v1, Vec3<float>& v2, int n, float*& zBuff, Color c, Graphics& gfx);
+	void DrawTri(Vec3<float>& v0, Vec3<float>& v1, Vec3<float>& v2, int n, float*& zBuff, Color c, Graphics& gfx);
 
 	Vec3<float> model[4];
 	Vec3<float> modnorm[4];
 	Vec3<float> vert[4];
 	Vec3<float> norm[4];
 
-	Vec<float> point[4];
+	Vec3<float> point[4];
 
 	Vec3<float> pos;
 	float rotX = 0.0f;
