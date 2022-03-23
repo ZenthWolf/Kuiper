@@ -268,6 +268,30 @@ void Tetrahedron::DrawTri(Vec3<float>&v0, Vec3<float>&v1, Vec3<float>&v2, int n,
 			}
 		}
 
+		float j = v1.Y;
+		if (j >= 0 && j < float(Graphics::ScreenHeight) && (int)v1.Y != (int)v0.Y)
+		{
+			float minx = std::max(0.0f, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float maxx = std::min((float)Graphics::ScreenWidth,v1.X + 1);
+			
+			for (float i = minx; i < maxx; i += 1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
+		}
+
 		miny = v1.Y + 1 > 0 ? v1.Y + 1 : 0;
 		maxy = v2.Y < (float)Graphics::ScreenHeight ? v2.Y : (float)Graphics::ScreenHeight;
 		for (float j = miny; j < maxy; j+=1.0f)
@@ -303,6 +327,30 @@ void Tetrahedron::DrawTri(Vec3<float>&v0, Vec3<float>&v1, Vec3<float>&v2, int n,
 			float maxx = std::min((float)Graphics::ScreenWidth, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
 			float minx = std::max(0.0f, (v0.X + 1 + (v1.X - v0.X) * (j - v0.Y) / (v1.Y - v0.Y)));
 			
+			for (float i = minx; i < maxx; i += 1.0f)
+			{
+				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
+								v1.Z * (1 - abs(Area * (v1.Project() - Vec<float>(i, j)).Cross((v2.Project() - v0.Project())))) +
+								v2.Z * (1 - abs(Area * (v2.Project() - Vec<float>(i, j)).Cross((v0.Project() - v1.Project()))));
+				if (zBuff[(int)j * Graphics::ScreenWidth + (int)i] < invDepth)
+				{
+					zBuff[(int)j * Graphics::ScreenWidth + (int)i] = invDepth;
+					gfx.PutPixel((int)i, (int)j, c);
+				}
+				else
+				{
+					int err = (int)j * Graphics::ScreenWidth + (int)i;
+					bool stop = true;
+				}
+			}
+		}
+
+		float j = v1.Y;
+		if (j >= 0 && j < float(Graphics::ScreenHeight) && (int)v1.Y != (int)v0.Y)
+		{
+			float maxx = std::min((float) Graphics::ScreenWidth, (v0.X + 1 + (v2.X - v0.X) * (j - v0.Y) / (v2.Y - v0.Y)));
+			float minx = std::max(0.0f, v1.X + 1);
+
 			for (float i = minx; i < maxx; i += 1.0f)
 			{
 				float invDepth = v0.Z * (1 - abs(Area * (v0.Project() - Vec<float>(i, j)).Cross((v1.Project() - v2.Project())))) +
