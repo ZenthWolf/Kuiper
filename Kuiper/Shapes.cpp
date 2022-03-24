@@ -302,21 +302,7 @@ Approach Shapes::FindApproach(const std::vector<Vec<float>>& model0,
 			save1[i] = vertices[i].index1;
 		}
 
-		// Determine the closest point on the simplex and
-		// remove unused vertices.
-		switch (simplex.count)
-		{
-		case 1:
-			break;
-
-		case 2:
-			simplex.Solve2();
-			break;
-
-		case 3:
-			simplex.Solve3();
-			break;
-		}
+		simplex.FindNearestToOrigin();
 
 		// If interior to polygon, end
 		if (simplex.count == 3)

@@ -159,11 +159,13 @@ struct SimplexVertex
 struct Simplex
 {
 	Vec<float> GetSearchDirection() const;
-	void Solve2();
-	void Solve3();
+	void FindNearestToOrigin();
 	Approach PrepareResult(int iter, int convex0, int convex1);
 
 	SimplexVertex vertex0, vertex1, vertex2;
 	float divisor; //Normalizes barycentric coords
 	int count;
+private:
+	void Solve2();
+	void Solve3();
 };

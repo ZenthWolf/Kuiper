@@ -35,150 +35,22 @@ Vec<float> Simplex::GetSearchDirection() const
 	}
 }
 
-//Find closest point on this 1-Plex to origin (indicative of nearest point between polys)
-void Simplex::Solve2()
+
+void Simplex::FindNearestToOrigin()
 {
-	Vec<float> A = vertex0.point;
-	Vec<float> B = vertex1.point;
-
-	//unnormalized barycentric coordinates
-	float u = -B.Dot(A - B);
-	float v = -A.Dot(B - A);
-
-	// Region A
-	if (v <= 0.0f)
+	switch (count)
 	{
-		// New Simplex is vertex A.
-		vertex0.u = 1.0f;
-		divisor = 1.0f;
-		count = 1;
-		return;
+	case 1:
+		break;
+
+	case 2:
+		Solve2();
+		break;
+
+	case 3:
+		Solve3();
+		break;
 	}
-
-	// Region B
-	if (u <= 0.0f)
-	{
-		// New Simplex is vertex B, which needs to be moved.
-		vertex0 = vertex1;
-		vertex0.u = 1.0f;
-		divisor = 1.0f;
-		count = 1;
-		return;
-	}
-
-	// Region AB. 
-	vertex0.u = u;
-	vertex1.u = v;
-	Vec<float> e = B - A;
-	//if Degenerate, previous region was called.
-	divisor = e.GetLengthSq();
-	count = 2;
-}
-
-//Find closest point on this 2-Plex to origin (indicative of nearest point between polys)
-void Simplex::Solve3()
-{
-	Vec<float> A = vertex0.point;
-	Vec<float> B = vertex1.point;
-	Vec<float> C = vertex2.point;
-
-	// Unnormalized edge barycentric coordinate
-	float uAB = -B.Dot(A - B);
-	float vAB = -A.Dot(B - A);
-
-	float uBC = -C.Dot(B - C);
-	float vBC = -B.Dot(C - B);
-
-	float uCA = -A.Dot(C - A);
-	float vCA = -C.Dot(A - C);
-
-	//Check to for reduction to 0-Plex
-	// Region A
-	if (vAB <= 0.0f && uCA <= 0.0f)
-	{
-		vertex0.u = 1.0f;
-		divisor = 1.0f;
-		count = 1;
-		return;
-	}
-
-	// Region B
-	if (uAB <= 0.0f && vBC <= 0.0f)
-	{
-		vertex0 = vertex1;
-		vertex0.u = 1.0f;
-		divisor = 1.0f;
-		count = 1;
-		return;
-	}
-
-	// Region C
-	if (uBC <= 0.0f && vCA <= 0.0f)
-	{
-		vertex0 = vertex2;
-		vertex0.u = 1.0f;
-		divisor = 1.0f;
-		count = 1;
-		return;
-	}
-
-	// Signed triangle area.
-	float area = (B - A).Cross(C - A);
-
-	// Unnormalized triangular barycentric coordinates
-	// With above, tests that pnt is exterior a particular side
-	float uQBC = B.Cross(C);
-	float vAQC = C.Cross(A);
-	float wABQ = A.Cross(B);
-
-	// Region AB
-	if (uAB > 0.0f && vAB > 0.0f && wABQ * area <= 0.0f)
-	{
-		vertex0.u = uAB;
-		vertex1.u = vAB;
-		Vec<float> e = B - A;
-		divisor = e.Dot(e);
-		count = 2;
-		return;
-	}
-
-	// Region BC
-	if (uBC > 0.0f && vBC > 0.0f && uQBC * area <= 0.0f)
-	{
-		vertex0 = vertex1;
-		vertex1 = vertex2;
-
-		vertex0.u = uBC;
-		vertex1.u = vBC;
-		Vec<float> e = C - B;
-		divisor = e.GetLengthSq();
-		count = 2;
-		return;
-	}
-
-	// Region CA
-	if (uCA > 0.0f && vCA > 0.0f && vAQC * area <= 0.0f)
-	{
-		//This is weird, investigate what swapping placement changes
-		vertex1 = vertex0;
-		vertex0 = vertex2;
-
-		vertex0.u = uCA;
-		vertex1.u = vCA;
-		Vec<float> e = A - C;
-		divisor = e.GetLengthSq();
-		count = 2;
-		return;
-	}
-
-	// Region ABC
-	assert(abs(area) > 0.0f && uQBC * area > 0.0f && vAQC * area > 0.0f && wABQ * area > 0.0f);
-	vertex0.u = uQBC;
-	vertex1.u = vAQC;
-	vertex2.u = wABQ;
-	//Divisior non-zero, else previous region catches
-	divisor = area;
-	count = 3;
 }
 
 Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
@@ -280,4 +152,144 @@ Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
 
 	result.iterations = iter;
 	return std::move(result);
+}
+
+//Find closest point on this 1-Plex to origin (indicative of nearest point between polys)
+void Simplex::Solve2()
+{
+	Vec<float> A = vertex0.point;
+	Vec<float> B = vertex1.point;
+
+	// Region B
+	float u = -B.Dot(A - B);
+	if (u <= 0.0f)
+	{
+		// New Simplex is vertex B, which needs to be moved.
+		vertex0 = vertex1;
+		vertex0.u = 1.0f;
+		divisor = 1.0f;
+		count = 1;
+		return;
+	}
+
+	// Region A
+	float v = -A.Dot(B - A);
+	if (v <= 0.0f)
+	{
+		// New Simplex is vertex A.
+		vertex0.u = 1.0f;
+		divisor = 1.0f;
+		count = 1;
+		return;
+	}
+
+	// Region AB. 
+	vertex0.u = u;
+	vertex1.u = v;
+	Vec<float> e = B - A;
+	//if Degenerate, previous region was called.
+	divisor = e.GetLengthSq();
+	count = 2;
+}
+
+
+//Find closest point on this 2-Plex to origin (indicative of nearest point between polys)
+void Simplex::Solve3()
+{
+	Vec<float> A = vertex0.point;
+	Vec<float> B = vertex1.point;
+	Vec<float> C = vertex2.point;
+
+	//Check to for reduction to 0-Simplex
+	//or to 1-Simplex
+
+	// Region C
+	float uBC = -C.Dot(B - C);
+	float vCA = -C.Dot(A - C);
+	if (uBC <= 0.0f && vCA <= 0.0f)
+	{
+		vertex0 = vertex2;
+		vertex0.u = 1.0f;
+		divisor = 1.0f;
+		count = 1;
+		return;
+	}
+
+	// Signed triangle area.
+	float area = (B - A).Cross(C - A);
+
+	// Region BC
+	float vBC = -B.Dot(C - B);
+	float uQBC = B.Cross(C);
+	if (uBC > 0.0f && vBC > 0.0f && uQBC * area <= 0.0f)
+	{
+		vertex0 = vertex1;
+		vertex1 = vertex2;
+
+		vertex0.u = uBC;
+		vertex1.u = vBC;
+		Vec<float> e = C - B;
+		divisor = e.GetLengthSq();
+		count = 2;
+		return;
+	}
+
+	// Region CA
+	float uCA = -A.Dot(C - A);
+	float vAQC = C.Cross(A);
+	if (uCA > 0.0f && vCA > 0.0f && vAQC * area <= 0.0f)
+	{
+		//This is weird, investigate what swapping placement changes
+		vertex1 = vertex0;
+		vertex0 = vertex2;
+
+		vertex0.u = uCA;
+		vertex1.u = vCA;
+		Vec<float> e = A - C;
+		divisor = e.GetLengthSq();
+		count = 2;
+		return;
+	}
+	
+	// Region A
+	float vAB = -A.Dot(B - A);
+	if (vAB <= 0.0f && uCA <= 0.0f)
+	{
+		vertex0.u = 1.0f;
+		divisor = 1.0f;
+		count = 1;
+		return;
+	}
+
+	// Region B
+	float uAB = -B.Dot(A - B);
+	if (uAB <= 0.0f && vBC <= 0.0f)
+	{
+		vertex0 = vertex1;
+		vertex0.u = 1.0f;
+		divisor = 1.0f;
+		count = 1;
+		return;
+	}
+
+	// Region AB
+	float wABQ = A.Cross(B);
+	if (uAB > 0.0f && vAB > 0.0f && wABQ * area <= 0.0f)
+	{
+		vertex0.u = uAB;
+		vertex1.u = vAB;
+		Vec<float> e = B - A;
+		divisor = e.Dot(e);
+		count = 2;
+		return;
+	}
+
+	// Region ABC
+	assert(abs(area) > 0.0f && uQBC * area > 0.0f && vAQC * area > 0.0f && wABQ * area > 0.0f);
+	vertex0.u = uQBC;
+	vertex1.u = vAQC;
+	vertex2.u = wABQ;
+	//Divisior non-zero, else previous region catches
+	divisor = area;
+	count = 3;
 }
