@@ -24,17 +24,20 @@ public:
 	ColliderManager(std::vector<std::unique_ptr<Asteroid>>& belt, Ship& ship)
 		:belt(belt), ship(ship)
 	{}
-	void DoCollisions(const float dt, bool collship) const; //originally CollCheck
+	void DoCollisions(const float dt, bool collship, int& jank) const; //originally CollCheck
 
 private:
 	//Collision Depth Analyzers
-	void DoBinaryCollision(Entity& BodyA, Entity& BodyB, const float dt) const;
+	void DoBinaryCollision(Entity& BodyA, Entity& BodyB, const float dt, int& jank, bool doJank = false) const;
 	float ResolveMidField(Entity& BodyA, Entity& BodyB, ActiveEdge& contactEdge) const; //originally CollCheck
 	void ResolveNearField(const std::vector<Vec<float>>& InitBodyA0, const std::vector<Vec<float>>& InitBodyA1,
 						const std::vector<Vec<float>>& InitBodyB0, const std::vector<Vec<float>>& InitBodyB1,
 						float& t, ActiveEdge& outfoundEdge) const;
 	void ResolveDiscreteCollision(const std::vector<Vec<float>>& BodyA, const std::vector<Vec<float>>& BodyB,
 								float& t, ActiveEdge& outfoundEdge) const;
+	void UpdateEdge(ActiveEdge& outEdge, const Approach& approach, 
+						const std::vector<Vec<float>>& A0, const std::vector<Vec<float>>& A1, 
+						const std::vector<Vec<float>>& B0, const std::vector<Vec<float>>& B1) const;
 	ActiveEdge DeepestVsEdgeSolver(const Vec<float>& edgeI0, const Vec<float>& edgeJ0,
 								const Vec<float>& edgeI1, const Vec<float>& edgeJ1,
 								const std::vector<Vec<float>>& pointCloud) const;

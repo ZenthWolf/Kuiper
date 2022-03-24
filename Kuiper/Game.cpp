@@ -130,7 +130,7 @@ void Game::UpdateModel(float dt)
 		ship.SetHistory();
 		ship.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
-		collider.DoCollisions(dt, collship);
+		collider.DoCollisions(dt, collship, jank);
 		ship.DriftDecay(dt);
 
 		if (!wnd.kbd.KeyIsEmpty())
@@ -360,6 +360,7 @@ void Game::ComposeFrame()
 			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
 		}
 		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
+		font.DrawText("Janks: " + std::to_string(jank), { 50,570 }, Colors::White, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;

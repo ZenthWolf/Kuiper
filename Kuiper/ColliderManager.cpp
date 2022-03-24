@@ -1,18 +1,18 @@
 #include "ColliderManager.h"
 
-void ColliderManager::DoCollisions(const float dt, const bool collship) const
+void ColliderManager::DoCollisions(const float dt, const bool collship, int& jank) const
 {
 	for (int i = 0; i < int(belt.size()); ++i)
 	{
 		for (int j = i + 1; j < belt.size(); ++j)
-			DoBinaryCollision(*belt[i], *belt[j], dt);
+			DoBinaryCollision(*belt[i], *belt[j], dt, jank);
 
 		if(collship)
-			DoBinaryCollision(*belt[i], ship, dt);
+			DoBinaryCollision(*belt[i], ship, dt, jank, true);
 	}
 }
 
-void ColliderManager::DoBinaryCollision(Entity& BodyA, Entity& BodyB, const float dt) const
+void ColliderManager::DoBinaryCollision(Entity& BodyA, Entity& BodyB, const float dt, int& jank, bool doJank) const
 {
 	float dist2 = (BodyA.GetPos() - BodyB.GetPos()).GetLengthSq();
 	float radi2 = BodyA.GetRadius() + BodyB.GetRadius();
@@ -46,7 +46,7 @@ void ColliderManager::DoBinaryCollision(Entity& BodyA, Entity& BodyB, const floa
 
 			float rewindTime = dt * (1 - time);
 
-			BodyB.Recoil(contact, BodyA, rewindTime);
+			BodyB.Recoil(contact, BodyA, rewindTime, jank, doJank);
 			BodyA.SetHistory();
 			BodyB.SetHistory();
 		}
@@ -160,73 +160,16 @@ void ColliderManager::ResolveNearField(const std::vector<Vec<float>>& InitBodyA0
 		return; //NO COLLISION (found in broad analysis)
 	}
 
-	/*********************************************************************************/
-	/*********************************************************************************/
-	/*****************************CONTINUE********************************************/
-	/*******************************FROM**********************************************/
-	/*******************************HERE**********************************************/
-	/*********************************************************************************/
-	/*********************************************************************************/
-
 	Approach approach = Shapes::FindApproach(BodyA0, BodyB0);
 	if (approach.index0 < 0)
 		return ResolveDiscreteCollision(InitBodyA0, InitBodyB0, t, outfoundEdge);
 
 	ActiveEdge currentEdge;
 
-	if (approach.type0 == Approach::Type::Edge)
-	{
-		currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
-			BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
-			BodyB1
-		);
-		currentEdge.p0 = BodyB0[currentEdge.pInd];
-		currentEdge.edgeIsA = true;
+	UpdateEdge(currentEdge, approach, BodyA0, BodyA1, BodyB0, BodyB1);
 
-	}
-	else if (approach.type1 == Approach::Type::Edge)
-	{
-		currentEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
-			BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
-			BodyA1
-		);
-		currentEdge.p0 = BodyA0[currentEdge.pInd];
-		currentEdge.edgeIsA = false;
-	}
-	else
-	{
-		//constant line of separation
-		currentEdge.n0 = approach.point1 - approach.point0;
-		currentEdge.n1 = currentEdge.n0;
-		currentEdge.planeConst0 = 0.0f;
-		currentEdge.planeConst1 = 0.0f;
-		//emulate p1-p0 as single point
-		int deepestA = Shapes::FindSupport(currentEdge.n0, BodyA1);
-		int deepestB = Shapes::FindSupport(-currentEdge.n0, BodyB1);
-		currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
-		currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
-		currentEdge.depth1 = currentEdge.n1.Dot(currentEdge.p1) - currentEdge.planeConst1;
-
-		currentEdge.edgeIsA = false; // THIS COLLISION TYPE SHOULD NEVER BE THE END STATE. OH GOD, HOW DO I VERIFY THAT?
-	}
-
-	//shouldn't need this, but do...
-	//if (currentEdge.depth1 > tolerance || approach.index0 < 0)
-	//TODO VERIFY UTILITY
 	if (currentEdge.depth1 > tolerance)
-	{
-		return;
-	}
-	//TODO VERIFY UTILITY
-	if (currentEdge.depth1 < 0 && (currentEdge.n0.Dot(currentEdge.p0) - currentEdge.planeConst0 < -tolerance))
-	{
-		if (1 < t)
-		{
-			t = 1;
-			outfoundEdge = std::move(currentEdge);
-		}
-		return;
-	}
+		return; //NO COLLISION (found in near analysis)
 
 	int iteration = 0;
 	while (true)
@@ -250,10 +193,10 @@ void ColliderManager::ResolveNearField(const std::vector<Vec<float>>& InitBodyA0
 		BodyA1 = InitBodyA1;
 		BodyB1 = InitBodyB1;
 
-		int newiterations = 0;
+		int innerIters = 0;
 		while (currentEdge.depth1 < -tolerance && T0 != 1.0f && approach.index0 >= 0)
 		{
-			++newiterations;
+			++innerIters;
 
 			if (currentEdge.depth1 > tolerance)
 				return; //NO COLLISION (found in near analysis)
@@ -263,42 +206,7 @@ void ColliderManager::ResolveNearField(const std::vector<Vec<float>>& InitBodyA0
 			BodyA1 = BodyAtTime(InitBodyA0, InitBodyA1, T1);
 			BodyB1 = BodyAtTime(InitBodyB0, InitBodyB1, T1);
 
-			if (approach.type0 == Approach::Type::Edge)
-			{
-				currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
-					BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
-					BodyB1
-				);
-				currentEdge.p0 = BodyB0[currentEdge.pInd];
-				currentEdge.edgeIsA = true;
-
-			}
-			else if (approach.type1 == Approach::Type::Edge)
-			{
-				currentEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
-					BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
-					BodyA1
-				);
-				currentEdge.p0 = BodyA0[currentEdge.pInd];
-				currentEdge.edgeIsA = false;
-			}
-			else
-			{
-				//constant line of separation
-				currentEdge.n0 = approach.point1 - approach.point0;
-				currentEdge.n1 = currentEdge.n0;
-				currentEdge.planeConst0 = 0.0f;
-				currentEdge.planeConst1 = 0.0f;
-				//emulate p1-p0 as single point
-				int deepestA = Shapes::FindSupport(currentEdge.n0, BodyA1);
-				int deepestB = Shapes::FindSupport(-currentEdge.n0, BodyB1);
-				currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
-				currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
-				currentEdge.depth1 = currentEdge.n1.Dot(currentEdge.p1);
-
-				currentEdge.edgeIsA = false;
-			}
-
+			UpdateEdge(currentEdge, approach, BodyA0, BodyA1, BodyB0, BodyB1);
 		}
 		T0 = T1;
 		BodyA0 = BodyAtTime(InitBodyA0, InitBodyA1, T0);
@@ -307,41 +215,7 @@ void ColliderManager::ResolveNearField(const std::vector<Vec<float>>& InitBodyA0
 		//Potentially new approach (should change if not within tolerance)
 		approach = Shapes::FindApproach(BodyA0, BodyB0);
 
-		if (approach.type0 == Approach::Type::Edge)
-		{
-			currentEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
-				BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
-				BodyB1
-			);
-			currentEdge.p0 = BodyB0[currentEdge.pInd];
-			currentEdge.edgeIsA = true;
-
-		}
-		else if (approach.type1 == Approach::Type::Edge)
-		{
-			currentEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
-				BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
-				BodyA1
-			);
-			currentEdge.p0 = BodyA0[currentEdge.pInd];
-			currentEdge.edgeIsA = false;
-		}
-		else
-		{
-			//constant line of separation
-			currentEdge.n0 = approach.point1 - approach.point0;
-			currentEdge.n1 = currentEdge.n0;
-			currentEdge.planeConst0 = 0.0f;
-			currentEdge.planeConst1 = 0.0f;
-			//emulate p1-p0 as single point
-			int deepestA = Shapes::FindSupport(currentEdge.n0, BodyA1);
-			int deepestB = Shapes::FindSupport(-currentEdge.n0, BodyB1);
-			currentEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
-			currentEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
-			currentEdge.depth1 = currentEdge.n0.Dot(currentEdge.p1);
-
-			currentEdge.edgeIsA = false;
-		}
+		UpdateEdge(currentEdge, approach, BodyA0, BodyA1, BodyB0, BodyB1);
 
 		if (currentEdge.depth1 > tolerance)
 			return; //NO COLLISION (found in near analysis)
@@ -406,6 +280,47 @@ void ColliderManager::ResolveDiscreteCollision(const std::vector<Vec<float>>& Bo
 	outfoundEdge.discreteCollision = true;
 	outfoundEdge.depth1 = sqrt(shallowestMove);
 	t = 0.0f;
+}
+
+void ColliderManager::UpdateEdge(ActiveEdge& outEdge, const Approach& approach, 
+										const std::vector<Vec<float>>& BodyA0, const std::vector<Vec<float>>& BodyA1, 
+										const std::vector<Vec<float>>& BodyB0, const std::vector<Vec<float>>& BodyB1) const
+{
+	if (approach.type0 == Approach::Type::Edge)
+	{
+		outEdge = DeepestVsEdgeSolver(BodyA0[approach.index0], BodyA0[(approach.index0 + 1) % BodyA0.size()],
+			BodyA1[approach.index0], BodyA1[(approach.index0 + 1) % BodyA1.size()],
+			BodyB1
+		);
+		outEdge.p0 = BodyB0[outEdge.pInd];
+		outEdge.edgeIsA = true;
+
+	}
+	else if (approach.type1 == Approach::Type::Edge)
+	{
+		outEdge = DeepestVsEdgeSolver(BodyB0[approach.index1], BodyB0[(approach.index1 + 1) % BodyB0.size()],
+			BodyB1[approach.index1], BodyB1[(approach.index1 + 1) % BodyB1.size()],
+			BodyA1
+		);
+		outEdge.p0 = BodyA0[outEdge.pInd];
+		outEdge.edgeIsA = false;
+	}
+	else
+	{
+		//constant line of separation
+		outEdge.n0 = approach.point1 - approach.point0;
+		outEdge.n1 = outEdge.n0;
+		outEdge.planeConst0 = 0.0f;
+		outEdge.planeConst1 = 0.0f;
+		//emulate p1-p0 as single point
+		int deepestA = Shapes::FindSupport(outEdge.n0, BodyA1);
+		int deepestB = Shapes::FindSupport(-outEdge.n0, BodyB1);
+		outEdge.p0 = BodyB0[deepestB] - BodyA0[deepestA];
+		outEdge.p1 = BodyB1[deepestB] - BodyA1[deepestA];;
+		outEdge.depth1 = outEdge.n1.Dot(outEdge.p1) - outEdge.planeConst1;
+
+		outEdge.edgeIsA = false; // THIS COLLISION TYPE SHOULD NEVER BE THE END STATE. OH GOD, HOW DO I VERIFY THAT?
+	}
 }
 
 ActiveEdge ColliderManager::DeepestVsEdgeSolver(const Vec<float>& edgeI0, const Vec<float>& edgeJ0,
@@ -504,6 +419,7 @@ float ColliderManager::FindRoot(const ActiveEdge& curEdge, const float& T0init, 
 
 	return impactTime * TDiff + T0init; //Best Guess? Throw Error?
 }
+
 
 std::vector<Vec<float>> ColliderManager::BodyAtTime(const std::vector<Vec<float>>& Body0, 
 													const std::vector<Vec<float>>& Body1, const float timeParam) const

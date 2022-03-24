@@ -185,7 +185,7 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
-void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime)
+void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime, int& jank, bool doJank)
 {
 	alertStaleModel();
 	targ.alertStaleModel();
@@ -244,6 +244,10 @@ void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rew
 		targ.RotBy(targ.angvel * rewindTime);
 
 		return;
+	}
+	if (doJank && contactEdge.discreteCollision)
+	{
+		jank++;
 	}
 
 	float sourceCross = sourceRad.Cross(norm);

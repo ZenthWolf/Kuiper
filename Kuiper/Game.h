@@ -73,4 +73,5 @@ private:
 	ColliderManager collider;
 
 	bool collship = false;
+	int jank = 0;
 };

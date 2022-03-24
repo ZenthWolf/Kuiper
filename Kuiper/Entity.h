@@ -62,7 +62,7 @@ public:
 	void SetColor(const Color cnew);
 
 	//Interactions
-	void Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime);
+	void Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime, int&, bool);
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;
 	std::vector<Vec<float>> GetTransformedModel() const;
