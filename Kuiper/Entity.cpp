@@ -15,7 +15,7 @@
 #include "Shapes.h"
 #include "Entity.h"
 
-#include "Spawner.h"
+#include "ColliderManager.h"
 
 #define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
 
@@ -185,7 +185,7 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
-void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, const float rewindTime)
+void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime)
 {
 	alertStaleModel();
 	targ.alertStaleModel();
@@ -202,23 +202,23 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, cons
 	float sourceI = 0.4f * powf(boundingrad, 5.0f);
 	float targI = 0.4f * powf(targ.boundingrad, 5.0f);
 
-	Vec<float> norm = contactEdge->n0.Norm();
+	Vec<float> norm = contactEdge.n0.Norm();
 
-	if (contactEdge->discreteCollision)
+	if (contactEdge.discreteCollision)
 	{
-		if (contactEdge->edgeIsA)
+		if (contactEdge.edgeIsA)
 		{
-			TranslateBy(norm * contactEdge->depth1 * 0.5f);
-			targ.TranslateBy(-norm * contactEdge->depth1 * 0.5f);
+			TranslateBy(norm * contactEdge.depth1 * 0.5f);
+			targ.TranslateBy(-norm * contactEdge.depth1 * 0.5f);
 		}
 		else
 		{
-			TranslateBy(-norm * contactEdge->depth1 * 0.5f);
-			targ.TranslateBy(norm * contactEdge->depth1 * 0.5f);
+			TranslateBy(-norm * contactEdge.depth1 * 0.5f);
+			targ.TranslateBy(norm * contactEdge.depth1 * 0.5f);
 		}
 	}
 
-	Vec<float> contact = contactEdge->p0;
+	Vec<float> contact = contactEdge.p0;
 	Vec<float> sourceRad = contact - pos;
 	Vec<float> targetRad = contact - targ.pos;
 	
@@ -226,7 +226,7 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, cons
 	Vec<float> vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*angvel;
 
 	Vec<float> rvel;
-	if (contactEdge->edgeIsA)
+	if (contactEdge.edgeIsA)
 	{
 		rvel = - vContactTarget + vContactSource;
 	}
@@ -256,7 +256,7 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, cons
 	//collision response
 	float impulse = -(1.f+1.f)* rvel.Dot(norm) / ((1.f/sourceMass) + (1.f/targMass) + momInertiaFactor);
 
-	if (contactEdge->edgeIsA)
+	if (contactEdge.edgeIsA)
 	{
 		vel += norm * impulse / sourceMass;
 		targ.vel -= norm * impulse / targMass;
@@ -277,7 +277,7 @@ void Entity::Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, cons
 	vContactSource = vel + Vec<float>{-sourceRad.Y, sourceRad.X}*angvel;
 	vContactTarget = targ.vel + Vec<float>{-targetRad.Y, targetRad.X}*angvel;
 	Vec<float> rvel2;
-	if (contactEdge->edgeIsA)
+	if (contactEdge.edgeIsA)
 	{
 		rvel2 = -vContactTarget + vContactSource;
 	}
@@ -437,36 +437,7 @@ void Entity::alertStaleModel() const
 }
 
 //Axis-aligned boxes
-Rect<float> Entity::GetBoundingBox(const std::vector<Vec<float>>& model) const
-{
-	float x0 = model[0].X; float x1 = model[0].X;
-	float y0 = model[0].Y; float y1 = model[0].Y;
-
-	for(auto v : model)
-	{
-		if (v.X < x0)
-		{
-			x0 = v.X;
-		}
-		else if (v.X > x1)
-		{
-			x1 = v.X;
-		}
-
-		if (v.Y < y0)
-		{
-			y0 = v.Y;
-		}
-		else if (v.Y > y1)
-		{
-			y1 = v.Y;
-		}
-	}
-
-	return Rect<float>(x0, y0, x1, y1);
-}
-
 Rect<float> Entity::GetBoundingBox() const
 {
-	return GetBoundingBox(GetTransformedModel());
+	return Shapes::BoundingBox(GetTransformedModel());
 }

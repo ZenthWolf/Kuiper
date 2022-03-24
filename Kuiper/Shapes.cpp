@@ -214,5 +214,199 @@ bool Shapes::IsSamePoint(const Vec<float>& p, const Vec<float>& r)
 	return (dx < EPS && dy < EPS);
 }
 
-	
+/// <summary>
+/// Calculates nearest elements between concave polygons.
+/// </summary>
+/// <param name="modelList">World Space model</param>
+/// <returns>Nearest Elements Information</returns>
+Approach Shapes::FindApproach(const std::vector<std::vector<Vec<float>>>& modelList0, const std::vector<std::vector<Vec<float>>>& modelList1)
+{
+	//All cases for first element in model0
+	Approach result = FindApproach(modelList0[0], modelList1[0]);
 
+	for (int j=1; j<modelList1.size(); ++j)
+	{
+		Approach test = FindApproach(modelList0[0], modelList1[j]);
+
+		if (test.distance < result.distance)
+		{
+			test.convex0 = 0;
+			test.convex1 = j;
+			result = std::move(test);
+			if (result.distance == 0.0f)
+			{
+				return result;;
+			}
+		}
+	}
+
+	//Remaining cases
+	for (int i=1; i<modelList0.size(); ++i)
+	{
+		for (int j=0; j<modelList1.size(); ++j)
+		{
+			Approach test = FindApproach(modelList0[i], modelList1[j]);
+
+			if (test.distance < result.distance)
+			{
+				test.convex0 = i;
+				test.convex1 = j;
+				result = std::move(test);
+				if (result.distance == 0.0f)
+				{
+					return result;
+				}
+			}
+		}
+	}
+	return result;
+}
+
+/// <summary>
+/// Calculates nearest elements between convex polygons, or convex primitives. 
+/// </summary>
+/// <param name="model">World Space model</param>
+/// <returns>Nearest Elements Information</returns>
+Approach Shapes::FindApproach(const std::vector<Vec<float>>& model0,
+	const std::vector<Vec<float>>& model1)
+{
+// Initial Simplex
+	Simplex simplex;
+	simplex.vertex0.index0 = 0;
+	simplex.vertex0.index1 = 0;
+	simplex.vertex0.point0 = model0[0];
+	simplex.vertex0.point1 = model1[0];
+	simplex.vertex0.point = simplex.vertex0.point1 - simplex.vertex0.point0;
+	simplex.vertex0.u = 1.0f;
+	simplex.count = 1;
+
+	// Pointer to vertecies in simplex, acts like an array
+	// Just don't be reckless and go out of bounds
+	SimplexVertex* vertices = &simplex.vertex0;
+
+	// Vertices of last simplex from previous iteration
+	// Finding a repeat is primary termination criterion.
+	int save0[3] = { -1,-1,-1 }, save1[3] = { -1,-1,-1 };
+	int saveCount = 0;
+
+	// Loop evolving the simplex
+	const int maxIters = 20;
+	int iter = 0;
+	while (iter < maxIters)
+	{
+		// Copy current verticies
+		saveCount = simplex.count;
+		for (int i = 0; i < saveCount; ++i)
+		{
+			save0[i] = vertices[i].index0;
+			save1[i] = vertices[i].index1;
+		}
+
+		// Determine the closest point on the simplex and
+		// remove unused vertices.
+		switch (simplex.count)
+		{
+		case 1:
+			break;
+
+		case 2:
+			simplex.Solve2();
+			break;
+
+		case 3:
+			simplex.Solve3();
+			break;
+		}
+
+		// If interior to polygon, end
+		if (simplex.count == 3)
+		{
+			break;
+		}
+
+		// Get search direction.
+		Vec<float> d = simplex.GetSearchDirection();
+
+		// Ensure the search direction non-zero.
+		if (d.GetLengthSq() == 0.0f)
+		{
+			break;
+		}
+
+		// New Vertex to add to the Simplex
+		SimplexVertex* newvert = vertices + simplex.count;
+		newvert->index0 = FindSupport(-d, model0);
+		newvert->index1 = FindSupport(d, model1);
+		newvert->point0 = model0[newvert->index0];
+		newvert->point1 = model1[newvert->index1];
+		newvert->point = newvert->point1 - newvert->point0;
+
+		++iter;
+
+		// Primary escape criterion: repeated support point
+		bool duplicate = false;
+		for (int i = 0; i < saveCount; ++i)
+		{
+			if (newvert->index0 == save0[i] && newvert->index1 == save1[i])
+			{
+				return simplex.PrepareResult(iter, 0, 0);
+			}
+		}
+
+		// New vertex is ok- Solve functions always reduce the dimension of the simplex, so this is safe
+		++simplex.count;
+	}
+
+	return simplex.PrepareResult(iter, 0, 0);
+}
+
+int Shapes::FindSupport(const Vec<float>& d, const std::vector<Vec<float>>& model)
+{
+	int furthestIndex = 0;
+	float maxDist = model[0].Dot(d);
+	for (int i = 1; i < int(model.size()); ++i)
+	{
+		float dist = model[i].Dot(d);
+		if (dist > maxDist)
+		{
+			furthestIndex = i;
+			maxDist = dist;
+		}
+	}
+
+	return furthestIndex;
+}
+
+/// <summary>
+/// Calculates the Axes-Aligned Bounding Box for a polygonal model.
+/// </summary>
+/// <param name="polyVerts"></param>
+/// <returns>AABB for polygon</returns>
+Rect<float> Shapes::BoundingBox(const std::vector<Vec<float>>& polyVerts)
+{
+	//Axes-Aligned Bounding Box
+	Rect<float> AABB = Rect<float>(polyVerts[0], polyVerts[0]);
+	for (int i=1; i<polyVerts.size(); ++i)
+	{
+		auto v = polyVerts[i];
+		if (v.X < AABB.X0)
+		{
+			AABB.X0 = v.X;
+		}
+		else if (v.X > AABB.X1)
+		{
+			AABB.X1 = v.X;
+		}
+
+		if (v.Y < AABB.Y0)
+		{
+			AABB.Y0 = v.Y;
+		}
+		else if (v.Y > AABB.Y1)
+		{
+			AABB.Y1 = v.Y;
+		}
+	}
+
+	return std::move(AABB);
+}

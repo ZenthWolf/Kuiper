@@ -13,11 +13,16 @@
 #pragma once
 
 #include<vector>
-#include<list>
+
 #include "Engine/Vec.h"
+#include "Engine/Rect.h"
+
+//Forward Declarations
+struct Approach;
+struct Simplex;
+struct SimplexVertex;
 
 /* Shapes use counterclockwise unwinding. Important for defining normals */
-
 class Shapes 
 {
 public:
@@ -100,7 +105,65 @@ public:
 	static std::vector<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
 	static void Center(std::vector<Vec<float>>& shape);
 
+	//Basic Geometric Functions
 	static Vec<float> FindIntersection(const Vec<float>& p0, const Vec<float>& p1, const Vec<float>& r0, const Vec<float>& r1);
 	static bool IsOnSegment(const Vec<float>& p, const Vec<float>& l0, const Vec<float>& l1);
 	static bool IsSamePoint(const Vec<float>& p, const Vec<float>& r);
+
+	//GJK Calculation
+	static Approach FindApproach(const std::vector<std::vector<Vec<float>>>& modelList0,
+						const std::vector<std::vector<Vec<float>>>& modelList1);
+	static Approach FindApproach(const std::vector<Vec<float>>& model0, 
+						const std::vector<Vec<float>>& model1);
+	static int FindSupport(const Vec<float>& d, const std::vector<Vec<float>>& model);
+
+	//Fallback Utilities
+	static Rect<float> BoundingBox(const std::vector<Vec<float>>& convexPoly);
+};
+
+
+/*******************/
+/* DATA STRUCTURES */
+/*******************/
+struct Approach
+{
+	enum class Type { Vertex, Edge };
+	Vec<float> point0;      // closest point on polygon 0
+	int convex0 = -1;       // convex primitive of point0
+	int index0 = -1;        // index of the element index0 represents
+	Type type0;             // the type of element index0 represents
+
+	Vec<float> point1;      // closest point on polygon 1
+	int convex1 = -1;       // convex primitive of point1
+	int index1 = -1;        // index of the element index1 represents
+	Type type1;             // the type of element index1 represents
+
+	float distance;
+	int iterations;		    // number of GJK iterations used
+};
+
+/// A simplex vertex for the Minkowski difference in GJK
+struct SimplexVertex
+{
+	Vec<float> point0;	  // Point from polygon 0 in world space
+	Vec<float> point1;	  // Point from polygon 1 in world space
+	Vec<float> point;	  // Minkowski difference point
+
+	float u;	          // unnormalized barycentric coordinate for closest point
+	int index0 = -1;			  // point index in polygon 0
+	int index1 = -1;			  // point index in polygon 1
+};
+
+
+/// Simplex used by the GJK algorithm.
+struct Simplex
+{
+	Vec<float> GetSearchDirection() const;
+	void Solve2();
+	void Solve3();
+	Approach PrepareResult(int iter, int convex0, int convex1);
+
+	SimplexVertex vertex0, vertex1, vertex2;
+	float divisor; //Normalizes barycentric coords
+	int count;
 };

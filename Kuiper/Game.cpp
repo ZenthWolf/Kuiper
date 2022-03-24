@@ -17,7 +17,8 @@
 Game::Game(MainWindow& AFakeName)
 	:
 	wnd(AFakeName),gfx(wnd), rng(std::random_device()()),
-	ct(gfx), cam(ct), spawner(belt), mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
+	ct(gfx), cam(ct), spawner(belt), collider(belt, ship),
+	mus(L"Sound\\ForgetAboutMe.wav", Sound::LoopType::AutoFullSound)
 {
 	SoundSystem::SetMasterVolume(vol);
 
@@ -129,6 +130,8 @@ void Game::UpdateModel(float dt)
 		ship.SetHistory();
 		ship.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
+		collider.DoCollisions(dt, collship);
+		ship.DriftDecay(dt);
 
 		if (!wnd.kbd.KeyIsEmpty())
 		{
@@ -160,13 +163,6 @@ void Game::UpdateModel(float dt)
 				}
 			}
 		}
-
-		if (collship)
-		{
-			spawner.CollideShip(ship, dt);
-		}
-
-		ship.DriftDecay(dt);
 
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
@@ -263,33 +259,6 @@ void Game::ComposeFrame()
 			cam.Draw(s.GetDrawable());
 		}
 		
-		/*
-		//DEBUG BOUNDING CIRCS
-		float radius = ship.GetRadius();
-		radius *= cam.GetScale();
-		Vec<float> pos = { ship.GetPos().X, -ship.GetPos().Y };
-		pos -= {cam.GetPos().X, -cam.GetPos().Y};
-		pos *= cam.GetScale();
-		pos += {gfx.ScreenWidth / 2, gfx.ScreenHeight / 2};
-		gfx.DrawCirc(pos, radius, Colors::LightGrey);
-
-		for (auto& a : belt)
-		{
-			float radius = a->GetRadius();
-			radius *= cam.GetScale();
-			Vec<float> pos = { a->GetPos().X, -a->GetPos().Y };
-			pos -= {cam.GetPos().X, -cam.GetPos().Y};
-			pos *= cam.GetScale();
-			pos += {gfx.ScreenWidth / 2, gfx.ScreenHeight / 2};
-			gfx.DrawCirc(pos, radius, Colors::DarkGrey);
-		}
-		//DEBUG CIRCS OVER
-		*/
-
-
-
-
-
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		//cam.Draw(ship.GetDrawable());
@@ -311,7 +280,7 @@ void Game::ComposeFrame()
 
 		auto mothership = Shapes::ConvexSeparator(poly);
 
-		Approach testApproach = spawner.FindApproach(ship.GetTransformedPrimitives(), mothership);
+		Approach testApproach = Shapes::FindApproach(ship.GetTransformedPrimitives(), mothership);
 		std::vector<Vec<float>> approachLine;
 		approachLine.emplace_back(testApproach.point0);
 		approachLine.emplace_back(testApproach.point1);

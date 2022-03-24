@@ -27,6 +27,8 @@
 #include "Statics.h"
 #include "Ship.h"
 
+#include "ColliderManager.h"
+
 
 class Game
 {
@@ -67,6 +69,8 @@ private:
 	std::vector<Star> scene;
 	std::vector<std::unique_ptr<Asteroid>> belt;
 	Spawner spawner;
+
+	ColliderManager collider;
 
 	bool collship = false;
 };

@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="ColliderManager.h" />
     <ClInclude Include="Engine\BreezeException.h" />
     <ClInclude Include="Engine\COMInitializer.h" />
     <ClInclude Include="Engine\DXErr.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Statics.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColliderManager.cpp" />
     <ClCompile Include="Engine\COMInitializer.cpp" />
     <ClCompile Include="Engine\DXErr.cpp" />
     <ClCompile Include="Engine\FrameTimer.cpp" />
@@ -183,6 +185,7 @@
     <ClCompile Include="Graphics\SurfaceOPT.cpp" />
     <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="Spawner.cpp" />
   </ItemGroup>
   <ItemGroup>

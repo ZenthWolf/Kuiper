@@ -55,7 +55,6 @@ public:
 	void SetVel(const Vec<float> newvel);
 	void SetAngVel(const float newvel);
 	Rect<float> GetBoundingBox() const;
-	Rect<float> GetBoundingBox(const std::vector<Vec<float>>& model) const;
 
 	//Rendering
 	Drawable GetDrawable(bool debug = false) const;
@@ -63,7 +62,7 @@ public:
 	void SetColor(const Color cnew);
 
 	//Interactions
-	void Recoil(std::unique_ptr<ActiveEdge>& contactEdge, Entity& targ, const float rewindTime);
+	void Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime);
 	bool CollPoint(const Vec<float> targ) const;
 	Vec<float> GetTransformedVertex(const int vert) const;
 	std::vector<Vec<float>> GetTransformedModel() const;
