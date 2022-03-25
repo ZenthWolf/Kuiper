@@ -12,22 +12,24 @@
 
 #pragma once
 
+#include <chrono>
+#include <random>
+
+#include "Engine/FrameTimer.h"
 #include "Engine/Keyboard.h"
 #include "Engine/Mouse.h"
-#include "Graphics/Graphics.h"
-#include "Engine/FrameTimer.h"
-#include <chrono>
 #include "Engine/Sound.h"
-#include <random>
-#include "Graphics/Font.h"
-#include "Graphics/CoordinateTransformer.h"
-#include "Graphics/Camera.h"
 
-#include "Spawner.h"
-#include "Statics.h"
-#include "Ship.h"
+#include "Graphics/Camera.h"
+#include "Graphics/CoordinateTransformer.h"
+#include "Graphics/Font.h"
+#include "Graphics/Graphics.h"
 
 #include "ColliderManager.h"
+#include "Ship.h"
+#include "Spawner.h"
+#include "Statics.h"
+
 
 
 class Game
@@ -56,22 +58,25 @@ private:
 	/********************************/
 	std::mt19937 rng;
 
-	GameState gameState = GameState::Title;
-	FrameTimer ft;
-	Font font = "Images//Fixedsys16x28.bmp";
-	CoordinateTransformer ct;
 	Camera cam;
+	CoordinateTransformer ct;
+	const Font font = "Images//Fixedsys16x28.bmp";
+	FrameTimer ft;
+	GameState gameState = GameState::Title;
+	Sound mus;
 	float vol = 0.3f;
 
-	Sound mus;
-
+	//Entities
 	Ship ship;
-	std::vector<Star> scene;
 	std::vector<std::unique_ptr<Asteroid>> belt;
-	Spawner spawner;
 
+	Spawner spawner;
 	ColliderManager collider;
 
+	//Background
+	std::vector<Star> scene;
+
+	//Debug
 	bool collship = false;
 	int jank = 0;
 };

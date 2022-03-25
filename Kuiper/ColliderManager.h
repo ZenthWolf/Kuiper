@@ -12,6 +12,8 @@
 
 #pragma once
 #include<vector>
+#include<memory>
+
 #include "Ship.h"
 #include "Asteroid.h"
 #include "Shapes.h"

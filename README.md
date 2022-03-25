@@ -29,22 +29,6 @@ Arrow Keys - camera panning (Screen pans at edge)
 
 Major Branches:
 
-master - The last version of "SpeculativeColl". Controls as above, see entry about the "SpeculativeColl" branch
+master - The last version of "CollisionManager". Controls as above, see entry about the "CollisionManager" branch
 
-SimpleColl - A simple collision protocol. Detects line crosses and implements a toy model response. Linear momentum transfers like direct billiard ball collisions,
-and angular momentum is treated incredibly simply, but unphysically. Angular momentum transfer tends to build over time, but overall the effect does not exibit
-terrible behavior. This branch does not allow for collisions with the ship, nor does it have background music.
-
-RealisticColl - A naive attempt at a corrective response based on detecting vertices inside collision targets. This produces a point to implement a realistic
-impulse model for linear and angular momentum. Problems with the corrective model result in multiple collisions and is unlikely to be revisited, as the collision
-criterion (vertex required to be interior to the collision target) proved inadequate. Collisions are resolved more realistically, but the multiple collision create
-arbitarily large impulses in common edge cases.
-
-SpeculativeColl - Nearly complete. This branch decomposes collision models into convex primitive elements in order to implement well trusted algorithms (SAT) that
-otherwise could not be utilized generally. This method requires a speculative update step in order to find contact point of any collision. Collision algorithms are
-currently working in debug mode, but work needed to make release mode work smoothly. In the event this method fails, code falls back into a discrete collision
-solver.
-
-Future work:
-
-The "SpeculativeColl" branch follows ideas presented by Erin Catto (Box2D creator), but seeks to recreate the ideas rather than implement the trusted code available. Future work should be to use Box2D directly.
+AlienObject - Branch testing 3-D rendering and lighting for a single background object.

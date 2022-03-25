@@ -15,7 +15,7 @@
 //Tolerance 
 #define EPS 0.1
 
-std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<float>>& model)
+std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(const std::vector<Vec<float>>& model)
 {
 	std::vector<std::vector<Vec<float>>> primitives;
 

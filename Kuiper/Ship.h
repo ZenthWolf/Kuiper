@@ -31,5 +31,4 @@ private:
 	float athrust = 2.0f;
 
 	float rotdecay = 0.5f;
-
 };

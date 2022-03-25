@@ -17,28 +17,30 @@ Polygon Decomposition into convex primitive elements:
 
 GJK Finding nearest point on a polygon to a source point:
 	- Implemented and working for convex and concave polygons
-	- Implementation can be found: Spawner::FindApproach(..) in Spawner.cpp
-	- Classes "Simplex" and "SimplexVertex", as well as the struct "Approach" (containing the result of this calculation) are defined along with Spawner (see also Spawner.h), but are not considered members of Spawner. Unsure if this is preferable.
+	- Implementation can be found: Shapes::FindApproach(..) in Shapes.cpp
+	- Classes "Simplex" and "SimplexVertex", as well as the struct "Approach" (containing the result of this calculation) are declared along with Shapes (see also Shapes.h) and defined in Simplex.cpp.
 
 GJK Finding nearest points for 2 polygons:
 	- Implemented, for Convex and Concave polygons
 	- Currently, checks against every pair of primitive convex elements
 	- There should be estimating methods which can cull the need to check each possible pair
-	- Can be seen in Spawner.cpp, as described above.
+	- Can be seen in Shapes.cpp, as described above.
 
-TOI Calculation:
-	- Not begun. Will first work with assumed convex polygons.
+TOI Calculation (ColliderManager):
+	- Implemented where possible- algorithm falls back on discrete collisions if not possible to determine.
 
-Broad phase detection:
-	- Will remain unchanged- all colliders store a bounding radius which is intended to be used (Axis-Aligned Bounding Boxes [AABB] are also available).
-	- This is done in Spawner::CollCheck(..) and Spawner::CollShip(..) in Spawner.cpp, prior to calling Entity::CollWith to verify the existence of a collision.
+Broad phase detection (ColliderManager::DoBinaryCollision):
+	- All colliders store a bounding radius which is intended to be used (Axis-Aligned Bounding Boxes [AABB] are also available).
+	- This is done in ColliderManager::DoBinaryCollision(..) in ColliderManager.cpp, prior to calling Entity::Recoil to verify the existence of a collision.
 
-Mid phase detection:
-	- Not fully implemented. Availability of AABBs extends to the convex primitive of polygons and is likely to be used in this step to identify candidate collisions of the convex primitive elements.
-	- Cursory implementation should be simple because of the above.
-	- There is an open question about potentially interior polygons (which ought not be checked against) and how to identify and ignore.
+Mid phase detection (ColliderManager::ResolveMidField):
+	- Fully implemented. Primitives are collision candidates if their AABB overlaps with the target polygon's AABB (for whole polygon).
 
-Near phase detection
-	- Not begun. This will be concurrent with the implementation of TOI calculation.
+Near phase detection (ColliderManager::ResolveNearField):
+	- Individual primitives are checked for overlapping AABBs.
+	- If overlapping, ToI calculation is attempted- misses may still be detected, resulting in no collision
+	- Additionally, if collision is present from start, a code is returned to resolve the collision as a discrete collision, as opposed to a continuous collision.
 
-Impulse is calculated and applied at the identified contact points. The implementation from previous versions is likely to remain in place.
+Impulse is imparted (Entity::Recoil):
+	- Applied at the identified contact points.
+	- Time is reversed to the collision time and propogated back after impulse is applied.s

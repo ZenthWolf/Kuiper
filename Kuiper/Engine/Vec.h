@@ -126,10 +126,3 @@ public:
 	T X;
 	T Y;
 };
-
-/** Could use:
-
-typedef Vec<int> VecI;
-
-but fuck it. **/
-

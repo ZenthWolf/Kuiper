@@ -47,6 +47,8 @@ Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0
 	SetHistory();
 }
 
+
+//Parameter: Get/Set/Update
 const Vec<float>& Entity::GetPos() const
 {
 	return pos;
@@ -62,20 +64,19 @@ void Entity::TranslateBy(const Vec<float> dpos)
 	pos += dpos;
 }
 
-void Entity::SetScale(const float s)
+Vec<float> Entity::GetVel() const
 {
-	scale = s;
-	boundingrad *= s;
+	return vel;
 }
 
-float Entity::GetScale() const
+void Entity::SetVel(const Vec<float> newvel)
 {
-	return scale;
+	vel = newvel;
 }
 
-float Entity::GetRadius() const
+Vec<float> Entity::GetHeading() const
 {
-	return boundingrad;
+	return { cos(heading), sin(heading) };
 }
 
 void Entity::SetHeading(const float th)
@@ -104,24 +105,9 @@ void Entity::RotBy(const float th)
 	}
 }
 
-Vec<float> Entity::GetHeading() const
-{
-	return { cos(heading), sin(heading) };
-}
-
-Vec<float> Entity::GetVel() const
-{
-	return vel;
-}
-
 float Entity::GetAngVel() const
 {
 	return angvel;
-}
-
-void Entity::SetVel(const Vec<float> newvel)
-{
-	vel = newvel;
 }
 
 void Entity::SetAngVel(const float newvel)
@@ -129,6 +115,99 @@ void Entity::SetAngVel(const float newvel)
 	angvel = newvel;
 }
 
+float Entity::GetScale() const
+{
+	return scale;
+}
+
+void Entity::SetScale(const float s)
+{
+	scale = s;
+	boundingrad *= s;
+}
+
+float Entity::GetRadius() const
+{
+	return boundingrad;
+}
+
+//Dynamic Qualities
+//Axis-aligned boxes
+Rect<float> Entity::GetBoundingBox() const
+{
+	return Shapes::BoundingBox(GetTransformedModel());
+}
+
+std::vector<Vec<float>> Entity::GetTransformedModel() const
+{
+	if (staleModel)
+	{
+		for (int i = 0; i < cachedModel.size(); ++i)
+		{
+			cachedModel[i] = GetTransformedVertex(i);
+		}
+		staleModel = false;
+	}
+	return cachedModel;
+}
+
+std::vector<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
+{
+	if (stalePrimitives)
+	{
+		for (int i = 0; i < cachedPrimitives.size(); ++i)
+		{
+			for (int j = 0; j < cachedPrimitives[i].size(); ++j)
+			{
+				Vec<float> v = modelprimitives[i][j];
+				float vxtemp = v.X; float vytemp = v.Y;
+				v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
+				v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
+				v.X *= scale;
+				v.Y *= scale;
+				v += pos;
+
+				cachedPrimitives[i][j] = v;
+			}
+		}
+		stalePrimitives = false;
+	}
+
+	return cachedPrimitives;
+}
+
+Vec<float> Entity::GetTransformedVertex(int vert) const
+{
+	Vec<float> v = model[vert];
+	float vxtemp = v.X; float vytemp = v.Y;
+	v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
+	v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
+	v.X *= scale;
+	v.Y *= scale;
+	v += pos;
+
+	return v;
+}
+
+void Entity::alertStaleModel() const
+{
+	staleModel = true;
+	stalePrimitives = true;
+}
+
+Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
+{
+	Vec<float> relpnt = pnt;
+	relpnt -= pos;
+	relpnt *= 1 / scale;
+	float tpx = relpnt.X; float tpy = relpnt.Y;
+	relpnt.X = cos(-heading) * tpx - sin(-heading) * tpy;
+	relpnt.Y = sin(-heading) * tpx + cos(-heading) * tpy;
+
+	return relpnt;
+}
+
+//Rendering
 Drawable Entity::GetDrawable(bool debug) const
 {
 	Drawable d(model, c);
@@ -190,6 +269,7 @@ void Entity::SetColor(const Color cnew)
 	c = cnew;
 }
 
+//Interactions
 void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime, int& jank, bool doJank)
 {
 	alertStaleModel();
@@ -351,69 +431,7 @@ float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C) const
 	return A.Cross(B) + B.Cross(C) + C.Cross(A);
 }
 
-Vec<float> Entity::GetTransformedVertex(int vert) const
-{
-	Vec<float> v = model[vert];
-	float vxtemp = v.X; float vytemp = v.Y;
-	v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
-	v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
-	v.X *= scale;
-	v.Y *= scale;
-	v += pos;
-
-	return v;
-}
-
-std::vector<Vec<float>> Entity::GetTransformedModel() const
-{
-	if (staleModel)
-	{
-		for (int i = 0; i < cachedModel.size(); ++i)
-		{
-			cachedModel[i] = GetTransformedVertex(i);
-		}
-		staleModel = false;
-	}
- 	return cachedModel;
-}
-
-std::vector<std::vector<Vec<float>>> Entity::GetTransformedPrimitives() const
-{
- 	if (stalePrimitives)
-	{
-		for (int i = 0; i < cachedPrimitives.size(); ++i)
-		{
-			for (int j = 0; j < cachedPrimitives[i].size(); ++j)
-			{
-				Vec<float> v = modelprimitives[i][j];
-				float vxtemp = v.X; float vytemp = v.Y;
-				v.X = cos(heading) * vxtemp - sin(heading) * vytemp;
-				v.Y = sin(heading) * vxtemp + cos(heading) * vytemp;
-				v.X *= scale;
-				v.Y *= scale;
-				v += pos;
-
-				cachedPrimitives[i][j] = v;
-			}
-		}
-		stalePrimitives = false;
-	}
-
-	return cachedPrimitives;
-}
-
-Vec<float> Entity::UntransformPoint(const Vec<float> pnt)
-{
-	Vec<float> relpnt = pnt;
-	relpnt -= pos;
-	relpnt *= 1 / scale;
-	float tpx = relpnt.X; float tpy = relpnt.Y;
-	relpnt.X = cos(-heading) * tpx - sin(-heading) * tpy;
-	relpnt.Y = sin(-heading) * tpx + cos(-heading) * tpy;
-
-	return relpnt;
-}
-
+//History Recording
 void Entity::SetHistory()
 {
 	History.pos = pos;
@@ -435,16 +453,4 @@ void Entity::ResetHistory()
 	vel = History.vel;
 	heading = History.heading;
 	angvel = History.angvel;
-}
-
-void Entity::alertStaleModel() const
-{
-	staleModel = true;
-	stalePrimitives = true;
-}
-
-//Axis-aligned boxes
-Rect<float> Entity::GetBoundingBox() const
-{
-	return Shapes::BoundingBox(GetTransformedModel());
 }

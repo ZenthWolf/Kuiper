@@ -57,7 +57,6 @@ void Ship::Update(const float dt)
 	alertStaleModel();
 	TranslateBy(vel * dt);
 	RotBy(angvel * dt);
-	
 }
 
 void Ship::DriftDecay(const float dt)

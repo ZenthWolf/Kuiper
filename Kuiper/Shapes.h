@@ -102,7 +102,7 @@ public:
 		return asteroid;
 	}
 
-	static std::vector<std::vector<Vec<float>>> ConvexSeparator(std::vector<Vec<float>>& model);
+	static std::vector<std::vector<Vec<float>>> ConvexSeparator(const std::vector<Vec<float>>& model);
 	static void Center(std::vector<Vec<float>>& shape);
 
 	//Basic Geometric Functions
@@ -120,7 +120,6 @@ public:
 	//Fallback Utilities
 	static Rect<float> BoundingBox(const std::vector<Vec<float>>& convexPoly);
 };
-
 
 /*******************/
 /* DATA STRUCTURES */
@@ -160,7 +159,7 @@ struct Simplex
 {
 	Vec<float> GetSearchDirection() const;
 	void FindNearestToOrigin();
-	Approach PrepareResult(int iter, int convex0, int convex1);
+	Approach PrepareResult(const int iter, const int convex0, const int convex1) const;
 
 	SimplexVertex vertex0, vertex1, vertex2;
 	float divisor; //Normalizes barycentric coords

@@ -53,7 +53,7 @@ void Simplex::FindNearestToOrigin()
 	}
 }
 
-Approach Simplex::PrepareResult(int iter, int convex0, int convex1)
+Approach Simplex::PrepareResult(const int iter, const int convex0, const int convex1) const
 {
 	float s = 1.0f / divisor;
 	Approach result;
@@ -172,7 +172,7 @@ void Simplex::Solve2()
 		return;
 	}
 
-	// Region A
+	// Region A - Theoretically Unreachable, may trigger if O close to A
 	float v = -A.Dot(B - A);
 	if (v <= 0.0f)
 	{
@@ -251,7 +251,7 @@ void Simplex::Solve3()
 		return;
 	}
 	
-	// Region A
+	// Region A - Theoretically Unreachable, may trigger if O close to A
 	float vAB = -A.Dot(B - A);
 	if (vAB <= 0.0f && uCA <= 0.0f)
 	{
@@ -261,7 +261,7 @@ void Simplex::Solve3()
 		return;
 	}
 
-	// Region B
+	// Region B - Theoretically Unreachable, may trigger if O close to B
 	float uAB = -B.Dot(A - B);
 	if (uAB <= 0.0f && vBC <= 0.0f)
 	{
@@ -272,7 +272,7 @@ void Simplex::Solve3()
 		return;
 	}
 
-	// Region AB
+	// Region AB  - Theoretically Unreachable, may trigger if O close to AB
 	float wABQ = A.Cross(B);
 	if (uAB > 0.0f && vAB > 0.0f && wABQ * area <= 0.0f)
 	{

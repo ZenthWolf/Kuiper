@@ -66,22 +66,11 @@ void Game::UpdateModel(float dt)
 		if (!wnd.kbd.KeyIsEmpty())
 		{
 			auto e = wnd.kbd.ReadKey();
-			
-			bool isWorking;
-			std::vector<std::vector<Vec<float>>> VexStar;
-			std::vector<std::vector<Vec<float>>> VexRoid;
-			std::vector<std::vector<Vec<float>>> VexShip;
 
 			if (e.IsPress())
 			{
 				switch (e.GetCode())
 				{
-				case 'P':
-					VexStar = Shapes::ConvexSeparator(Shapes::Star());
-					VexRoid = Shapes::ConvexSeparator(Shapes::Asteroid());
-					VexShip = Shapes::ConvexSeparator(Shapes::Ship());
-					isWorking = true;
-					break;
 				case 'E':
 					vol += 0.05f;
 					if (vol > 1.0f)
@@ -110,31 +99,7 @@ void Game::UpdateModel(float dt)
 
 
 	case GameState::Play:
-		if (wnd.kbd.KeyIsPressed('W'))
-		{
-			Vec<float> heading = ship.GetHeading();
-			ship.Thrust(dt);
-		}
-		if (wnd.kbd.KeyIsPressed('A'))
-		{
-			ship.AThrust(dt);
-		}
-		if (wnd.kbd.KeyIsPressed('D'))
-		{
-			ship.AThrust(-dt);
-		}
-		if (wnd.kbd.KeyIsPressed('S'))
-		{
-			ship.SetVel({ 0.0f,0.0f });
-			ship.SetAngVel(0.0f);
-		}
-
-		ship.SetHistory();
-		ship.Update(dt);
-		spawner.Update(dt, cam.GetScreenBox());
-		collider.DoCollisions(dt, collship, jank);
-		//ship.DriftDecay(dt);
-
+		//Volume Control
 		if (!wnd.kbd.KeyIsEmpty())
 		{
 			auto e = wnd.kbd.ReadKey();
@@ -166,6 +131,27 @@ void Game::UpdateModel(float dt)
 			}
 		}
 
+		//Ship Control
+		if (wnd.kbd.KeyIsPressed('W'))
+		{
+			ship.Thrust(dt);
+		}
+		if (wnd.kbd.KeyIsPressed('A'))
+		{
+			ship.AThrust(dt);
+		}
+		if (wnd.kbd.KeyIsPressed('D'))
+		{
+			ship.AThrust(-dt);
+		}
+		//Debug
+		if (wnd.kbd.KeyIsPressed('S'))
+		{
+			ship.SetVel({ 0.0f,0.0f });
+			ship.SetAngVel(0.0f);
+		}
+
+		//Camera Control
 		const float velc = 200.0f;
 		if (wnd.kbd.KeyIsPressed(VK_UP))
 		{
@@ -184,6 +170,7 @@ void Game::UpdateModel(float dt)
 			cam.MoveBy({ dt * velc, 0.0f });
 		}
 
+		//Camera Zoom
 		while (!wnd.mouse.IsEmpty())
 		{
 			const auto e = wnd.mouse.Read();
@@ -197,33 +184,40 @@ void Game::UpdateModel(float dt)
 				break;
 			}
 		}
+
+		//Auto Pan
+		Rect<float> cambox = cam.GetScreenBox().GetExpand(-150.0f);
+
+		if (ship.GetPos().X > cambox.X0)
+		{
+			cam.MoveBy({ dt * velc, 0.0f });
+		}
+
+		if (ship.GetPos().X < cambox.X1)
+		{
+			cam.MoveBy({ -dt * velc, 0.0f });
+		}
+
+		if (ship.GetPos().Y > cambox.Y0)
+		{
+			cam.MoveBy({ 0.0f, dt * velc });
+		}
+
+		if (ship.GetPos().Y < cambox.Y1)
+		{
+			cam.MoveBy({ 0.0f, -dt * velc });
+		}
+
+		//Update
+		ship.SetHistory();
+		ship.Update(dt);
+		spawner.Update(dt, cam.GetScreenBox());
+		collider.DoCollisions(dt, collship, jank);
+		//ship.DriftDecay(dt);
+
 		break;
 	}
-
-	Rect<float> cambox = cam.GetScreenBox().GetExpand(-150.0f);
-	const float velc = 200.0f;
-
-	if (ship.GetPos().X > cambox.X0 ) 
-	{
-		cam.MoveBy({ dt * velc, 0.0f });
-	}
-
-	if (ship.GetPos().X < cambox.X1 )
-	{
-		cam.MoveBy({ -dt * velc, 0.0f });
-	}
-
-	if (ship.GetPos().Y > cambox.Y0 )
-	{
-		cam.MoveBy({ 0.0f, dt * velc });
-	}
-
-	if (ship.GetPos().Y < cambox.Y1 )
-	{
-		cam.MoveBy({ 0.0f, -dt * velc });
-	}
 }
-
 
 void Game::ComposeFrame()
 {
@@ -253,8 +247,6 @@ void Game::ComposeFrame()
 		
 		poly.emplace_back(200.0f, 500.0f);
 
-		cam.Draw(Drawable(poly, Colors::Green));
-
 		for (auto& s : scene)
 		{
 			//cam.Draw(s.GetDrawable());
@@ -262,24 +254,30 @@ void Game::ComposeFrame()
 		}
 		
 		cam.Draw(Drawable(poly, Colors::Green));
-
-		//cam.Draw(ship.GetDrawable());
 		cam.Draw(ship.GetDrawable());
+
+		std::vector<Vec<float>> DrawShipCenter;
+
+		DrawShipCenter.emplace_back(ship.GetPos());
+		DrawShipCenter.emplace_back(ship.GetPos());
+
+		Drawable dsc(DrawShipCenter, Colors::LightBlue);
+		cam.Draw(dsc);
 
 		for (auto& a : belt)
 		{
 			cam.Draw(a->GetDrawable());
-			//cam.Draw(a->GetDrawList());
 
-			std::vector<Vec<float>> test;
+			std::vector<Vec<float>> DrawCenter;
 
-			test.emplace_back(a->GetPos() + Vec<float>{1.0f, 0.0f});
-			test.emplace_back(a->GetPos() - Vec<float>{1.0f, 0.0f});
+			DrawCenter.emplace_back(a->GetPos());
+			DrawCenter.emplace_back(a->GetPos());
 
-			Drawable d(test, Colors::LightBlue);
-			cam.Draw(d);
+			Drawable dac(DrawCenter, Colors::LightBlue);
+			cam.Draw(dac);
 		}
 
+		/*Debug Approach Test Start*/
 		auto mothership = Shapes::ConvexSeparator(poly);
 
 		Approach testApproach = Shapes::FindApproach(ship.GetTransformedPrimitives(), mothership);
@@ -296,7 +294,6 @@ void Game::ComposeFrame()
 				bool STOP = youViolatedTheLaw;
 			}
 			auto shipPrim = ship.GetTransformedPrimitives();
-			//NearElements testElements = spawner.GetNearestElements(ship.GetTransformedModel(), poly);
 			
 			std::vector<Vec<float>> edgeLine;
 			std::vector<Vec<float>> pntLine;
@@ -344,11 +341,13 @@ void Game::ComposeFrame()
 				cam.Draw(Drawable(pntLine, Colors::LightBlue));
 			}
 		}
+		/*Debug Approach Test End*/
 
-		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
+		//Debug Info
+		font.DrawText(std::to_string(belt.size()), {100,120}, Colors::White, gfx);
 		if (collship)
 		{
-			font.DrawText("Colliding", { 50,95 }, Colors::White, gfx);
+			font.DrawText("Colliding", { 50,90 }, Colors::White, gfx);
 		}
 		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
 		font.DrawText("Ship R: " + std::to_string(ship.GetAngVel()), { 50,60 }, Colors::White, gfx);
@@ -370,7 +369,6 @@ void Game::ComposeFrame()
 			}
 			
 		}
-
 		break;
 	}
 	}

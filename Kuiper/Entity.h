@@ -14,16 +14,14 @@
 
 #include <vector>
 #include <list>
+
 #include "Engine/Vec.h"
+#include "Engine/BreezeException.h"
 #include "Graphics/Colors.h"
 #include "Graphics/Drawable.h"
-#include<memory>
-
-#include "Engine/BreezeException.h"
 
 //Forward Declarations
 struct ActiveEdge;
-
 struct LastColl
 {
 	Vec<float> pos;
@@ -34,28 +32,35 @@ struct LastColl
 	std::vector<std::vector<Vec<float>>> primitives;
 };
 
-
-
 class Entity
 {
 public:
 	Entity(std::vector<Vec<float>> modl, const Vec<float>& pos, const Vec<float>& vel, float angvel, Color c);
 
-	//Parameters
+	//Parameters: Get/Set/Update
 	const Vec<float>& GetPos() const;
 	void SetPos(const Vec<float> newpos);
 	void TranslateBy(const Vec<float> dpos);
-	void SetScale(const float s);
-	float GetScale() const;
-	float GetRadius() const;
+	Vec<float> GetVel() const;
+	void SetVel(const Vec<float> newvel);
+	Vec<float> GetHeading() const;
 	void SetHeading(const float th);
 	void RotBy(const float th);
-	Vec<float> GetHeading() const;
-	Vec<float> GetVel() const;
 	float GetAngVel() const;
-	void SetVel(const Vec<float> newvel);
 	void SetAngVel(const float newvel);
+	float GetScale() const;
+	void SetScale(const float s);
+	float GetRadius() const;
+
+	//Dynamic Qualities
 	Rect<float> GetBoundingBox() const;
+	std::vector<Vec<float>> GetTransformedModel() const;
+	std::vector<std::vector<Vec<float>>> GetTransformedPrimitives() const;
+protected:
+	Vec<float> GetTransformedVertex(const int vert) const;
+public:
+	void alertStaleModel() const;
+	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
 
 	//Rendering
 	Drawable GetDrawable(bool debug = false) const;
@@ -65,17 +70,16 @@ public:
 	//Interactions
 	void Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime, int&, bool);
 	bool CollPoint(const Vec<float> targ) const;
-	Vec<float> GetTransformedVertex(const int vert) const;
-	std::vector<Vec<float>> GetTransformedModel() const;
-	std::vector<std::vector<Vec<float>>> GetTransformedPrimitives() const;
-	Vec<float> Entity::UntransformPoint(const Vec<float> pnt);
+protected:
+	float ClusterArea(const Vec<float> A, const Vec<float> B, const Vec<float> C) const;
+public:
 
 	//History Recording
 	void SetHistory();
 	LastColl ReadHistory() const;
 	void ResetHistory();
-	void alertStaleModel() const;
 
+	//Debugger Tools
 	bool didColl = false;
 
 	enum class CollDepth
@@ -87,9 +91,8 @@ public:
 	};
 	mutable CollDepth depth = CollDepth::Free;
 
-protected:
-	float ClusterArea(const Vec<float> A, const Vec<float> B, const Vec<float> C) const;
 
+protected:
 	std::vector<Vec<float>> model;
 	std::vector<std::vector<Vec<float>>> modelprimitives;
 	mutable std::vector<Vec<float>> cachedModel;
