@@ -8,17 +8,17 @@
 void Tetrahedron::Update(float dt)
 {
 	rotX += dt * .45;
-	rotZ += dt * .7;
+	rotZ1 += dt * .7;
 
 	if (rotX > 6.2831853)
 		rotX -= 6.2831853;
 	else if (rotX < -6.2831853)
 		rotX += 6.2831853;
 
-	if (rotZ > 6.2831853)
-		rotZ -= 6.2831853;
-	else if (rotZ < -6.2831853)
-		rotZ += 6.2831853;
+	if (rotZ1 > 6.2831853)
+		rotZ1 -= 6.2831853;
+	else if (rotZ1 < -6.2831853)
+		rotZ1 += 6.2831853;
 
 	pos.Z -= dt * 5;
 	if (pos.Z < 0.0f)
@@ -219,14 +219,24 @@ void Tetrahedron::RotX(const float dth)
 		rotX += 6.2831853;
 }
 
-void Tetrahedron::RotZ(const float dth)
+void Tetrahedron::RotZ1(const float dth)
 {
-	rotZ += dth;
+	rotZ1 += dth;
 
-	if (rotZ > 6.2831853)
-		rotZ -= 6.2831853;
-	else if (rotZ < -6.2831853)
-		rotZ += 6.2831853;
+	if (rotZ1 > 6.2831853)
+		rotZ1 -= 6.2831853;
+	else if (rotZ1 < -6.2831853)
+		rotZ1 += 6.2831853;
+}
+
+void Tetrahedron::RotZ2(const float dth)
+{
+	rotZ2 += dth;
+
+	if (rotZ2 > 6.2831853)
+		rotZ2 -= 6.2831853;
+	else if (rotZ2 < -6.2831853)
+		rotZ2 += 6.2831853;
 }
 
 Vec3<float> Tetrahedron::GetNorm(const int i)
@@ -400,8 +410,8 @@ void Tetrahedron::TransformModel()
 {
 	for (int i = 0; i < 4; ++i)
 	{
-		vert[i] = model[i] * (Matrix::XRotor(rotX) * Matrix::ZRotor(rotZ));
+		vert[i] = model[i] * (Matrix::ZRotor(rotZ1) * Matrix::XRotor(rotX) * Matrix::ZRotor(rotZ2));
 		vert[i] += pos;
-		norm[i] = modnorm[i] * (Matrix::XRotor(rotX) * Matrix::ZRotor(rotZ));
+		norm[i] = modnorm[i] * (Matrix::ZRotor(rotZ1) * Matrix::XRotor(rotX) * Matrix::ZRotor(rotZ2));
 	}
 }

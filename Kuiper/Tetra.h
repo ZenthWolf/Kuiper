@@ -237,7 +237,8 @@ public:
 	void AdjustScreenDist(const float dr);
 	void AdjustAdditionalOffset(const float dr);
 	void RotX(const float dth);
-	void RotZ(const float dth);
+	void RotZ1(const float dth);
+	void RotZ2(const float dth);
 	Vec3<float> GetNorm(const int i);
 
 private:
@@ -255,6 +256,7 @@ private:
 	Vec3<float> pos;
 	float rotX = 0.0f;
 	float rotY = 0.0f;
-	float rotZ = 0.0f;
+	float rotZ1 = 0.0f;
+	float rotZ2 = 0.0f;
 	const Color c = Color(80, 30, 255);
 };

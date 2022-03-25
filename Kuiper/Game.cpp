@@ -153,19 +153,27 @@ void Game::UpdateModel(float dt)
 		}
 		if (wnd.kbd.KeyIsPressed('R'))
 		{
-			alienObj.RotX(-dt * 1.0f);
+			alienObj.RotZ1(-dt * 1.0f);
 		}
 		if (wnd.kbd.KeyIsPressed('T'))
 		{
-			alienObj.RotX(dt * 1.0f);
+			alienObj.RotZ1(dt * 1.0f);
 		}
 		if (wnd.kbd.KeyIsPressed('F'))
 		{
-			alienObj.RotZ(-dt * 1.0f);
+			alienObj.RotX(-dt * 1.0f);
 		}
 		if (wnd.kbd.KeyIsPressed('G'))
 		{
-			alienObj.RotZ(dt * 1.0f);
+			alienObj.RotX(dt * 1.0f);
+		}
+		if (wnd.kbd.KeyIsPressed('V'))
+		{
+			alienObj.RotZ2(-dt * 1.0f);
+		}
+		if (wnd.kbd.KeyIsPressed('B'))
+		{
+			alienObj.RotZ2(dt * 1.0f);
 		}
 
 
