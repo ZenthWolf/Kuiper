@@ -241,7 +241,7 @@ public:
 	void RotZ2(const float dth);
 	Vec3<float> GetNorm(const int i);
 
-private:
+public:
 	void TransformModel();
 	void DrawTriFromLowest(Vec3<float>& v0, Vec3<float>& v1, Vec3<float>& v2, int n, float*& zBuff, Color c, Graphics& gfx);
 	void DrawTri(Vec3<float>& v0, Vec3<float>& v1, Vec3<float>& v2, int n, float*& zBuff, Color c, Graphics& gfx);

@@ -449,6 +449,9 @@ void Game::ComposeFrame()
 		font.DrawText("Offset: " + std::to_string(alienObj.additionalOffset), { 50,90 }, Colors::White, gfx);
 		font.DrawText("Distance: " + std::to_string(alienObj.forcedDist), { 50,120 }, Colors::White, gfx);
 		
+		font.DrawText("RotZ1: " + std::to_string(alienObj.rotZ1), { 50,500 }, Colors::White, gfx);
+		font.DrawText("RotX: " + std::to_string(alienObj.rotX), { 50,530 }, Colors::White, gfx);
+		font.DrawText("RotZ2: " + std::to_string(alienObj.rotZ2), { 50,560 }, Colors::White, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{
 			std::vector<Vec<float>> testLine;
