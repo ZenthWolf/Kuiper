@@ -16,34 +16,12 @@
 #include <random>
 #include "Asteroid.h"
 
-struct NearElements
-{
-	enum class Type { Vertex, Edge };
-
-	int v0;
-	Type type0;
-	int v1;
-	Type type1;
-
-	bool flip;
-};
-
 class Spawner
 {
 public:
 	Spawner(std::vector<std::unique_ptr<Asteroid>>& belt);
-
-	void Update(const float dt, const Rect<float> cambox);
-
-	int FindIncidentEdge(const int edge, 
-		const std::vector<Vec<float>>& source, 
-		const std::vector<Vec<float>>& target) const;
-	float FindMaxSeparation(int& edge,
-		const std::vector<Vec<float>>& source,
-		const std::vector<Vec<float>>& target) const;
-	NearElements GetNearestElements(const std::vector<Vec<float>>& model0,
-		const std::vector<Vec<float>>& model1) const;
-
+	void Update(const float dt, const Rect<float>& cambox);
+	void Initialize(const Rect<float>& cambox);
 private:
 	void GenerateAsteroid(const Rect<float> cambox);
 
@@ -51,10 +29,10 @@ private:
 	float GenTime = 0.0f;
 	std::mt19937 rng;
 
-	float vRange = 300.0f;
-	float sMin = 0.75f;
-	float sMax = 5.0f;
-	float omgRange = 5.0f;
+	const float vRange = 300.0f;
+	const float sMin = 0.75f;
+	const float sMax = 5.0f;
+	const float omgRange = 5.0f;
 
-	int forcedAst = 5;
+	const int forcedAst = 5;
 };

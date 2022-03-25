@@ -9,10 +9,9 @@
 /*** unless you are a working member of Temper Tech.                     ***/
 /*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
+#define NOMINMAX
 #include<algorithm>
 #include<cassert>
-#include<iterator>
-#define NOMINMAX
 
 #include "Spawner.h"
 
@@ -20,7 +19,7 @@ Spawner::Spawner(std::vector<std::unique_ptr<Asteroid>>& belt)
 	:belt(belt), rng(std::random_device()())
 {}
 
-void Spawner::Update(const float dt, const Rect<float> cambox)
+void Spawner::Update(const float dt, const Rect<float>& cambox)
 {
 	//Cull distant asteroids
 	for (auto& a : belt)
@@ -49,20 +48,19 @@ void Spawner::Update(const float dt, const Rect<float> cambox)
 	{
 		if (int(belt.size()) < 16)
 		{
-			if (forcedAst != 0)
-			{
-				while (forcedAst > 0)
-				{
-					GenerateAsteroid(cambox);
-					forcedAst--;
-				}
-			}
-
 			GenerateAsteroid(cambox);
 
 			std::uniform_real_distribution<float> nextAst(.3f, 2.0f);
 			GenTime = nextAst(rng);
 		}
+	}
+}
+
+void Spawner::Initialize(const Rect<float>& cambox)
+{
+	for (int i=0; i<forcedAst; ++i)
+	{
+		GenerateAsteroid(cambox);
 	}
 }
 
@@ -147,102 +145,4 @@ void Spawner::GenerateAsteroid(const Rect<float> cambox)
 		if (accepted)
 			break;
 	}
-}
-
-float Spawner::FindMaxSeparation(int& edge, const std::vector<Vec<float>>& source, const std::vector<Vec<float>>& target) const
-{
-	int nSource = int(source.size());
-	int nTarget = int(target.size());
-
-	float maxSeparation = -FLT_MAX;
-
-	for (int i = 0; i < nSource; ++i)
-	{
-		int i1 = (i + 1) % nSource;
-		// source normal
-		Vec<float> n = { source[i1].Y - source[i].Y, -source[i1].X + source[i].X };
-		n = n.Norm();
-		// Find deepest point for normal i.
-		float si = FLT_MAX;
-		for (int j = 0; j < nTarget; ++j)
-		{
-			float sij = n.Dot(target[j] - source[i]);
-			if (sij < si)
-			{
-				si = sij;
-			}
-		}
-
-		if (si > maxSeparation)
-		{
-			maxSeparation = si;
-			edge = i;
-		}
-	}
-
-	return maxSeparation;
-}
-
-int Spawner::FindIncidentEdge(const int edge, const std::vector<Vec<float>>& source, const std::vector<Vec<float>>& target) const
-{
-	int nverts = target.size();
-
-	// Get the normal of the reference edge in poly2's frame.
-	int edge1 = (edge + 1) % source.size();
-	Vec<float> norm = {(source[edge1].Y - source[edge].Y), -(source[edge1].X - source[edge].X)};
-
-	// Find the incident edge on poly2.
-	int index = 0;
-	float minDot = FLT_MAX;
-	for (int i = 0; i < nverts; ++i)
-	{
-		int i1 = (i + 1) % nverts;
-		float dot = norm.Dot( { (target[i1].Y - target[i].Y), - (target[i1].X - target[i].X) });
-		if (dot < minDot)
-		{
-			minDot = dot;
-			index = i;
-		}
-	}
-
-	return index;
-}
-
-
-NearElements Spawner::GetNearestElements(const std::vector<Vec<float>>& model0,
-										const std::vector<Vec<float>>& model1) const
-{
-	
-	int edge0 = 0;
-	int edge1 = 0;
-	float separation0 = FindMaxSeparation(edge0, model0, model1);
-	float separation1 = FindMaxSeparation(edge1, model1, model0);
-
-	NearElements result;
-
-	if (separation0 > separation1)
-	{
-		result.v0 = edge1;
-		result.type0 = NearElements::Type::Edge;
-		result.flip = true;
-		result.v1 = FindIncidentEdge(result.v0, model1, model0);
-		result.type1 = NearElements::Type::Vertex;
-	}
-	else
-	{
-		result.v0 = edge0;
-		result.type0 = NearElements::Type::Edge;
-		result.flip = false;
-		result.v1 = FindIncidentEdge(result.v0, model0, model1);
-		result.type1 = NearElements::Type::Vertex;
-	}
-
-	if(result.flip)
-	{
-		std::swap(result.v0, result.v1);
-		std::swap(result.type0, result.type1);
-		result.flip = false;
-	}
-
-	return result;
 }

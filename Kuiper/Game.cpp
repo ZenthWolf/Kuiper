@@ -36,6 +36,8 @@ Game::Game(MainWindow& AFakeName)
 
 	ship.SetHeading(3.1415926 / 2);
 	ship.SetScale(3.0f);
+
+	spawner.Initialize(cam.GetScreenBox());
 }
 
 void Game::Play()
