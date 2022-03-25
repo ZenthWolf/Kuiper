@@ -19,7 +19,7 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 {
 	std::vector<std::vector<Vec<float>>> primitives;
 
-	int nverts = model.size();
+	const int nverts = model.size();
 	for (int i = 0; i < nverts; ++i)
 	{
 		//indecies
@@ -33,7 +33,6 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 		Vec<float> p2 = model[i2];
 
 		//Determine p1 relative to line p0-p2
-		//This is mathemtically equivalent to Entity::ClusterArea - investigate efficiencies
 		float orientation = p0.Cross(p1) + p1.Cross(p2) + p2.Cross(p0);
 
 		if (orientation < 0)
@@ -48,6 +47,7 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 
 			float minLength = FLT_MAX;
 
+			//Find first edge intersected by extension
 			for (int j = 0; j < nverts; ++j)
 			{
 				if (j != i0 && j != i1)
@@ -79,9 +79,8 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 					}
 				}
 			}
-			
-			//Need to give error if minLength is FLT_MAX
 
+			//Indecies of opposing edge
 			j0 = h;
 			j1 = k;
 
@@ -93,59 +92,31 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(std::vector<Vec<flo
 			r1 = model[j1];
 
 			//Cut apart into 2 polygons and rerun or find that current polygon is convex
-			if(!IsSamePoint(hit, r0))
+			int precursor0Start = j1;
+			int precursor0End = i1;
+			int precursor1Start = i1;
+			int precursor1End = j1;
+
+			if(IsSamePoint(hit, r0))
 			{
-				precursor0.emplace_back(hit);
+				hit = r0;
+				precursor1End = j0;
 			}
-			if (!IsSamePoint(hit, r1))
+			else if (IsSamePoint(hit, r1))
 			{
-				precursor1.emplace_back(hit);
+				hit = r1;
+				precursor0Start = (precursor0Start + 1) % nverts;
 			}
+			precursor0.reserve((i0 - precursor0Start + nverts) % nverts + 1);
+			precursor0.emplace_back(hit);
+			
+			for (k = precursor0Start; k!=precursor0End; k=(k+1)%nverts)
+				precursor0.emplace_back(model[k]);
 
-			h = -1;
-			k = i0;
-			while (true)
-			{
-
-				if (k != j1) precursor0.emplace_back(model[k]);
-				else
-				{
-					//if (h < 0 || h >= n) err();
-					if (!IsOnSegment(r1, model[h], p0))
-					{
-						precursor0.emplace_back(model[k]);
-					}
-					break;
-				}
-
-				h = k;
-
-				//A curse be upon the C++ modulus operator
-				if (k - 1 < 0) k = nverts - 1;
-				else k--;
-			}
-
-			std::reverse(precursor0.begin(), precursor0.end());
-
-			h = -1;
-			k = i1;
-			while (true)
-			{
-				if (k != j1) precursor1.emplace_back(model[k]);
-				else
-				{
-					//if (h < 0 || h >= n) err();
-					if (!IsOnSegment(r0, model[h], p1))
-					{
-						precursor0.emplace_back(model[k]);
-					}
-					break;
-				}
-
-				h = k;
-				k = (k + 1) % nverts;
-			}
-
+			precursor1.reserve((precursor1End - i1 + nverts) % nverts + 1);
+			precursor1.emplace_back(hit);
+			for (k = precursor1Start; k!=precursor1End; k=(k+1)%nverts)
+				precursor1.emplace_back(model[k]);
 
 			auto primlist0 = ConvexSeparator(precursor0);
 			auto primlist1 = ConvexSeparator(precursor1);

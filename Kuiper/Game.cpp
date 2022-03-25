@@ -1,4 +1,4 @@
-/***************************************************************************/
+﻿/***************************************************************************/
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
@@ -131,7 +131,7 @@ void Game::UpdateModel(float dt)
 		ship.Update(dt);
 		spawner.Update(dt, cam.GetScreenBox());
 		collider.DoCollisions(dt, collship, jank);
-		ship.DriftDecay(dt);
+		//ship.DriftDecay(dt);
 
 		if (!wnd.kbd.KeyIsEmpty())
 		{
@@ -262,11 +262,11 @@ void Game::ComposeFrame()
 		cam.Draw(Drawable(poly, Colors::Green));
 
 		//cam.Draw(ship.GetDrawable());
-		cam.Draw(ship.GetDrawable(true));
+		cam.Draw(ship.GetDrawable());
 
 		for (auto& a : belt)
 		{
-			cam.Draw(a->GetDrawable(true));
+			cam.Draw(a->GetDrawable());
 			//cam.Draw(a->GetDrawList());
 
 			std::vector<Vec<float>> test;
@@ -311,22 +311,15 @@ void Game::ComposeFrame()
 
 			if (testApproach.type0 == Approach::Type::Edge)
 			{
-				//Vec<float> lineDir = shipVert[(testApproach.index0 + 1) % nVert] - shipVert[testApproach.index0];
 				Vec<float> lineDir = (*prim)[(testApproach.index0 + 1) % nVert] - (*prim)[testApproach.index0];
 
-				//edgeLine.emplace_back(shipVert[testApproach.index0] - lineDir*2);
-				//edgeLine.emplace_back(shipVert[testApproach.index0] + lineDir*3);
 				edgeLine.emplace_back((*prim)[testApproach.index0] - lineDir * 2);
 				edgeLine.emplace_back((*prim)[testApproach.index0] + lineDir * 3);
 				
-				//edgeLine.emplace_back( shipVert[testApproach.index0] );
-				//edgeLine.emplace_back( shipVert[(testApproach.index0+1)%nVert] );
 				cam.Draw(Drawable(edgeLine, Colors::White));
 			}
 			else if ((testApproach.type0 == Approach::Type::Vertex))
 			{
-				//edgeLine.emplace_back(shipVert[testApproach.index0]);
-				//edgeLine.emplace_back(shipVert[(testApproach.index0 + 1) % nVert]);
 				edgeLine.emplace_back((*prim)[testApproach.index0]);
 				edgeLine.emplace_back((*prim)[(testApproach.index0 + 1) % nVert]);
 				
@@ -338,16 +331,12 @@ void Game::ComposeFrame()
 
 			if (testApproach.type1 == Approach::Type::Edge)
 			{
-				//pntLine.emplace_back(shipVert[testApproach.index1]);
-				//pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
 				pntLine.emplace_back(mothership[testApproach.convex1][testApproach.index1]);
 				pntLine.emplace_back(mothership[testApproach.convex1][(testApproach.index1 + 1) % mothership[testApproach.convex1].size()]);
 				cam.Draw(Drawable(pntLine, Colors::White));
 			}
 			else if ((testApproach.type1 == Approach::Type::Vertex))
 			{
-				//pntLine.emplace_back(shipVert[testApproach.index1]);
-				//pntLine.emplace_back(shipVert[(testApproach.index1 + 1) % nVert]);
 				pntLine.emplace_back(mothership[testApproach.convex1][testApproach.index1]);
 				pntLine.emplace_back(mothership[testApproach.convex1][(testApproach.index1 + 1) % mothership[testApproach.convex1].size()]);
 				cam.Draw(Drawable(pntLine, Colors::LightBlue));
@@ -357,9 +346,10 @@ void Game::ComposeFrame()
 		font.DrawText(std::to_string(belt.size()), {100,100}, Colors::White, gfx);
 		if (collship)
 		{
-			font.DrawText("Colliding", { 50,65 }, Colors::White, gfx);
+			font.DrawText("Colliding", { 50,95 }, Colors::White, gfx);
 		}
 		font.DrawText("Ship V: " + std::to_string(ship.GetVel().GetLength()), { 50,30 }, Colors::White, gfx);
+		font.DrawText("Ship R: " + std::to_string(ship.GetAngVel()), { 50,60 }, Colors::White, gfx);
 		font.DrawText("Janks: " + std::to_string(jank), { 50,570 }, Colors::White, gfx);
 		if (wnd.mouse.LeftIsPressed())
 		{

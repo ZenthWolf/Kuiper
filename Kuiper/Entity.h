@@ -52,6 +52,7 @@ public:
 	void RotBy(const float th);
 	Vec<float> GetHeading() const;
 	Vec<float> GetVel() const;
+	float GetAngVel() const;
 	void SetVel(const Vec<float> newvel);
 	void SetAngVel(const float newvel);
 	Rect<float> GetBoundingBox() const;

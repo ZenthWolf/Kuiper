@@ -114,6 +114,11 @@ Vec<float> Entity::GetVel() const
 	return vel;
 }
 
+float Entity::GetAngVel() const
+{
+	return angvel;
+}
+
 void Entity::SetVel(const Vec<float> newvel)
 {
 	vel = newvel;
@@ -342,10 +347,8 @@ bool Entity::CollPoint(const Vec<float> targ) const
 /// <returns>positive if A-B-C is a counterclockwise orientation</returns>
 float Entity::ClusterArea(Vec<float> A, Vec<float> B, Vec<float> C) const
 {
-	Vec<float> side0 = { B.X - A.X, B.Y - A.Y };
-	Vec<float> side1{ C.X - B.X, C.Y - B.Y };
-
-	return side0.Cross(side1);
+	//Equiv to (B-A)X(C-B)
+	return A.Cross(B) + B.Cross(C) + C.Cross(A);
 }
 
 Vec<float> Entity::GetTransformedVertex(int vert) const
