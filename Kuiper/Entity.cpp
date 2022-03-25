@@ -17,8 +17,6 @@
 
 #include "ColliderManager.h"
 
-#define BREEZE_COLLIDER_EXCEPTION( note ) Entity::ColliderException( note,_CRT_WIDE(__FILE__),__LINE__ )
-
 Entity::Entity(std::vector<Vec<float>> modl, const Vec<float>& pos = { 0.0f, 0.0f }, 
 			const Vec<float>& vel = { 0.0f, 0.0f }, float angvel = 0.0f, Color c = Colors::White)
 	:model(std::move(modl)), pos(pos), vel(vel), angvel(angvel), c(c)

@@ -16,7 +16,6 @@
 #include <list>
 
 #include "Engine/Vec.h"
-#include "Engine/BreezeException.h"
 #include "Graphics/Colors.h"
 #include "Graphics/Drawable.h"
 
