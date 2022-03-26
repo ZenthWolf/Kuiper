@@ -126,7 +126,7 @@ void Spawner::GenerateAsteroid(const Rect<float> cambox)
 			belt[belt.size() - 1]->SetScale(scale);
 		}
 
-		int index = belt.size() - 1;
+		int index = (int)belt.size() - 1;
 
 		//ensure no collision
 		bool accepted = true;

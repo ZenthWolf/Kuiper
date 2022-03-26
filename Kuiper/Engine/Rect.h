@@ -82,12 +82,12 @@ public:
 			&& (Y1 > targ.Y) && (Y0 < targ.Y));
 	}
 
-	int width() const
+	T width() const
 	{
 		return X1 - X0;
 	}
 
-	int height() const
+	T height() const
 	{
 		return Y1 - Y0;
 	}

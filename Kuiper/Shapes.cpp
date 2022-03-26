@@ -19,7 +19,7 @@ std::vector<std::vector<Vec<float>>> Shapes::ConvexSeparator(const std::vector<V
 {
 	std::vector<std::vector<Vec<float>>> primitives;
 
-	const int nverts = model.size();
+	const int nverts = (int)model.size();
 	for (int i = 0; i < nverts; ++i)
 	{
 		//indecies

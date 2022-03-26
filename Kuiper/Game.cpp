@@ -305,7 +305,7 @@ void Game::ComposeFrame()
 			{
 				++prim;
 			}
-			nVert = (*prim).size();
+			nVert = (int)(*prim).size();
 
 
 			if (testApproach.type0 == Approach::Type::Edge)
@@ -326,7 +326,7 @@ void Game::ComposeFrame()
 			}
 
 			shipVert = poly;
-			nVert = shipVert.size();
+			nVert = (int)shipVert.size();
 
 			if (testApproach.type1 == Approach::Type::Edge)
 			{
