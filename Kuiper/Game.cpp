@@ -182,6 +182,9 @@ void Game::UpdateModel(float dt)
 			case Mouse::Event::Type::WheelDown:
 				cam.SetScale(cam.GetScale() * 0.95f);
 				break;
+			case Mouse::Event::Type::RPress:
+				Vec<float> hexpos = { cam.GetScreenBox().X0, cam.GetScreenBox().Y0 + (cam.GetScreenBox().Y1 * 3.0f) / 4.0f };
+				hexa = new Hexabot(ship, hexpos, { 7.5f,-5.0f });
 			}
 		}
 
@@ -211,6 +214,8 @@ void Game::UpdateModel(float dt)
 		//Update
 		ship.SetHistory();
 		ship.Update(dt);
+		if (hexa != nullptr)
+			hexa->Update(dt); 
 		spawner.Update(dt, cam.GetScreenBox());
 		collider.DoCollisions(dt, collship, jank);
 		//ship.DriftDecay(dt);
@@ -249,12 +254,17 @@ void Game::ComposeFrame()
 
 		for (auto& s : scene)
 		{
-			//cam.Draw(s.GetDrawable());
 			cam.Draw(s.GetDrawable());
 		}
 		
 		cam.Draw(Drawable(poly, Colors::Green));
+
+		Drawable hexaBle = Drawable(hexabotSchematic, Colors::White);
+		hexaBle.Scale(10.f);
+		cam.Draw(hexaBle, false);
 		cam.Draw(ship.GetDrawable());
+		if (hexa != nullptr)
+			cam.Draw(hexa->GetDrawable(), false);
 
 		std::vector<Vec<float>> DrawShipCenter;
 

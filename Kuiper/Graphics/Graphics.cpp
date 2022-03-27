@@ -540,7 +540,7 @@ Colors::LightGrey,
 Colors::Grey,
 Colors::DarkGrey };
 
-void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c)
+void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c, bool debugJoints)
 {
 
 	const auto xform = [&](Vec<float> v)
@@ -561,14 +561,16 @@ void Graphics::DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> tra
 	int colcount = 0;
 	for (auto i = vert.begin(); i != std::prev(vert.end()); ++i)
 	{
-		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
+		if(debugJoints)
+			DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
 		++colcount;
 
 		const Vec<float> next = xform( *std::next(i) );
 		DrawLine(cur, next, c);
 		cur = next;
 	}
-	DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
+	if(debugJoints)
+		DrawCirc(cur, 3.0f, colArr[colcount % int(colArr.size())]);
 	DrawLine(cur, front, c);
 }
 

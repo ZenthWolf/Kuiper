@@ -65,11 +65,11 @@ Rect<float> Camera::GetScreenBox() const
 		float(Graphics::ScreenHeight / 2) * zoom);
 }
 
-void Camera::Draw(Drawable& drawable) const
+void Camera::Draw(Drawable& drawable, bool debugJoints) const
 {
 	drawable.Translate(-pos);
 	drawable.Scale(scale);
-	ct.Draw(drawable);
+	ct.Draw(drawable, debugJoints);
 }
 
 void Camera::Draw(std::list<Drawable>& drawable) const

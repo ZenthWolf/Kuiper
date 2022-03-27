@@ -69,7 +69,7 @@ public:
 	void DrawDRIsoTri(int x, int y, int size, Color C);
 	void DrawLine( Vec<float> p0, Vec<float> p1, Color c);
 	void DrawPolylineC( const std::vector<Vec<float>>& vert, Color c);
-	void DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c);
+	void DrawPolylineC(const std::vector<Vec<float>>& vert, Vec<float> translation, float sx, float sy, float th, Color c, bool debugJoints = true);
 	template<typename E>
 	void DrawSprite(int x, int y, const Surface& S, E effect)
 	{

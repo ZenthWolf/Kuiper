@@ -270,6 +270,10 @@ void Entity::SetColor(const Color cnew)
 //Interactions
 void Entity::Recoil(const ActiveEdge& contactEdge, Entity& targ, const float rewindTime, int& jank, bool doJank)
 {
+	if (doJank && !contactEdge.discreteCollision)
+	{
+		jank++;
+	}
 	alertStaleModel();
 	targ.alertStaleModel();
 

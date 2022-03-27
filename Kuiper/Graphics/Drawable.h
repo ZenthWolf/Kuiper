@@ -31,7 +31,7 @@ public:
 	void ScaleX(const float sx);
 	void ScaleY(const float sy);
 
-	void Render(Graphics& gfx) const;
+	void Render(Graphics& gfx, bool debugJoints = true) const;
 
 private:
 	const std::vector<Vec<float>>* model;

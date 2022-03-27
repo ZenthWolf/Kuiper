@@ -21,7 +21,7 @@ class CoordinateTransformer
 public:
 	CoordinateTransformer(Graphics& gfx);
 
-	void Draw(Drawable& drawable) const;
+	void Draw(Drawable& drawable, bool debugJoints = true) const;
 
 private:
 	Graphics& gfx;

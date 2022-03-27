@@ -16,11 +16,11 @@ CoordinateTransformer::CoordinateTransformer(Graphics& gfx)
 	: gfx(gfx)
 {}
 
-void CoordinateTransformer::Draw(Drawable& drawable) const
+void CoordinateTransformer::Draw(Drawable& drawable, bool debugJoints) const
 {
 	const Vec<float> offset = { float(Graphics::ScreenWidth / 2), float(Graphics::ScreenHeight / 2) };
 
 	drawable.ScaleY(-1.0f);
 	drawable.Translate(offset);
-	drawable.Render(gfx);
+	drawable.Render(gfx, debugJoints);
 }

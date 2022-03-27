@@ -156,6 +156,7 @@
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\SpriteEffect.h" />
     <ClInclude Include="Graphics\Surface.h" />
+    <ClInclude Include="Hexabot.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Spawner.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="Graphics\GraphicsOPT.cpp" />
     <ClCompile Include="Graphics\Surface.cpp" />
     <ClCompile Include="Graphics\SurfaceOPT.cpp" />
+    <ClCompile Include="Hexabot.cpp" />
     <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Simplex.cpp" />

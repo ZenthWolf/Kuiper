@@ -51,7 +51,7 @@ void Drawable::ScaleY(const float sy)
 	ScaleInd(1.0f, sy);
 }
 
-void Drawable::Render(Graphics& gfx) const
+void Drawable::Render(Graphics& gfx, bool debugJoints) const
 {
-	gfx.DrawPolylineC(*model, translation, scale_x, scale_y, rot, c);
+	gfx.DrawPolylineC(*model, translation, scale_x, scale_y, rot, c, debugJoints);
 }

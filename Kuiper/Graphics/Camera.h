@@ -30,7 +30,7 @@ public:
 
 	Rect<float> GetScreenBox() const;
 	
-	void Draw(Drawable& drawable) const;
+	void Draw(Drawable& drawable, bool debugJoints = true) const;
 	void Draw(std::list<Drawable>& drawable) const;
 
 private:

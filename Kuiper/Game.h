@@ -27,6 +27,7 @@
 
 #include "ColliderManager.h"
 #include "Ship.h"
+#include "Hexabot.h"
 #include "Spawner.h"
 #include "Statics.h"
 
@@ -68,6 +69,7 @@ private:
 
 	//Entities
 	Ship ship;
+	Hexabot* hexa = nullptr;
 	std::vector<std::unique_ptr<Asteroid>> belt;
 
 	Spawner spawner;
@@ -79,4 +81,6 @@ private:
 	//Debug
 	bool collship = false;
 	int jank = 0;
+
+	std::vector<Vec<float>> hexabotSchematic = Shapes::Hexabot();
 };
