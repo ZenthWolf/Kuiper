@@ -1,7 +1,7 @@
 #include "Hexabot.h"
 #include "Shapes.h"
 
-Hexabot::Hexabot(Entity targ, Vec<float> pos, Vec<float> vel, float rot, Color c)
+Hexabot::Hexabot(Entity& targ, Vec<float> pos, Vec<float> vel, float rot, Color c)
 	:Entity(Shapes::Hexabot(), pos, vel, rot, c), target(targ)
 {
 	vmax = 50.0f;

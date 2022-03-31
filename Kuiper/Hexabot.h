@@ -4,7 +4,7 @@
 class Hexabot : public Entity
 {
 public:
-	Hexabot(Entity targ, Vec<float> pos = { 0.0f, 0.0f }, Vec<float> vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::LightGrey);
+	Hexabot(Entity& targ, Vec<float> pos = { 0.0f, 0.0f }, Vec<float> vel = { 0.0f, 0.0f }, float rot = 0.0f, Color c = Colors::LightGrey);
 
 	void Thrust(const float dt);
 	void AThrust(const float dt);

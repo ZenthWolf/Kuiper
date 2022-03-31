@@ -120,22 +120,22 @@ public:
 	{
 		std::vector<Vec<float>> hexabotSchematic;
 		hexabotSchematic.reserve(14);
-		hexabotSchematic.emplace_back(-.5f, 0.86602540378f);
-		hexabotSchematic.emplace_back(-1.0f, 0.0f);
-		hexabotSchematic.emplace_back(-.5f, -0.86602540378f);
-		hexabotSchematic.emplace_back(.5f, -0.86602540378f);
-		hexabotSchematic.emplace_back(1.0f, 0.0f);
-		hexabotSchematic.emplace_back(.5f, 0.86602540378f); //Hexagon
+		hexabotSchematic.emplace_back(0.86602540378f, .5f);
+		hexabotSchematic.emplace_back(0.0f, 1.0f);
+		hexabotSchematic.emplace_back(-0.86602540378f, .5f);
+		hexabotSchematic.emplace_back(-0.86602540378f, -.5f);
+		hexabotSchematic.emplace_back(0.0f, -1.0f);
+		hexabotSchematic.emplace_back(0.86602540378f, -.5f); //Hexagon
 
-		hexabotSchematic.emplace_back(.6f, 0.86602540378f + 0.25f); //OutterEdge of Right
-		hexabotSchematic.emplace_back(.385f, 0.86602540378f + 0.5f); //Point of Right
-		hexabotSchematic.emplace_back(.4f, 0.86602540378f + 0.2f); // Bend of Right
-		hexabotSchematic.emplace_back(.25f, 0.86602540378f); //hex
+		hexabotSchematic.emplace_back(0.86602540378f + 0.25f, -.6f); //OutterEdge of Right
+		hexabotSchematic.emplace_back(0.86602540378f + 0.5f, -.385f); //Point of Right
+		hexabotSchematic.emplace_back(0.86602540378f + 0.2f, -.4f); // Bend of Right
+		hexabotSchematic.emplace_back(0.86602540378f, -.25f); //hex
 
-		hexabotSchematic.emplace_back(-.25f, 0.86602540378f);  //hex
-		hexabotSchematic.emplace_back(-.4f, 0.86602540378f + 0.2f); // Bend of Left
-		hexabotSchematic.emplace_back(-.385f, 0.86602540378f + 0.5f); //Point of Left
-		hexabotSchematic.emplace_back(-.6f, 0.86602540378f + 0.25f); //Outter Edge of Left
+		hexabotSchematic.emplace_back(0.86602540378f, .25f);  //hex
+		hexabotSchematic.emplace_back(0.86602540378f + 0.2f, .4f); // Bend of Left
+		hexabotSchematic.emplace_back(0.86602540378f + 0.5f, .385f); //Point of Left
+		hexabotSchematic.emplace_back(0.86602540378f + 0.25f, .6f); //Outter Edge of Left
 
 		//Center(hexabotSchematic); //Hex is centered, pincers are not to be included
 		return hexabotSchematic;
