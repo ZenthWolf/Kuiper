@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -11,10 +9,12 @@
 /***************************************************************************/
 
 #pragma once
-#include "Sound.h"
-#include <random>
+
 #include <initializer_list>
 #include <memory>
+#include <random>
+
+#include "Graphics/Sound.h"
 
 class SoundEffect
 {

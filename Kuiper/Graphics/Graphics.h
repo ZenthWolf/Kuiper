@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -14,10 +12,11 @@
 
 #include <d3d11.h>
 #include <wrl.h>
-#include "../engine/BreezeException.h"
-#include "Colors.h"
-#include "../Engine/Rect.h"
-#include "Surface.h"
+
+#include "Engine/BreezeException.h"
+#include "Engine/Rect.h"
+#include "Graphics/Colors.h"
+#include "Graphics/Surface.h"
 
 class Graphics
 {

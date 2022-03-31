@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -11,12 +9,14 @@
 /***************************************************************************/
 
 #pragma once
-#include "WinDefs.h"
-#include "../Graphics/Graphics.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "BreezeException.h"
+
 #include <string>
+
+#include "Engine/BreezeException.h"
+#include "Engine/Keyboard.h"
+#include "Engine/Mouse.h"
+#include "Engine/WinDefs.h"
+#include "Graphics/Graphics.h"
 
 // for granting special access to hWnd only for Graphics constructor
 class HWNDKey

@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "WinDefs.h"
 #include <sal.h>
+#include "WinDefs.h"
 
 #ifdef __cplusplus
 extern "C" {

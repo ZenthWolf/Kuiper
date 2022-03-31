@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -12,9 +10,9 @@
 
 #pragma once
 
-#include "../Engine/Vec.h"
-#include "Graphics.h"
-#include "Drawable.h"
+#include "Engine/Vec.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/Drawable.h"
 
 class CoordinateTransformer
 {

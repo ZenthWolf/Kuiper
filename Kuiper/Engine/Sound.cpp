@@ -2,22 +2,20 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
 /*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
-
-#include "Sound.h"
-#include <assert.h>
 #include <algorithm>
-#include <fstream>
 #include <array>
+#include <assert.h>
+#include <fstream>
 #include <functional>
-#include "XAudio\XAudio2.h"
-#include "DXErr.h"
+
+#include "Engine/DXErr.h"
+#include "Engine/Sound.h"
+#include "Engine/XAudio\XAudio2.h"
 
 #define CHILI_SOUND_API_EXCEPTION( hr,note ) SoundSystem::APIException( hr,_CRT_WIDE(__FILE__),__LINE__,note )
 #define CHILI_SOUND_FILE_EXCEPTION( filename,note ) SoundSystem::FileException( _CRT_WIDE(__FILE__),__LINE__,note,filename )

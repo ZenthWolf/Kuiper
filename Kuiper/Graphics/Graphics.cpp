@@ -2,26 +2,25 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
 /*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
 
-#include "../Engine/MainWindow.h"
-#include "Graphics.h"
-#include "../Engine/DXErr.h"
 #include <assert.h>
 #include <string>
 #include <array>
 
+#include "Engine/DXErr.h"
+#include "Engine/MainWindow.h"
+#include "Graphics/Graphics.h"
+
 // Should be created during the build sequence before preprocessing
 namespace FramebufferShaders
 {
-#include "../FramebufferPS.shh"
-#include "../FramebufferVS.shh"
+#include "FramebufferPS.shh"
+#include "FramebufferVS.shh"
 }
 
 #pragma comment( lib,"d3d11.lib" )

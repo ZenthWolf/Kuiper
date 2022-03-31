@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -13,7 +11,8 @@
 #pragma once
 
 #include<list>
-#include "CoordinateTransformer.h"
+
+#include "Graphics/CoordinateTransformer.h"
 
 class Camera
 {

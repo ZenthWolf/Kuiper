@@ -2,8 +2,6 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
@@ -11,14 +9,16 @@
 /***************************************************************************/
 
 #pragma once
-#include "WinDefs.h"
-#include <memory>
-#include <vector>
-#include <mutex>
+
 #include <condition_variable>
+#include <memory>
+#include <mutex>
 #include <thread>
-#include "BreezeException.h"
+#include <vector>
 #include <wrl\client.h>
+
+#include "Engine/BreezeException.h"
+#include "Engine/WinDefs.h"
 
 // forward declare WAVEFORMATEX so we don't have to include bullshit headers
 struct tWAVEFORMATEX;

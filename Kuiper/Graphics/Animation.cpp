@@ -2,16 +2,14 @@
 /***               Temper Tech PROJECT KUIPER                            ***/
 /*** Copyright for all time                                              ***/
 /***                                                                     ***/
-/*** Part of the Temper DirectX Framework                                ***/
-/***                                                                     ***/
 /*** Proprietary Software, do not read.                                  ***/
 /*** You cannot use it, look at it, or have it on your computer,         ***/
 /*** unless you are a working member of Temper Tech.                     ***/
 /*** Temper Tech is definitely not a made up company.                    ***/
 /***************************************************************************/
 
-#include "Animation.h"
-#include "SpriteEffect.h"
+#include "Graphics/Animation.h"
+#include "Graphics/SpriteEffect.h"
 
 Animation::Animation( int x0, int y0, int width, int height, int framecount,
 	                  const Surface& sprite, float holdTime, Color chroma)
